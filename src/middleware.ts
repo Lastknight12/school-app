@@ -3,6 +3,7 @@ import type { NextRequest } from "next/server";
 import { decode } from "next-auth/jwt";
 import type { Session } from "next-auth";
 import type { UserRole } from "@prisma/client";
+import { env } from "./env";
 
 export const urls = new Map<string, UserRole[]>([
   ["/stats", ["STUDENT"]],
@@ -16,7 +17,7 @@ export default async function middleware(request: NextRequest) {
   if (!token) return NextResponse.redirect(new URL("/login", request.url));
   const decryptToken = (await decode({
     token,
-    secret: "asd",
+    secret: env.NEXTAUTH_SECRET!,
   })) as unknown as Session["user"];
 
   if (!token) {

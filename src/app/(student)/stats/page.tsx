@@ -5,7 +5,7 @@ import { getServerAuthSession } from "~/server/auth";
 export default async function Page() {
   const session = await getServerAuthSession();
 
-  if (!session) {
+  if (!session?.user) {
     return redirect("/login");
   }
 
