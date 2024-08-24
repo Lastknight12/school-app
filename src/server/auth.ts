@@ -1,4 +1,5 @@
 import { PrismaAdapter } from "@auth/prisma-adapter";
+import type { UserRole } from "@prisma/client";
 import {
   getServerSession,
   type DefaultSession,
@@ -6,6 +7,7 @@ import {
 } from "next-auth";
 import { type Adapter } from "next-auth/adapters";
 import DiscordProvider from "next-auth/providers/discord";
+import GoogleProvider from "next-auth/providers/google";
 
 import { env } from "~/env";
 import { db } from "~/server/db";
@@ -21,7 +23,9 @@ declare module "next-auth" {
     user: {
       id: string;
       // ...other properties
-      // role: UserRole;
+      role: UserRole;
+      balance: number;
+      klassId?: string;
     } & DefaultSession["user"];
   }
 
@@ -37,20 +41,56 @@ declare module "next-auth" {
  * @see https://next-auth.js.org/configuration/options
  */
 export const authOptions: NextAuthOptions = {
+  secret: env.NEXTAUTH_SECRET,
+  session: {
+    strategy: "jwt",
+  },
+  pages: {
+    signIn: "/login",
+  },
   callbacks: {
-    session: ({ session, user }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: user.id,
-      },
-    }),
+    jwt: async ({ token }) => {
+      const dbUser = await db.user.findFirst({
+        where: { id: token.sub },
+        select: {
+          name: true,
+          email: true,
+          image: true,
+          balance: true,
+          role: true,
+          klassId: true,
+        },
+      });
+
+      return {
+        sub: token.sub,
+        name: dbUser?.name,
+        email: dbUser?.email,
+        image: dbUser?.image,
+        balance: dbUser?.balance,
+        role: dbUser?.role,
+        klassId: dbUser?.klassId,
+      };
+    },
+    session: ({ session, token }) => {
+      return {
+        ...session,
+        user: {
+          ...token,
+          id: token.sub,
+        },
+      };
+    },
   },
   adapter: PrismaAdapter(db) as Adapter,
   providers: [
     DiscordProvider({
       clientId: env.DISCORD_CLIENT_ID,
       clientSecret: env.DISCORD_CLIENT_SECRET,
+    }),
+    GoogleProvider({
+      clientId: env.GOOGLE_CLIENT_ID,
+      clientSecret: env.GOOGLE_CLIENT_SECRET,
     }),
     /**
      * ...add more providers here.
