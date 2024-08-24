@@ -94,7 +94,7 @@ export default function StudentsTable({ klassId }: Props) {
           ))}
         </TableHeader>
         <TableBody>
-          {getStudents.data?.length === 1 ||
+          {getStudents.data?.length === 0 ||
             (table.getRowModel.length === 0 && !getStudents.isFetching && (
               <TableRow>
                 <TableCell

@@ -6,18 +6,25 @@ import { useRouter } from "next/navigation";
 interface Props {
   users?: User[];
   sessionUsername: string;
+  sessionBalance: number;
   isLoading: boolean;
 }
 
 export default function SearchResult({
   users,
   sessionUsername,
+  sessionBalance,
   isLoading,
 }: Props) {
   const router = useRouter();
 
   if (isLoading) {
     return <div>Loading...</div>;
+  }
+
+  function onMutationSuccess(setIsDialogOpen: (open: boolean) => void) {
+    router.refresh();
+    setIsDialogOpen(false);
   }
 
   return (
@@ -33,7 +40,8 @@ export default function SearchResult({
                 <TransactionDialog
                   key={user.name}
                   user={user}
-                  onMutationSuccess={() => router.refresh()}
+                  onMutationSuccess={onMutationSuccess}
+                  sessionBalance={sessionBalance}
                 >
                   <div className="flex items-center gap-3">
                     <Image

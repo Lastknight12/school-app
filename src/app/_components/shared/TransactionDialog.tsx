@@ -3,7 +3,12 @@
 import type { User } from "@prisma/client";
 import Image from "next/image";
 import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
-import { useState, type ChangeEvent } from "react";
+import {
+  type Dispatch,
+  type SetStateAction,
+  useState,
+  type ChangeEvent,
+} from "react";
 import { z } from "zod";
 import { sendAmountSchema } from "~/schemas/zod";
 import { toast } from "sonner";
@@ -12,16 +17,20 @@ import Spinner from "~/components/ui/spinner";
 
 interface Props {
   user: User;
+  sessionBalance?: number;
   children?: React.ReactNode;
   isOpen?: boolean;
   isTeacher?: boolean;
-  onMutationSuccess?: () => void;
+  onMutationSuccess?: (
+    setIsDialogOpen: Dispatch<SetStateAction<boolean>>,
+  ) => void;
   onOpenChange?: (open: boolean) => void;
 }
 
 export default function TransactionDialog({
   user,
   children,
+  sessionBalance,
   isTeacher,
   isOpen,
   onOpenChange,
@@ -36,7 +45,9 @@ export default function TransactionDialog({
   const sendMoneyMutation = api.transfers.sendMoney.useMutation({
     onSuccess: () => {
       toast.success("Платіж успішно відправлений");
-      onMutationSuccess ? onMutationSuccess() : setIsDialogOpen(false);
+      console.log(onMutationSuccess);
+      onMutationSuccess?.(setIsDialogOpen);
+      setIsDialogOpen(false);
     },
     onError: (error) => {
       toast.error(error.message);
@@ -99,7 +110,7 @@ export default function TransactionDialog({
 
           <div className="flex w-full flex-col items-center">
             {!isTeacher ? (
-              <p className="text-[#6f6f6f]">Бланс: {user.balance}</p>
+              <p className="text-[#6f6f6f]">Бланс: {sessionBalance ?? 0}</p>
             ) : (
               <p className="mb-1">Кількість баллів:</p>
             )}

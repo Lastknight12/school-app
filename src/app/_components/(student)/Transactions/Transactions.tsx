@@ -11,7 +11,6 @@ interface Props {
 
 export default function Transactions({ session }: Props) {
   const getUsersByName = api.user.getUsersByName.useMutation();
-
   async function onInputChange(name: string) {
     getUsersByName.mutate({ name });
   }
@@ -23,6 +22,7 @@ export default function Transactions({ session }: Props) {
       <SearchResult
         users={getUsersByName.data ?? []}
         sessionUsername={session.user.name!}
+        sessionBalance={session.user.balance}
         isLoading={getUsersByName.isPending}
       />
     </main>
