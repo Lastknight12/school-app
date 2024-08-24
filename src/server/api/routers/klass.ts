@@ -9,10 +9,7 @@ export const klassRouter = createTRPCRouter({
   getKlass: teacherProcerure.query(async ({ ctx }) => {
     const klass = await ctx.db.klass.findFirst({
       where: {
-        OR: [
-          { teacherId: ctx.session.user.id },
-          { students: { some: { id: ctx.session.user.id } } },
-        ],
+        teacherId: ctx.session.user.id,
       },
       select: {
         name: true,

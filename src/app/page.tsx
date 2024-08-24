@@ -16,15 +16,15 @@ export default async function Home() {
     case "STUDENT":
       if (!session.user.klassId)
         return (
-          <div>
+          <div className="px-5">
             <p>Зачекайте поки адміністратор добавить вас в потрібний клас</p>
           </div>
         );
       return <StudentHomePage />;
     case "TEACHER":
-      if (!session.user.klassId) {
+      if (session.user.teacherInIds?.length === 0) {
         return (
-          <div>
+          <div className="px-5">
             <p>Зачекайте поки адміністратор добавить вас в потрібний клас</p>
           </div>
         );

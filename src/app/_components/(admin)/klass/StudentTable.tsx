@@ -21,6 +21,7 @@ import {
 
 import Image from "next/image";
 import { api } from "~/trpc/react";
+import Spinner from "~/components/ui/spinner";
 
 interface Student {
   name: string;
@@ -93,6 +94,17 @@ export default function StudentsTable({ klassId }: Props) {
           ))}
         </TableHeader>
         <TableBody>
+          {getStudents.data?.length === 1 ||
+            (table.getRowModel.length === 0 && !getStudents.isFetching && (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
+                  Жодних учнів не знайдено
+                </TableCell>
+              </TableRow>
+            ))}
           {getStudents.data && !getStudents.isFetching ? (
             table.getRowModel().rows.map((row) => (
               <TableRow
@@ -108,8 +120,8 @@ export default function StudentsTable({ klassId }: Props) {
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
-                Учнів поки немає
+              <TableCell colSpan={columns.length}>
+                <Spinner containerClassName=" mx-auto" />
               </TableCell>
             </TableRow>
           )}

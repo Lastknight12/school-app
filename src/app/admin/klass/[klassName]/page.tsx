@@ -41,7 +41,9 @@ export default async function Page({
         </div>
       </div>
 
-      <ButtonsGroup klassId={klass.id} />
+      <div className="mb-5">
+        <ButtonsGroup klassId={klass.id} />
+      </div>
 
       <StudentsTable klassId={klass.id} />
     </main>

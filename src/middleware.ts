@@ -14,15 +14,14 @@ const redirectUrl = "/not-found";
 // This function can be marked `async` if using `await` inside
 export default async function middleware(request: NextRequest) {
   const token = request.cookies.get("next-auth.session-token")?.value;
+
   if (!token) return NextResponse.redirect(new URL("/login", request.url));
+
   const decryptToken = (await decode({
     token,
     secret: env.NEXTAUTH_SECRET!,
   })) as unknown as Session["user"];
 
-  if (!token) {
-    return NextResponse.redirect(new URL("/login", request.url));
-  }
   const currentUrl = request.nextUrl.pathname;
 
   if (!urls.get(currentUrl)?.includes(decryptToken.role)) {

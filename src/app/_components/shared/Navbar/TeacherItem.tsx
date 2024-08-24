@@ -1,13 +1,12 @@
 "use server";
 
-import Spinner from "~/components/ui/spinner";
 import { api } from "~/trpc/server";
 
 export default async function TeacherItem() {
   const klass = await api.klass.getKlass();
 
   if (!klass) {
-    return <Spinner />;
+    return null;
   }
 
   return (

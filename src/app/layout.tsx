@@ -3,7 +3,7 @@ import { TRPCReactProvider } from "~/trpc/react";
 import localFont from "next/font/local";
 import Navbar from "./_components/shared/Navbar/Navbar";
 import "../styles/globals.css";
-import BottomNavigationWrapper from "./_components/(student)/BottomNavigation/BottomNavigationContainer";
+import BottomNavigationWrapper from "./_components/shared/BottomNavigation/BottomNavigationContainer";
 import { Toaster } from "sonner";
 
 const metropolis = localFont({

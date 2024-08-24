@@ -26,6 +26,9 @@ declare module "next-auth" {
       role: UserRole;
       balance: number;
       klassId?: string;
+      teacherInIds?: {
+        id: string;
+      }[];
     } & DefaultSession["user"];
   }
 
@@ -59,6 +62,11 @@ export const authOptions: NextAuthOptions = {
           balance: true,
           role: true,
           klassId: true,
+          teacherIn: {
+            select: {
+              id: true,
+            },
+          },
         },
       });
 
@@ -70,6 +78,7 @@ export const authOptions: NextAuthOptions = {
         balance: dbUser?.balance,
         role: dbUser?.role,
         klassId: dbUser?.klassId,
+        teacherInIds: dbUser?.teacherIn,
       };
     },
     session: ({ session, token }) => {

@@ -16,6 +16,7 @@ export const userRouter = createTRPCRouter({
           name: {
             contains: input.name,
           },
+          role: "STUDENT",
         },
       });
 
@@ -31,6 +32,10 @@ export const userRouter = createTRPCRouter({
   }),
 
   getAllStudents: adminProcerure.query(async ({ ctx }) => {
-    return await ctx.db.user.findMany({});
+    return await ctx.db.user.findMany({
+      where: {
+        role: "STUDENT",
+      },
+    });
   }),
 });
