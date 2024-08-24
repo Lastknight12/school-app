@@ -30,16 +30,18 @@ export default function TeacherHomePage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {klass.data?.students.length === 0 && !klass.isFetching ? (
-              <TableCell colSpan={3}>
-                <div className="text-center">Жодних учнів не знайдено</div>
-              </TableCell>
-            ) : (
+            {klass.isFetching && (
               <TableRow>
                 <TableCell colSpan={3}>
                   <Spinner containerClassName=" mx-auto" />
                 </TableCell>
               </TableRow>
+            )}
+
+            {klass.data?.students.length === 0 && !klass.isFetching && (
+              <TableCell colSpan={3}>
+                <div className="text-center">Жодних учнів не знайдено</div>
+              </TableCell>
             )}
 
             {klass.data?.students?.map((student) => (
