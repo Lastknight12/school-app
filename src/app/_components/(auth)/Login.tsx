@@ -14,12 +14,14 @@ export default function Login() {
     {
       name: "Discord",
       icon: <FaDiscord size={24} />,
-      callbackFn: () => void signIn("discord"),
+      callbackFn: () =>
+        void signIn("discord", { redirect: true, callbackUrl: "/" }),
     },
     {
       name: "Google",
       icon: <FaGoogle size={24} />,
-      callbackFn: () => void signIn("google"),
+      callbackFn: () =>
+        void signIn("google", { redirect: true, callbackUrl: "/" }),
     },
   ];
   return (

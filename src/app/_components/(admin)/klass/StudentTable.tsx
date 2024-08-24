@@ -94,8 +94,10 @@ export default function StudentsTable({ klassId }: Props) {
           ))}
         </TableHeader>
         <TableBody>
-          {getStudents.data?.length === 0 ||
-            (table.getRowModel.length === 0 && !getStudents.isFetching && (
+          {table.getRowModel().rows.length === 0 &&
+            !getStudents.isFetching &&
+            table.getRowModel.length === 0 &&
+            !getStudents.isFetching && (
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
@@ -104,7 +106,7 @@ export default function StudentsTable({ klassId }: Props) {
                   Жодних учнів не знайдено
                 </TableCell>
               </TableRow>
-            ))}
+            )}
           {getStudents.data && !getStudents.isFetching ? (
             table.getRowModel().rows.map((row) => (
               <TableRow

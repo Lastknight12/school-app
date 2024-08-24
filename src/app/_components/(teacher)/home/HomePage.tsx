@@ -30,14 +30,10 @@ export default function TeacherHomePage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {klass.data?.students && !klass.isFetching ? (
-              klass.data?.students.map((student) => (
-                <TableContent
-                  key={student.id}
-                  student={student}
-                  onSuccess={() => klass.refetch()}
-                />
-              ))
+            {klass.data?.students.length === 0 && !klass.isFetching ? (
+              <TableCell colSpan={3}>
+                <div className="text-center">Жодних учнів не знайдено</div>
+              </TableCell>
             ) : (
               <TableRow>
                 <TableCell colSpan={3}>
@@ -45,6 +41,14 @@ export default function TeacherHomePage() {
                 </TableCell>
               </TableRow>
             )}
+
+            {klass.data?.students?.map((student) => (
+              <TableContent
+                key={student.id}
+                student={student}
+                onSuccess={() => klass.refetch()}
+              />
+            ))}
           </TableBody>
         </Table>
       </div>

@@ -56,49 +56,49 @@ export const transfersRouter = createTRPCRouter({
         },
       });
 
-      await ctx.db.user.update({
-        where: {
-          id: ctx.session.user.id,
-        },
-        data: {
-          balance: {
-            decrement: input.amount,
-          },
-          senderIn: {
-            connect: {
-              id: transaction.id,
-            },
-          },
-        },
-      });
-
       {
         ctx.session.user.role === "STUDENT" &&
-          ctx.db.user
-            .update({
-              where: {
-                id: input.receiverId,
+          (await ctx.db.user.update({
+            where: {
+              id: ctx.session.user.id,
+            },
+            data: {
+              balance: {
+                decrement: input.amount,
               },
-              data: {
-                balance: {
-                  increment: input.amount,
-                },
-                recieverIn: {
-                  connect: {
-                    id: transaction.id,
-                  },
+              senderIn: {
+                connect: {
+                  id: transaction.id,
                 },
               },
-            })
-            .catch((err) => {
-              if (err instanceof PrismaClientKnownRequestError) {
-                throw new TRPCError({
-                  code: "INTERNAL_SERVER_ERROR",
-                  message: `Надішліть повідомлення адміністратору, ${err.message}`,
-                });
-              }
-            });
+            },
+          }));
       }
+
+      ctx.db.user
+        .update({
+          where: {
+            id: input.receiverId,
+          },
+          data: {
+            balance: {
+              increment: input.amount,
+            },
+            recieverIn: {
+              connect: {
+                id: transaction.id,
+              },
+            },
+          },
+        })
+        .catch((err) => {
+          if (err instanceof PrismaClientKnownRequestError) {
+            throw new TRPCError({
+              code: "INTERNAL_SERVER_ERROR",
+              message: `Надішліть повідомлення адміністратору, ${err.message}`,
+            });
+          }
+        });
     }),
 
   getTransfers: protectedProcedure.query(async ({ ctx }) => {
