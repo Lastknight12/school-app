@@ -16,12 +16,6 @@ interface Props {
   allowedUrls: string[];
 }
 
-interface filteredNavigationItems {
-  name: string;
-  href: string;
-  icon: React.ReactNode | null;
-}
-
 export default function BottomNavigation({ allowedUrls }: Props) {
   const pathname = usePathname();
   const actionYPoint = -35;
@@ -63,53 +57,45 @@ export default function BottomNavigation({ allowedUrls }: Props) {
     { name: "Stats", href: "/stats", icon: <IoMdStats size={24} /> },
   ];
 
-  const filteredNavigationItems: filteredNavigationItems[] =
-    navigationItems.filter(
-      (item) => allowedUrls.includes(item.href) || item.href === "/",
-    );
+  const filteredNavigationItems = navigationItems.filter(
+    (item) => allowedUrls.includes(item.href) || item.href === "/",
+  );
 
-  if (
-    !filteredNavigationItems.includes({
-      href: pathname,
-      name: "pathname",
-      icon: null,
-    })
-  )
+  if (!filteredNavigationItems.some((item) => item.href === pathname)) {
     return null;
+  }
 
   return (
-    <div>
-      <animated.div
-        style={{
-          left: `calc(50% - (24px * 2 + 40px * ${filteredNavigationItems.length - 1} + 24px * ${filteredNavigationItems.length}) / 2) !important`,
-          y,
-          // 24px * 2 padding on left and right,
-          // 40px * items - 1 gap between items,
-          // 24px * 2 items width
-        }}
-        className="fixed bottom-[calc(0%-65.6px)] rounded-bl-sm rounded-br-sm border border-[#fafafa15] bg-[#28292b] py-5 backdrop-blur-sm"
+    <animated.div
+      style={{
+        left: `calc(50% - (24px * 2 + 40px * ${filteredNavigationItems.length - 1} + 24px * ${filteredNavigationItems.length}) / 2) !important`,
+        y,
+        // 24px * 2 padding on left and right,
+        // 40px * items - 1 gap between items,
+        // 24px * 2 items width
+      }}
+      className="fixed bottom-[calc(0%-65.6px)] rounded-bl-sm rounded-br-sm border border-[#fafafa15] bg-[#28292b] py-5 backdrop-blur-sm"
+    >
+      {/* Top line */}
+      <button
+        {...bind()}
+        className={`fixed -top-4 left-[-1px] flex h-4 w-[calc(100%+2px)] touch-none items-center justify-center rounded-tl-full rounded-tr-full border border-[#fafafa15] border-b-[#28292b] bg-[#28292b]`}
       >
-        {/* Top line */}
-        <button
-          {...bind()}
-          className={`fixed -top-4 left-[-1px] flex h-4 w-[calc(100%+2px)] touch-none items-center justify-center rounded-tl-full rounded-tr-full border border-[#fafafa15] border-b-[#28292b] bg-[#28292b]`}
-        >
-          <div className="flex h-full w-full items-center justify-center">
-            <div className="h-[2px] w-[40%] bg-[#5a5a5b]" />
-          </div>
-        </button>
-        <div className="flex gap-10 px-6">
-          {filteredNavigationItems.map((item) => (
-            <Link key={item.name} href={item.href}>
-              <div
-                className={`${pathname === item.href ? "text-[#4181FF]" : "text-[#fafafa]"}`}
-              >
-                {item.icon}
-              </div>
-            </Link>
-          ))}
+        <div className="flex h-full w-full items-center justify-center">
+          <div className="h-[2px] w-[40%] bg-[#5a5a5b]" />
         </div>
-      </animated.div>
-    </div>
+      </button>
+      <div className="flex gap-10 px-6">
+        {filteredNavigationItems.map((item) => (
+          <Link key={item.name} href={item.href}>
+            <div
+              className={`${pathname === item.href ? "text-[#4181FF]" : "text-[#fafafa]"}`}
+            >
+              {item.icon}
+            </div>
+          </Link>
+        ))}
+      </div>
+    </animated.div>
   );
 }
