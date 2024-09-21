@@ -58,6 +58,7 @@ export default function GenerateQRModal({
           return;
         }
 
+        setPaymentError("")
         setIsSuccess(true);
         decrementProductsCount.mutate(
           products.map((product) => {
