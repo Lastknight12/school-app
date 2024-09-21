@@ -10,6 +10,7 @@ import type { Transaction } from "@prisma/client";
 
 import jwt from "jsonwebtoken";
 import { randomUUID } from "crypto";
+import { env } from "~/env";
 
 export interface TokenData {
   randomChannelId: string;
@@ -298,14 +299,14 @@ export const transfersRouter = createTRPCRouter({
 
       const randomChannelId = randomUUID();
 
-      const token = await jwt.sign(
+      const token = jwt.sign(
         {
           products: input.products,
           totalAmount: amount,
           transactionId: transaction.id,
           randomChannelId: randomChannelId,
         },
-        process.env.QR_SECRET as string,
+        env.QR_SECRET,
       );
 
       return {
@@ -323,7 +324,7 @@ export const transfersRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const decryptedToken = jwt.verify(
         input.token,
-        process.env.QR_SECRET as string,
+        env.QR_SECRET,
       ) as TokenData;
 
       const [transaction, products] = await Promise.all([
