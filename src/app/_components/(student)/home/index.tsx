@@ -52,7 +52,7 @@ export default async function StudentHomePage() {
               const formatedGradient =
                 transfer.randomGradient as formatedTransfer["randomGradient"];
 
-              const isUserSender = transfer.sender.id === session?.user.id;
+              const isUserSender = transfer.sender!.id === session?.user.id;
               return (
                 <div
                   className="flex items-center justify-between gap-5"
@@ -73,8 +73,8 @@ export default async function StudentHomePage() {
                     <div>
                       <h1 className="font-bold tracking-wide text-[#fafafa]">
                         {isUserSender
-                          ? transfer.reciever.name
-                          : transfer.sender.name}
+                          ? transfer.reciever!.name
+                          : transfer.sender!.name}
                       </h1>
                       <p className="text-sm font-semibold text-[#fafafa4d]">
                         {transfer.createdAt.toLocaleDateString("uk-UA", {
