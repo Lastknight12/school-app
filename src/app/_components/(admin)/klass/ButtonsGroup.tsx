@@ -50,7 +50,6 @@ export default function ButtonsGroup({ klassId }: Props) {
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
-          variant="outline"
           role="combobox"
           aria-expanded={open}
           className="h-max w-[200px] justify-between"

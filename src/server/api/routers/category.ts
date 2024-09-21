@@ -1,8 +1,9 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure, sellerProcedure } from "../trpc";
 import jwt from "jsonwebtoken";
-import { TokenData } from "./transfers";
+import { type TokenData } from "./transfers";
 import { TRPCError } from "@trpc/server";
+import { env } from "~/env";
 
 export const categoryRouter = createTRPCRouter({
   getCategoryItems: protectedProcedure
@@ -21,7 +22,7 @@ export const categoryRouter = createTRPCRouter({
   decrementProductsCount: sellerProcedure
     .input(z.array(z.object({ id: z.string(), count: z.number() })))
     .mutation(async ({ ctx, input }) => {
-      input.forEach(async (product) => {
+      void input.map(async (product) => {
         await ctx.db.categoryItem.update({
           where: {
             id: product.id,
@@ -40,7 +41,7 @@ export const categoryRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const decryptedToken = jwt.verify(
         input.token,
-        process.env.QR_SECRET as string,
+        env.QR_SECRET,
       ) as TokenData;
 
       const [dbProducts, transaction] = await Promise.all([

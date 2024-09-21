@@ -3,9 +3,8 @@
 import { api } from "~/trpc/react";
 import ProductListItem from "./ProductListItem";
 import Spinner from "~/components/ui/spinner";
-import { CategoryItem } from "@prisma/client";
-import ShoppingCart from "./ShoppingCart";
 import { useProducts } from "~/lib/state";
+import Image from "next/image";
 
 export default function SellerHomePage() {
   const getCategoryItems = api.category.getCategoryItems.useQuery(
@@ -30,10 +29,9 @@ export default function SellerHomePage() {
             <ProductListItem
               key={index}
               item={item}
-              onButtonClick={addProduct}
             >
               <div className="flex items-start gap-3">
-                <img src={item.image} width={100} className="rounded-md" />
+                <Image src={item.image} width={100} height={100} className="rounded-md" alt="product image"/>
                 <div className="flex flex-col justify-center gap-2">
                   <h1>{item.title}</h1>
                   <p>{item.pricePerOne + " Балів"}</p>

@@ -5,14 +5,14 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "~/components/ui/carousel";
-import ProductCard from "../../shared/ProductCard";
-import { CategoryItem } from "@prisma/client";
+import ProductCard from "./ProductCard";
+import { type CategoryItem } from "@prisma/client";
 import { cn } from "~/lib/utils";
 
 interface Props {
   items: CategoryItem[];
   className?: string;
-  imageSize?: number
+  imageSize?: number;
 }
 
 export function ProductCarousel({ items, className, imageSize }: Props) {
@@ -23,7 +23,11 @@ export function ProductCarousel({ items, className, imageSize }: Props) {
         {items.map((item) => (
           <CarouselItem key={item.title}>
             <div>
-              <ProductCard item={item} className={cn("max-mobile:flex-col items-center", className)} imageSize={imageSize}/>
+              <ProductCard
+                item={item}
+                className={cn("items-center max-mobile:flex-col select-none", className)}
+                imageSize={imageSize}
+              />
             </div>
           </CarouselItem>
         ))}

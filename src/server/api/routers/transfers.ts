@@ -18,9 +18,9 @@ export interface TokenData {
   totalAmount: number;
   count: number;
   products: {
-    id: string,
-    count: number
-  }[]
+    id: string;
+    count: number;
+  }[];
 }
 
 export interface formatedTransfer extends Transaction {
@@ -60,6 +60,7 @@ export const transfersRouter = createTRPCRouter({
 
       const transaction = await ctx.db.transaction.create({
         data: {
+          type: "TRANSFER",
           reciever: {
             connect: {
               id: input.receiverId,
@@ -146,6 +147,7 @@ export const transfersRouter = createTRPCRouter({
             name: true,
           },
         },
+        type: true,
         amount: true,
         createdAt: true,
       },
@@ -280,19 +282,22 @@ export const transfersRouter = createTRPCRouter({
 
       const amount = dbProducts.reduce((total, dbProduct) => {
         // Find the corresponding product from the input array
-        const productInput = input.products.find((product) => product.id === dbProduct.id);
-        
+        const productInput = input.products.find(
+          (product) => product.id === dbProduct.id,
+        );
+
         // If the product exists in the input array, calculate the price
         if (productInput) {
           total += dbProduct.pricePerOne * productInput.count;
         }
-      
+
         return total;
       }, 0);
 
       const transaction = await ctx.db.transaction.create({
         data: {
           amount,
+          type: "BUY",
           randomGradient: randomColor,
         },
       });
@@ -311,8 +316,8 @@ export const transfersRouter = createTRPCRouter({
 
       return {
         token,
-        channel: randomChannelId
-      }
+        channel: randomChannelId,
+      };
     }),
 
   pay: protectedProcedure
@@ -336,7 +341,7 @@ export const transfersRouter = createTRPCRouter({
         ctx.db.categoryItem.findMany({
           where: {
             id: {
-              in: decryptedToken.products.map((product) => product.id)
+              in: decryptedToken.products.map((product) => product.id),
             },
           },
         }),
@@ -357,6 +362,7 @@ export const transfersRouter = createTRPCRouter({
       }
 
       if (ctx.session.user.balance < transaction.amount) {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         ctx.pusher.trigger(decryptedToken.randomChannelId, "pay", {
           error: "Недостатньо коштів",
         });
@@ -382,7 +388,7 @@ export const transfersRouter = createTRPCRouter({
           },
         }),
 
-        ctx.db.user.update({
+        void ctx.db.user.update({
           where: {
             id: ctx.session.user.id,
           },
@@ -394,6 +400,6 @@ export const transfersRouter = createTRPCRouter({
         }),
       ]);
 
-      ctx.pusher.trigger(decryptedToken.randomChannelId, "pay", {});
+      void ctx.pusher.trigger(decryptedToken.randomChannelId, "pay", {});
     }),
 });

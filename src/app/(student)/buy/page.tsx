@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { ProductCarousel } from "~/app/_components/(student)/buy/ProductsCarousel";
+import { ProductCarousel } from "~/app/_components/shared/ProductsCarousel";
 import { Button } from "~/components/ui/button";
 import Spinner from "~/components/ui/spinner";
 import { api } from "~/trpc/react";

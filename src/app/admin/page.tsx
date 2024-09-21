@@ -11,30 +11,32 @@ export default function KlassesTable() {
   });
 
   return (
-    <div className="mx-5 mb-3">
-      <ButtonsGroup />
-      {klassNames.data?.length === 0 && !klassNames.isFetching && (
-        <div className="w-full text-center">Жодних класів не знайдено</div>
-      )}
-      <div className="flex w-full flex-col gap-2">
-        {klassNames.isFetching ? (
-          <div className="flex w-full justify-center">
-            <Spinner />
+    <div>
+      {klassNames.isFetching ? (
+        <div className="flex h-[calc(100vh-72px)] items-center w-full justify-center">
+          <Spinner />
+        </div>
+      ) : (
+        <>
+          <ButtonsGroup />
+          {klassNames.data?.length === 0 && !klassNames.isFetching && (
+            <div className="w-full text-center">Жодних класів не знайдено</div>
+          )}
+          <div className="flex w-full flex-col gap-2">
+            {klassNames.data?.map((klass) => {
+              return (
+                <Link
+                  key={klass.name}
+                  href={`/admin/klass/${klass.name}`}
+                  className="flex w-full cursor-pointer justify-center rounded-md bg-card py-6 text-lg"
+                >
+                  {klass.name}
+                </Link>
+              );
+            })}
           </div>
-        ) : (
-          klassNames.data?.map((klass) => {
-            return (
-              <Link
-                key={klass.name}
-                href={`/admin/klass/${klass.name}`}
-                className="flex w-full cursor-pointer justify-center rounded-md bg-card py-6 text-lg"
-              >
-                {klass.name}
-              </Link>
-            );
-          })
-        )}
-      </div>
+        </>
+      )}
     </div>
   );
 }

@@ -45,7 +45,6 @@ export default function TransactionDialog({
   const sendMoneyMutation = api.transfers.sendMoney.useMutation({
     onSuccess: () => {
       toast.success("Платіж успішно відправлений");
-      console.log(onMutationSuccess);
       onMutationSuccess?.(setIsDialogOpen);
       setIsDialogOpen(false);
     },

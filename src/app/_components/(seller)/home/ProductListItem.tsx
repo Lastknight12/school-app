@@ -1,6 +1,6 @@
 "use client";
 
-import { CategoryItem } from "@prisma/client";
+import { type CategoryItem } from "@prisma/client";
 import { useState } from "react";
 import { IoMdAdd, IoMdRemove } from "react-icons/io";
 import { Button } from "~/components/ui/button";
@@ -20,18 +20,19 @@ import { cn } from "~/lib/utils";
 interface Props {
   children: React.ReactNode;
   item: CategoryItem;
-  onButtonClick: (item: CategoryItem) => void;
 }
 
 export default function ProductListItem({
   children,
   item,
-  onButtonClick,
 }: Props) {
   const [productCount, setProductCount] = useState(1);
   const [isOpen, setIsOpen] = useState(false);
 
   const itemExist = useProducts((state) => state.productExist(item));
+
+  const removeProduct = useProducts((state) => state.removeProduct);
+  const addProduct = useProducts((state) => state.addProduct)
 
   const resetStates = () => {
     setProductCount(1);
@@ -44,15 +45,16 @@ export default function ProductListItem({
       // 150 ms for closing animation
       setTimeout(() => {
         resetStates();
-      }, 150)
+      }, 150);
     }
   };
 
   function handleButtonClick() {
-    if (itemExist) return;
+    setTimeout(() => {
+      itemExist ? removeProduct(item.id) : addProduct({...item, count: productCount})
+    }, 150)
 
-    setIsOpen(false);
-    onButtonClick({ ...item, count: productCount });
+    setIsOpen(false)
   }
 
   const incrementCount = () => {
@@ -110,10 +112,10 @@ export default function ProductListItem({
         </div>
 
         <DialogFooter className="justify-end">
-          <Button onClick={handleButtonClick} disabled={itemExist}>
+          <Button onClick={handleButtonClick}>
             {!itemExist
               ? "Додати до списку ✅"
-              : `${item.title} уже в списку ❌`}
+              : `Видалити ${item.title} з списку ❌`}
           </Button>
         </DialogFooter>
       </DialogContent>

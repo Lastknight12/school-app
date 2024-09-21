@@ -12,27 +12,23 @@ import React, { useState, useEffect } from "react";
 import { Button } from "~/components/ui/button";
 import { pusherClient } from "~/lib/pusher-client";
 import { api } from "~/trpc/react";
-import { ProductCarousel } from "../../(student)/buy/ProductsCarousel";
-import { CategoryItem } from "@prisma/client";
+import { ProductCarousel } from "../../shared/ProductsCarousel";
 import QRCode from "react-qr-code";
 import { useProducts } from "~/lib/state";
 
 interface Props {
-  products: CategoryItem[];
   onSuccess?: () => void;
   children: React.ReactNode;
 }
 
-export default function GenerateQRModal({
-  products,
-  onSuccess,
-  children,
-}: Props) {
+export default function GenerateQRModal({ onSuccess, children }: Props) {
   const [open, setOpen] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [paymentError, setPaymentError] = useState("");
 
   const resetProductList = useProducts((state) => state.reset);
+
+  const products = useProducts((state) => state.products);
 
   const resetStates = () => {
     resetProductList();
@@ -46,8 +42,6 @@ export default function GenerateQRModal({
   const decrementProductsCount =
     api.category.decrementProductsCount.useMutation();
 
-  console.log(genQRToken.data?.token);
-
   useEffect(() => {
     if (genQRToken.data) {
       const channel = pusherClient.subscribe(genQRToken.data.channel);
@@ -58,8 +52,10 @@ export default function GenerateQRModal({
           return;
         }
 
-        setPaymentError("")
+        resetStates();
+        setPaymentError("");
         setIsSuccess(true);
+
         decrementProductsCount.mutate(
           products.map((product) => {
             return {
@@ -79,6 +75,7 @@ export default function GenerateQRModal({
     return () => {
       pusherClient.unsubscribe(genQRToken.data?.channel as string);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [genQRToken.data]);
 
   return (
@@ -86,15 +83,16 @@ export default function GenerateQRModal({
       open={open}
       onOpenChange={(isOpen: boolean) => {
         if (!isOpen) {
-          resetStates();
-          setOpen(false);
+          setTimeout(() => {
+            genQRToken.reset();
+          }, 150)
         }
 
-        setOpen(isOpen);
+        products.length > 0 && setOpen(isOpen);
       }}
     >
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="gap-8 sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] gap-8">
         <DialogHeader>
           <DialogTitle>
             {genQRToken.data ? "Відскануй QR код" : "Список доданих продуктів"}
@@ -104,7 +102,12 @@ export default function GenerateQRModal({
           {genQRToken.data ? (
             <>
               {!isSuccess && !paymentError && (
-                <QRCode value={process.env.VERCEL_URL ?? "localhost:3000" + `/buy?token=${genQRToken.data.token}`} />
+                <QRCode
+                  value={
+                    process.env.VERCEL_URL ??
+                    "localhost:3000" + `/buy?token=${genQRToken.data.token}`
+                  }
+                />
               )}
               {paymentError && <p className="text-red-500">{paymentError}</p>}
               {isSuccess && <p className="text-green-500">Успішно</p>}
