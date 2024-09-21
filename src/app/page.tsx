@@ -1,12 +1,13 @@
 import { getServerAuthSession } from "~/server/auth";
-import StudentHomePage from "./_components/(student)/home/HomePage";
-import TeacherHomePage from "./_components/(teacher)/home/HomePage";
 import { redirect } from "next/navigation";
+import StudentHomePage from "./_components/(student)/home";
+import SellerHomePage from "./_components/(seller)/home";
+import TeacherHomePage from "./_components/(teacher)/home/HomePage";
 
 export default async function Home() {
   const session = await getServerAuthSession();
 
-  if (!session) {
+  if (!session?.user) {
     return redirect("/login");
   }
 
@@ -21,6 +22,8 @@ export default async function Home() {
           </div>
         );
       return <StudentHomePage />;
+    case "SELLER":
+      return <SellerHomePage />;
     case "TEACHER":
       if (session.user.teacherInIds?.length === 0) {
         return (

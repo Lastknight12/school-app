@@ -14,7 +14,7 @@ export default async function BottomNavigationContainer() {
     if (value.includes(session.user.role)) return allowedUrls.push(url);
   });
 
-  if (!allowedUrls) return null;
+  if (!allowedUrls || allowedUrls.length <= 1) return null;
 
   return <BottomNavigation allowedUrls={allowedUrls} />;
 }

@@ -10,6 +10,7 @@
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
+import Pusher from "pusher"
 
 import { getServerAuthSession } from "~/server/auth";
 import { db } from "~/server/db";
@@ -29,9 +30,18 @@ import { db } from "~/server/db";
 export const createTRPCContext = async (opts: { headers: Headers }) => {
   const session = await getServerAuthSession();
 
+  const pusher = new Pusher({
+    appId: "1735458",
+    key: "b4e0e3f4c22b744cc197",
+    secret: "6409db25b1c4e1a854bd",
+    cluster: "eu",
+    useTLS: true
+  });
+
   return {
     db,
     session,
+    pusher,
     ...opts,
   };
 };
@@ -130,14 +140,24 @@ export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
   });
 });
 
-export const teacherProcerure = t.procedure.use(({ ctx, next }) => {
-  if (!ctx.session || !ctx.session.user) {
+export const sellerProcedure = t.procedure.use(({ ctx, next }) => {
+  if (!ctx.session || !ctx.session.user || ctx.session.user.role !== "SELLER") {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
 
-  if (ctx.session.user.role !== "TEACHER") {
+  return next({
+    ctx: {
+      // infers the `session` as non-nullable
+      session: { ...ctx.session, user: ctx.session.user },
+    },
+  });
+});
+
+export const teacherProcerure = t.procedure.use(({ ctx, next }) => {
+  if (!ctx.session || !ctx.session.user || ctx.session.user.role !== "TEACHER") {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
+
   return next({
     ctx: {
       // infers the `session` as non-nullable
@@ -147,13 +167,10 @@ export const teacherProcerure = t.procedure.use(({ ctx, next }) => {
 });
 
 export const adminProcerure = t.procedure.use(({ ctx, next }) => {
-  if (!ctx.session || !ctx.session.user) {
+  if (!ctx.session || !ctx.session.user || ctx.session.user.role !== "ADMIN") {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
 
-  if (ctx.session.user.role !== "ADMIN") {
-    throw new TRPCError({ code: "UNAUTHORIZED" });
-  }
   return next({
     ctx: {
       // infers the `session` as non-nullable

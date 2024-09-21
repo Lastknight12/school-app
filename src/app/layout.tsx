@@ -43,7 +43,9 @@ export default function RootLayout({
               position="top-center"
             />
             <Navbar />
+            <div className=" px-6">
             {children}
+            </div>
             <BottomNavigationWrapper />
           </NextAuthProvider>
         </TRPCReactProvider>

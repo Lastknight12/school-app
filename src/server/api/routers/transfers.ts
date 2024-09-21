@@ -1,8 +1,26 @@
-import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  sellerProcedure,
+} from "~/server/api/trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import type { Transaction } from "@prisma/client";
+
+import jwt from "jsonwebtoken";
+import { randomUUID } from "crypto";
+
+export interface TokenData {
+  randomChannelId: string;
+  transactionId: string;
+  totalAmount: number;
+  count: number;
+  products: {
+    id: string,
+    count: number
+  }[]
+}
 
 export interface formatedTransfer extends Transaction {
   randomGradient: {
@@ -221,4 +239,160 @@ export const transfersRouter = createTRPCRouter({
       },
     };
   }),
+
+  generateProductToken: sellerProcedure
+    .input(
+      z.object({
+        products: z.array(
+          z.object({
+            id: z.string(),
+            count: z.number(),
+          }),
+        ),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const dbProducts = await ctx.db.categoryItem.findMany({
+        where: {
+          id: {
+            in: input.products.map((item) => item.id),
+          },
+        },
+      });
+
+      if (dbProducts.length === 0) {
+        throw new TRPCError({
+          message: "Invalid product ID",
+          code: "BAD_REQUEST",
+        });
+      }
+
+      const colors = [
+        { from: "#D99CFF", to: "#FFD0F2" },
+        { from: "#FF9C9C", to: "#FF83CD" },
+        { from: "#FFFB9C", to: "#FFB69F" },
+        { from: "#C79CFF", to: "#9FBFFF" },
+        { from: "#9CFFC3", to: "#9FDCFF" },
+      ];
+
+      const randomColor = colors[Math.floor(Math.random() * colors.length)]!;
+
+      const amount = dbProducts.reduce((total, dbProduct) => {
+        // Find the corresponding product from the input array
+        const productInput = input.products.find((product) => product.id === dbProduct.id);
+        
+        // If the product exists in the input array, calculate the price
+        if (productInput) {
+          total += dbProduct.pricePerOne * productInput.count;
+        }
+      
+        return total;
+      }, 0);
+
+      const transaction = await ctx.db.transaction.create({
+        data: {
+          amount,
+          randomGradient: randomColor,
+        },
+      });
+
+      const randomChannelId = randomUUID();
+
+      const token = await jwt.sign(
+        {
+          products: input.products,
+          totalAmount: amount,
+          transactionId: transaction.id,
+          randomChannelId: randomChannelId,
+        },
+        process.env.QR_SECRET as string,
+      );
+
+      return {
+        token,
+        channel: randomChannelId
+      }
+    }),
+
+  pay: protectedProcedure
+    .input(
+      z.object({
+        token: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const decryptedToken = jwt.verify(
+        input.token,
+        process.env.QR_SECRET as string,
+      ) as TokenData;
+
+      const [transaction, products] = await Promise.all([
+        ctx.db.transaction.findUnique({
+          where: {
+            id: decryptedToken.transactionId,
+          },
+        }),
+        ctx.db.categoryItem.findMany({
+          where: {
+            id: {
+              in: decryptedToken.products.map((product) => product.id)
+            },
+          },
+        }),
+      ]);
+
+      if (!transaction || products.length === 0) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Транзакція або товари не були знайдені",
+        });
+      }
+
+      if (transaction.success) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Транзакція завершена",
+        });
+      }
+
+      if (ctx.session.user.balance < transaction.amount) {
+        ctx.pusher.trigger(decryptedToken.randomChannelId, "pay", {
+          error: "Недостатньо коштів",
+        });
+
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Недостатньо коштів",
+        });
+      }
+
+      await Promise.all([
+        ctx.db.transaction.update({
+          where: {
+            id: transaction.id,
+          },
+          data: {
+            sender: {
+              connect: {
+                id: ctx.session.user.id,
+              },
+            },
+            success: true,
+          },
+        }),
+
+        ctx.db.user.update({
+          where: {
+            id: ctx.session.user.id,
+          },
+          data: {
+            balance: {
+              decrement: transaction.amount,
+            },
+          },
+        }),
+      ]);
+
+      ctx.pusher.trigger(decryptedToken.randomChannelId, "pay", {});
+    }),
 });

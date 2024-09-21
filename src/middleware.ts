@@ -13,10 +13,7 @@ const redirectUrl = "/not-found";
 
 // This function can be marked `async` if using `await` inside
 export default async function middleware(request: NextRequest) {
-  const cookieName =
-    process.env.NODE_ENV === "development"
-      ? "next-auth.session-token"
-      : "__Secure-next-auth.session-token";
+  const cookieName = "__Secure-next-auth.session-token";
   const token = request.cookies.get(cookieName)?.value;
 
   if (!token) return NextResponse.redirect(new URL("/login", request.url));

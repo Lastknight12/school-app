@@ -2,89 +2,107 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider = "postgresql"
-    // NOTE: When using mysql or sqlserver, uncomment the @db.Text annotations in model Account below
-    // Further reading:
-    // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
-    // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
-    url      = env("DATABASE_URL")
+  provider = "postgresql"
+  // NOTE: When using mysql or sqlserver, uncomment the @db.Text annotations in model Account below
+  // Further reading:
+  // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
+  // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
+  url      = env("DATABASE_URL")
 }
 
 // Necessary for Next auth
 model Account {
-    id                       String  @id @default(cuid())
-    userId                   String
-    type                     String
-    provider                 String
-    providerAccountId        String
-    refresh_token            String? // @db.Text
-    access_token             String? // @db.Text
-    expires_at               Int?
-    token_type               String?
-    scope                    String?
-    id_token                 String? // @db.Text
-    session_state            String?
-    user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-    refresh_token_expires_in Int?
+  id                       String  @id @default(cuid())
+  userId                   String
+  type                     String
+  provider                 String
+  providerAccountId        String
+  refresh_token            String? // @db.Text
+  access_token             String? // @db.Text
+  expires_at               Int?
+  token_type               String?
+  scope                    String?
+  id_token                 String? // @db.Text
+  session_state            String?
+  user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  refresh_token_expires_in Int?
 
-    @@unique([provider, providerAccountId])
+  @@unique([provider, providerAccountId])
 }
 
 model Session {
-    id           String   @id @default(cuid())
-    sessionToken String   @unique
-    userId       String
-    expires      DateTime
-    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 enum UserRole {
-    ADMIN
-    TEACHER
-    STUDENT
+  ADMIN
+  TEACHER
+  STUDENT
+  SELLER
 }
 
 model User {
-    id            String        @id @default(cuid())
-    name          String
-    email         String        @unique
-    image         String
-    recieverIn    Transaction[] @relation(name: "recieverIn")
-    senderIn      Transaction[] @relation(name: "senderIn")
-    emailVerified Boolean?
-    balance       Float         @default(0.00)
-    role          UserRole      @default(STUDENT)
-    accounts      Account[]
-    sessions      Session[]
-    teacherIn     Klass[]       @relation(name: "teacherIn")
-    studentIn     Klass?        @relation(name: "studentIn", fields: [klassId], references: [id])
-    klassId       String?
+  id            String        @id @default(cuid())
+  name          String
+  email         String        @unique
+  image         String
+  recieverIn    Transaction[] @relation(name: "recieverIn")
+  senderIn      Transaction[] @relation(name: "senderIn")
+  emailVerified Boolean?
+  balance       Float         @default(0.00)
+  role          UserRole      @default(STUDENT)
+  accounts      Account[]
+  sessions      Session[]
+  teacherIn     Klass[]       @relation(name: "teacherIn")
+  studentIn     Klass?        @relation(name: "studentIn", fields: [klassId], references: [id])
+  klassId       String?
+}
+
+model Category {
+  id    String         @id @default(cuid())
+  name  String         @unique
+  items CategoryItem[]
+}
+
+model CategoryItem {
+  id          String   @id @default(cuid())
+  image       String
+  title       String
+  pricePerOne Float
+  count       Int
+  Category    Category @relation(fields: [categoryId], references: [id])
+  categoryId  String
 }
 
 enum TransactionType {
-    SEND
-    RECEIVE
+  SEND
+  RECEIVE
 }
 
 model Transaction {
-    id             String   @id @default(cuid())
-    amount         Float
-    reciever       User     @relation(fields: [recieverId], references: [id], name: "recieverIn")
-    randomGradient Json
-    createdAt      DateTime @default(now())
-    sender         User     @relation(fields: [senderId], references: [id], name: "senderIn")
-    recieverId     String
-    senderId       String
+  id             String   @id @default(cuid())
+  amount         Float
+  reciever       User?    @relation(fields: [recieverId], references: [id], name: "recieverIn")
+  randomGradient Json
+  success        Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  sender         User?    @relation(fields: [senderId], references: [id], name: "senderIn")
+  recieverId     String?
+  senderId       String?
 }
 
 model Klass {
-    id        String @id @default(cuid())
-    name      String
-    teacherId String
-    teacher   User?  @relation(fields: [teacherId], references: [id], name: "teacherIn")
-    students  User[] @relation(name: "studentIn")
+  id        String @id @default(cuid())
+  name      String
+  teacherId String
+  teacher   User?  @relation(fields: [teacherId], references: [id], name: "teacherIn")
+  students  User[] @relation(name: "studentIn")
 }
