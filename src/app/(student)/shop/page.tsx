@@ -1,12 +1,12 @@
 "use client";
 
 import { api } from "~/trpc/react";
-import ProductListItem from "./ProductItem/ProductListItem";
 import Spinner from "~/components/ui/spinner";
 import Image from "next/image";
 import { Skeleton } from "~/components/ui/skeleton";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { cn } from "~/lib/utils";
 
 export default function SellerHomePage() {
   const [currentCategoryName, setCurrentCategoryName] = useState("");
@@ -52,7 +52,7 @@ export default function SellerHomePage() {
               return (
                 <div
                   key={category.name}
-                  className="rounded-md bg-card px-4 py-2"
+                  className="rounded-md select-none bg-card px-4 py-2"
                   onClick={() => {
                     setCurrentCategoryName(category.name);
                   }}
@@ -63,7 +63,7 @@ export default function SellerHomePage() {
             })
           )}
         </div>
-        {/* if loading show spinner */}
+        {/* If data is loading show spinner */}
         {getCategoryItems.isPending ? (
           <div className="flex h-full items-center justify-center">
             <Spinner />
@@ -78,22 +78,26 @@ export default function SellerHomePage() {
           // else show items
           getCategoryItems.data?.map((item) => {
             return (
-              <ProductListItem key={item.id} item={item}>
-                <div className="flex items-start gap-3">
-                  <Image
-                    src={item.image}
-                    width={100}
-                    height={100}
-                    className="rounded-md"
-                    alt="product image"
-                  />
-                  <div className="flex flex-col justify-center gap-2">
-                    <h1>{item.title}</h1>
-                    <p>{item.pricePerOne + " Балів"}</p>
-                    <p>Кількість: {item.count}</p>
-                  </div>
+              <div
+                className={cn(
+                  "flex items-start gap-3",
+                  item.count === 0 && "opacity-30",
+                )}
+                key={item.id}
+              >
+                <Image
+                  src={item.image}
+                  width={100}
+                  height={100}
+                  className="rounded-md"
+                  alt="product image"
+                />
+                <div className="flex flex-col justify-center gap-2">
+                  <h1>{item.title}</h1>
+                  <p>{item.pricePerOne + " Балів"}</p>
+                  <p>Кількість: {item.count}</p>
                 </div>
-              </ProductListItem>
+              </div>
             );
           })
         )}

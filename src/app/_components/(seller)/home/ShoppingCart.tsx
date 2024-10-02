@@ -14,6 +14,7 @@ export default function ShoppingCart() {
           <div className="text-base text-red-600">{products.length}</div>
         </div>
       </GenerateQRModal>
+      
     </div>
   );
 }

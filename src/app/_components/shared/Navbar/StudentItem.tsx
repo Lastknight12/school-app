@@ -8,7 +8,7 @@ interface Props {
   userBalance: number;
 }
 
-export default function NavbarLeftItem({ userBalance: balance }: Props) {
+export default function StudentItem({ userBalance: balance }: Props) {
   const pathname = usePathname();
   const paths = new Map<string, React.ReactNode>([
     [
@@ -39,6 +39,12 @@ export default function NavbarLeftItem({ userBalance: balance }: Props) {
         Settings
       </h1>,
     ],
+    [
+      "/shop",
+      <h1 className="text-3xl" key={"shop"}>
+        Shop
+      </h1>,
+    ]
   ]);
 
   return paths.get(pathname);

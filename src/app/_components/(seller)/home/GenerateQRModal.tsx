@@ -12,9 +12,10 @@ import React, { useState, useEffect } from "react";
 import { Button } from "~/components/ui/button";
 import { pusherClient } from "~/lib/pusher-client";
 import { api } from "~/trpc/react";
-import { ProductCarousel } from "../../shared/ProductsCarousel";
+import { ProductCarousel } from "../../shared/Product/ProductsCarousel";
 import QRCode from "react-qr-code";
 import { useProducts } from "~/lib/state";
+import { env } from "~/env";
 
 interface Props {
   onSuccess?: () => void;
@@ -49,10 +50,12 @@ export default function GenerateQRModal({ onSuccess, children }: Props) {
       channel.bind("pay", (data: { error?: string }) => {
         if (data.error) {
           setPaymentError(data.error);
+          setTimeout(() => {
+            resetStates();
+          }, 1500);
           return;
         }
 
-        resetStates();
         setPaymentError("");
         setIsSuccess(true);
 
@@ -64,6 +67,7 @@ export default function GenerateQRModal({ onSuccess, children }: Props) {
             };
           }),
         );
+
         onSuccess?.();
 
         setTimeout(() => {
@@ -85,14 +89,14 @@ export default function GenerateQRModal({ onSuccess, children }: Props) {
         if (!isOpen) {
           setTimeout(() => {
             genQRToken.reset();
-          }, 150)
+          }, 150);
         }
 
         products.length > 0 && setOpen(isOpen);
       }}
     >
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-[425px] gap-8">
+      <DialogContent className="sm:max-w-[425px] gap-8 !bg-white">
         <DialogHeader>
           <DialogTitle>
             {genQRToken.data ? "Відскануй QR код" : "Список доданих продуктів"}
@@ -104,8 +108,7 @@ export default function GenerateQRModal({ onSuccess, children }: Props) {
               {!isSuccess && !paymentError && (
                 <QRCode
                   value={
-                    process.env.VERCEL_URL ??
-                    "localhost:3000" + `/buy?token=${genQRToken.data.token}`
+                    env.NEXT_PUBLIC_BUY_URL + `?token=${genQRToken.data.token}`
                   }
                 />
               )}

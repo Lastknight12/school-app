@@ -18,7 +18,7 @@ export default async function Home() {
       if (!session.user.klassId)
         return (
           <div className="px-5">
-            <p>Зачекайте поки адміністратор добавить вас в потрібний клас</p>
+            <p className=" text-center">Зачекайте поки адміністратор добавить вас в потрібний клас</p>
           </div>
         );
       return <StudentHomePage />;

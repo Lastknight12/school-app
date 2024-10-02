@@ -8,6 +8,7 @@ import { env } from "./env";
 export const urls = new Map<string, UserRole[]>([
   ["/stats", ["STUDENT"]],
   ["/transactions", ["STUDENT"]],
+  ["/shop", ["STUDENT"]],
 ]);
 const redirectUrl = "/not-found";
 

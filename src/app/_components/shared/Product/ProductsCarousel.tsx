@@ -25,7 +25,10 @@ export function ProductCarousel({ items, className, imageSize }: Props) {
             <div>
               <ProductCard
                 item={item}
-                className={cn("items-center max-mobile:flex-col select-none", className)}
+                className={cn(
+                  "select-none items-center max-mobile:flex-col",
+                  className,
+                )}
                 imageSize={imageSize}
               />
             </div>

@@ -7,7 +7,12 @@ await import("./src/env.js");
 /** @type {import("next").NextConfig} */
 const config = {
   images: {
-    remotePatterns: [{ hostname: "cdn.discordapp.com" }, {hostname: "lh3.googleusercontent.com"}, {hostname: "*.gstatic.com"}],
+    remotePatterns: [
+      { hostname: "cdn.discordapp.com" },
+      { hostname: "lh3.googleusercontent.com" },
+      { hostname: "*.gstatic.com" },
+      { hostname: "res.cloudinary.com" },
+    ],
   },
 };
 

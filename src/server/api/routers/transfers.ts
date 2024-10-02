@@ -344,6 +344,10 @@ export const transfersRouter = createTRPCRouter({
               in: decryptedToken.products.map((product) => product.id),
             },
           },
+          select: {
+            id: true,
+            count: true,
+          },
         }),
       ]);
 
@@ -373,7 +377,7 @@ export const transfersRouter = createTRPCRouter({
         });
       }
 
-      await Promise.all([
+      const promises = [
         ctx.db.transaction.update({
           where: {
             id: transaction.id,
@@ -388,7 +392,7 @@ export const transfersRouter = createTRPCRouter({
           },
         }),
 
-        void ctx.db.user.update({
+        ctx.db.user.update({
           where: {
             id: ctx.session.user.id,
           },
@@ -398,7 +402,22 @@ export const transfersRouter = createTRPCRouter({
             },
           },
         }),
-      ]);
+
+        products.map((product) => {
+          return ctx.db.categoryItem.update({
+            where: {
+              id: product.id,
+            },
+            data: {
+              count: {
+                decrement: product.count,
+              },
+            },
+          });
+        }),
+      ];
+
+      await Promise.all(promises);
 
       void ctx.pusher.trigger(decryptedToken.randomChannelId, "pay", {});
     }),

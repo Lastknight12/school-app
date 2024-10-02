@@ -11,6 +11,7 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useDrag } from "@use-gesture/react";
 import { useSpring, animated } from "@react-spring/web";
+import { FiShoppingBag } from "react-icons/fi";
 
 interface Props {
   allowedUrls: string[];
@@ -47,6 +48,7 @@ export default function BottomNavigation({ allowedUrls }: Props) {
     },
   );
 
+  // navigation items and icons that be displayed
   const navigationItems = [
     { name: "Home", href: "/", icon: <BiHome size={24} /> },
     {
@@ -55,12 +57,15 @@ export default function BottomNavigation({ allowedUrls }: Props) {
       icon: <GrTransaction size={24} />,
     },
     { name: "Stats", href: "/stats", icon: <IoMdStats size={24} /> },
+    {name: "Shop", href: "/shop", icon: <FiShoppingBag size={22} />},
   ];
 
+  // filter out navigation items that are allowed
   const filteredNavigationItems = navigationItems.filter(
     (item) => allowedUrls.includes(item.href) || item.href === "/",
   );
 
+  // if there are no allowed navigation items, return null and hide the bottom navigation
   if (!filteredNavigationItems.some((item) => item.href === pathname)) {
     return null;
   }
@@ -74,12 +79,12 @@ export default function BottomNavigation({ allowedUrls }: Props) {
         // 40px * items - 1 gap between items,
         // 24px * 2 items width
       }}
-      className="fixed bottom-[calc(0%-65.6px)] rounded-bl-sm rounded-br-sm border border-[#fafafa15] bg-[#28292b] py-5 backdrop-blur-sm"
+      className="fixed bottom-[calc(0%-66px)] rounded-sm border border-[#fafafa15] bg-[#28292b] py-5 backdrop-blur-sm"
     >
       {/* Top line */}
       <button
         {...bind()}
-        className={`fixed -top-4 left-[-1px] flex h-4 w-[calc(100%+2px)] touch-none items-center justify-center rounded-tl-full rounded-tr-full border border-[#fafafa15] border-b-[#28292b] bg-[#28292b]`}
+        className={`fixed -top-4 left-1/2 -translate-x-1/2 flex h-4 w-[calc(50%)] touch-none items-center justify-center rounded-tl-full rounded-tr-full border border-[#fafafa15] border-b-[#28292b] bg-[#28292b]`}
       >
         <div className="flex h-full w-full items-center justify-center">
           <div className="h-[2px] w-[40%] bg-[#5a5a5b]" />
