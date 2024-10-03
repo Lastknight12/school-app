@@ -19,7 +19,7 @@ import {
 import { api } from "~/trpc/react";
 import Image from "next/image";
 import { toast } from "sonner";
-import Spinner from "~/components/ui/spinner";
+import { Loader2 } from "lucide-react";
 
 interface Props {
   klassId: string;
@@ -65,7 +65,7 @@ export default function ButtonsGroup({ klassId }: Props) {
               <CommandEmpty>Учнів не знайдено</CommandEmpty>
             ) : (
               <>
-                <CommandEmpty>Учня з назвою {value} не знайдено</CommandEmpty>
+                <CommandEmpty>Учня з такою назвою не знайдено</CommandEmpty>
                 <CommandGroup>
                   {getStudents.data?.map((student) => (
                     <CommandItem
@@ -76,7 +76,7 @@ export default function ButtonsGroup({ klassId }: Props) {
                       disabled={addStudentMutation.isPending}
                     >
                       {addStudentMutation.isPending && value === student.id && (
-                        <Spinner containerClassName=" absolute left-[calc(50%-20px/2)]" />
+                        <Loader2 className=" absolute left-[calc(50%-20px/2)] h-4 w-4 animate-spin text-[#b5b5b5]" />
                       )}
                       <div
                         style={{

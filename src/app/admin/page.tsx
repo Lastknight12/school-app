@@ -1,9 +1,9 @@
 "use client";
 
 import { api } from "~/trpc/react";
-import Spinner from "~/components/ui/spinner";
 import Link from "next/link";
 import ButtonsGroup from "../_components/(admin)/home/ButtonsGroup";
+import { Loader2 } from "lucide-react";
 
 export default function KlassesTable() {
   const klassNames = api.klass.getAllKlasses.useQuery(void 0, {
@@ -14,14 +14,16 @@ export default function KlassesTable() {
     <div>
       {klassNames.isFetching ? (
         <div className="flex h-[calc(100vh-72px)] items-center w-full justify-center">
-          <Spinner />
+          <Loader2 className="h-6 w-6 animate-spin text-[#b5b5b5]" />
         </div>
       ) : (
         <>
           <ButtonsGroup />
+
           {klassNames.data?.length === 0 && !klassNames.isFetching && (
             <div className="w-full text-center">Жодних класів не знайдено</div>
           )}
+          
           <div className="flex w-full flex-col gap-2">
             {klassNames.data?.map((klass) => {
               return (

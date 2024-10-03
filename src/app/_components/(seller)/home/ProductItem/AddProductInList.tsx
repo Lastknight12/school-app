@@ -12,7 +12,7 @@ interface Props {
   remainingCount: number;
 }
 
-export default function AddProduct({
+export default function AddProductInList({
   productCount,
   remainingCount,
   item,

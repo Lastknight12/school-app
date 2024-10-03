@@ -34,8 +34,8 @@ export const transfersRouter = createTRPCRouter({
   sendMoney: protectedProcedure
     .input(
       z.object({
-        receiverId: z.string(),
-        amount: z.number(),
+        receiverId: z.string().min(1, "receiverId не може бути порожнім"),
+        amount: z.number().min(1, "amount не може бути менше 1"),
       }),
     )
     .mutation(async ({ input, ctx }) => {
@@ -323,7 +323,7 @@ export const transfersRouter = createTRPCRouter({
   pay: protectedProcedure
     .input(
       z.object({
-        token: z.string(),
+        token: z.string().min(2, "відсутній токен"),
       }),
     )
     .mutation(async ({ ctx, input }) => {

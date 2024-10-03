@@ -13,7 +13,7 @@ import {
 } from "~/components/ui/table";
 import { api } from "~/trpc/react";
 import TableContent from "./TableContent";
-import Spinner from "~/components/ui/spinner";
+import { Loader2 } from "lucide-react";
 
 export default function TeacherHomePage() {
   const klass = api.klass.getKlass.useQuery();
@@ -33,7 +33,7 @@ export default function TeacherHomePage() {
             {klass.isFetching && (
               <TableRow>
                 <TableCell colSpan={3}>
-                  <Spinner containerClassName=" mx-auto" />
+                  <Loader2 className="mx-auto h-5 w-5 animate-spin text-[#b5b5b5]" />
                 </TableCell>
               </TableRow>
             )}

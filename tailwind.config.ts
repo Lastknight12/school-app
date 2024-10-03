@@ -1,4 +1,3 @@
-import { transform } from "next/dist/build/swc";
 import type { Config } from "tailwindcss";
 
 const config = {
@@ -23,7 +22,9 @@ const config = {
     },
     extend: {
       fontFamily: {
-        metropolis: ["--font-metropolis"],
+        metropolis: ["var(--font-metropolis)"],
+        orbitron: ["var(--font-orbitron)"],
+        source_code_pro: ["var(--font-source-code-pro)"],
       },
       colors: {
         border: "hsl(var(--border))",

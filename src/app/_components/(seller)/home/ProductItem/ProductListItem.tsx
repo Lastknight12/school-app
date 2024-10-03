@@ -1,7 +1,7 @@
 "use client";
 
 import { type CategoryItem } from "@prisma/client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { GrUpdate } from "react-icons/gr";
 import { MdDelete } from "react-icons/md";
 import { Button } from "~/components/ui/button";
@@ -16,11 +16,12 @@ import {
 } from "~/components/ui/dialog";
 import { useProducts, useUpdateProduct } from "~/lib/state";
 import { cn } from "~/lib/utils";
-import AddProduct from "./AddProduct";
+import AddProductInList from "./AddProductInList";
 import { UpdateProduct } from "./UpdateProduct";
 import { api } from "~/trpc/react";
 import { toast } from "sonner";
-import Spinner from "~/components/ui/spinner";
+import { IoMdClose } from "react-icons/io";
+import { Loader2 } from "lucide-react";
 
 interface Props {
   children: React.ReactNode;
@@ -38,8 +39,11 @@ export default function ProductListItem({ children, item }: Props) {
   const removeProduct = useProducts((state) => state.removeProduct);
   const addProduct = useProducts((state) => state.addProduct);
 
+  // set item to update
   const initUpdate = useUpdateProduct((state) => state.init);
+  // reset item to update
   const resetUpdate = useUpdateProduct((state) => state.reset);
+  // updated item from state
   const updatedProduct = useUpdateProduct((state) => state.product);
 
   const utils = api.useUtils();
@@ -48,6 +52,7 @@ export default function ProductListItem({ children, item }: Props) {
     onSuccess: () => {
       toast.success("Продукт успішно оновлено");
       void utils.category.getCategoryItems.invalidate();
+        setIsOpen(false);
     },
     onError: () => {
       toast.error("Помилка під час оновлення продукту");
@@ -71,15 +76,15 @@ export default function ProductListItem({ children, item }: Props) {
     resetUpdate();
   };
 
-  const handleOpenChange = (isOpen: boolean) => {
-    setIsOpen(isOpen);
+  // if close modal reset all states
+  useEffect(() => {
     if (!isOpen) {
-      // 150 ms for closing animation
       setTimeout(() => {
         resetStates();
       }, 150);
     }
-  };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
 
   function handleButtonClick() {
     setTimeout(() => {
@@ -100,7 +105,7 @@ export default function ProductListItem({ children, item }: Props) {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild className={cn(item.count === 0 && "opacity-30")}>
         {children}
       </DialogTrigger>
@@ -118,9 +123,11 @@ export default function ProductListItem({ children, item }: Props) {
 
         <div className="flex select-none items-center justify-center">
           {updating ? (
-            <UpdateProduct />
+            <UpdateProduct defaultImageSrc={item.image} />
           ) : (
-            <AddProduct
+
+            // TODO: rename it
+            <AddProductInList
               item={item}
               remainingCount={item.count}
               decrementCountCallback={decrementCount}
@@ -137,9 +144,10 @@ export default function ProductListItem({ children, item }: Props) {
             className={cn(deleteProductMutation.isPending && "opacity-30")}
             onClick={() => deleteProductMutation.mutate({ id: item.id })}
           >
-            <MdDelete className="text-red-400" />
-            {deleteProductMutation.isPending && (
-              <Spinner containerClassName=" ml-2" />
+            {deleteProductMutation.isPending ? (
+              <Loader2 className="h-4 w-4 animate-spin text-[#b5b5b5]" />
+            ) : (
+              <MdDelete className="text-red-400" size={18} />
             )}
           </Button>
 
@@ -151,7 +159,11 @@ export default function ProductListItem({ children, item }: Props) {
               setUpdating(!updating);
             }}
           >
-            <GrUpdate className="text-yellow-400" />
+            {updating ? (
+              <IoMdClose className="text-yellow-300" size={20} />
+            ) : (
+              <GrUpdate className="text-yellow-300" />
+            )}
           </Button>
 
           {/* Add Button and Update */}
@@ -161,9 +173,11 @@ export default function ProductListItem({ children, item }: Props) {
               className={cn(item.count === 0 && "opacity-30")}
               disabled={item.count === 0}
             >
-              {!itemExist
-                ? "Додати до списку ✅"
-                : `Видалити ${item.title} з списку ❌`}
+              {item.count === 0
+                ? "Немає в наявності ❌"
+                : !itemExist
+                  ? "Додати до списку ✅"
+                  : `Видалити з списку ❌`}
             </Button>
           ) : (
             <Button
@@ -181,7 +195,7 @@ export default function ProductListItem({ children, item }: Props) {
             >
               Оновити{" "}
               {updateProductMutation.isPending && (
-                <Spinner containerClassName=" ml-2" />
+                <Loader2 className="ml-2 h-4 w-4 animate-spin bg-[#b5b5b5]" />
               )}
             </Button>
           )}

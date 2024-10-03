@@ -22,10 +22,12 @@ import {
 
 import Image from "next/image";
 import { useState } from "react";
-import Spinner from "~/components/ui/spinner";
 import { addKlassSchema } from "~/schemas/zod";
 import { toast } from "sonner";
 import { z } from "zod";
+import { Loader2 } from "lucide-react";
+import { Button } from "~/components/ui/button";
+import { cn } from "~/lib/utils";
 
 export default function ButtonsGroup() {
   const { data: teacher } = api.user.getAllTeachers.useQuery();
@@ -85,6 +87,10 @@ export default function ButtonsGroup() {
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
+                  {teacher?.length === 0 && (
+                      <p className=" p-2">Вчителів не знайдено</p>
+                  )}
+                  
                   {teacher?.map((teacher) => (
                     <SelectItem
                       key={teacher.id}
@@ -108,14 +114,14 @@ export default function ButtonsGroup() {
             </Select>
           </div>
           <DialogFooter>
-            <button
+            <Button
               disabled={addKlassMutation.isPending}
-              className={`flex items-center gap-2 rounded-lg bg-card ${addKlassMutation.isPending && "cursor-not-allowed opacity-40"} px-4 py-3 text-sm`}
+              className={cn(addKlassMutation.isPending && "cursor-not-allowed opacity-40")}
               type="submit"
               onClick={handleClick}
             >
-              Добавити {addKlassMutation.isPending && <Spinner />}
-            </button>
+              Добавити {addKlassMutation.isPending && <Loader2 className="ml-2 h-4 w-4 animate-spin text-[#b5b5b5]" />}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

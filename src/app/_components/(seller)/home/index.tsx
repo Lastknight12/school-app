@@ -2,11 +2,14 @@
 
 import { api } from "~/trpc/react";
 import ProductListItem from "./ProductItem/ProductListItem";
-import Spinner from "~/components/ui/spinner";
 import Image from "next/image";
-import { Skeleton } from "~/components/ui/skeleton";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useDebounceValue } from "~/hooks/useDebounceValue";
+import AddNewProduct from "./TopButtons/AddNewProduct";
+import AddNewCategory from "./TopButtons/AddNewCategory";
+import CategoryNamesList from "../../shared/CategoryNamesList";
+import { Loader2 } from "lucide-react";
 
 export default function SellerHomePage() {
   const [currentCategoryName, setCurrentCategoryName] = useState("");
@@ -23,9 +26,13 @@ export default function SellerHomePage() {
     }
   }, [getCategoryNames.data, getCategoryNames.isFetching]);
 
+  const [searchFilter, setSearchFilter] = useState("");
+  const debauncedFilterValue = useDebounceValue(searchFilter, 800);
+
   const getCategoryItems = api.category.getCategoryItems.useQuery(
     {
       categoryName: currentCategoryName,
+      searchFilter: debauncedFilterValue,
     },
     {
       enabled: currentCategoryName !== "",
@@ -35,38 +42,36 @@ export default function SellerHomePage() {
   return (
     <main>
       <div className="flex h-[calc(100vh-72px)] flex-col gap-5">
-        <div className="flex gap-2">
-          {getCategoryNames.isPending ? (
-            <div className="overflow-x-auto">
-              <div className="inline-flex space-x-2 pb-2">
-                {Array.from({ length: 10 }).map((_, index) => (
-                  <Skeleton
-                    key={index}
-                    className="h-[38px] w-[77px] flex-shrink-0"
-                  />
-                ))}
-              </div>
-            </div>
-          ) : (
-            getCategoryNames.data?.map((category) => {
-              return (
-                <div
-                  key={category.name}
-                  className="rounded-md bg-card px-4 py-2"
-                  onClick={() => {
-                    setCurrentCategoryName(category.name);
-                  }}
-                >
-                  {category.name}
-                </div>
-              );
-            })
-          )}
+        <div className="flex flex-wrap gap-3">
+          <AddNewCategory />
+
+          <AddNewProduct currentCategoryName={currentCategoryName} />
         </div>
+
+        {/* Top scrollable categories list */}
+        <CategoryNamesList
+          categories={getCategoryNames.data ?? []}
+          isLoading={getCategoryNames.isPending}
+          onClick={setCurrentCategoryName}
+          showMenu
+        />
+
+        {/* if we not fetching and data is not empty show input */}
+        {(getCategoryNames.data?.length ?? 1) > 0 &&
+          !getCategoryNames.isFetching && (
+            <input
+              className="w-full rounded-md bg-card px-4 py-2 outline-none"
+              value={searchFilter}
+              disabled={getCategoryNames.isFetching}
+              placeholder="Пошук..."
+              onChange={(e) => setSearchFilter(e.target.value)}
+            />
+          )}
+
         {/* if loading show spinner */}
         {getCategoryItems.isPending ? (
           <div className="flex h-full items-center justify-center">
-            <Spinner />
+            <Loader2 className="h-6 w-6 animate-spin text-[#b5b5b5]" />
           </div>
         ) : // if not loading and data is empty show message
         getCategoryItems.data?.length === 0 ? (
@@ -79,7 +84,7 @@ export default function SellerHomePage() {
           getCategoryItems.data?.map((item) => {
             return (
               <ProductListItem key={item.id} item={item}>
-                <div className="flex items-start gap-3">
+                <div className="flex items-center gap-3">
                   <Image
                     src={item.image}
                     width={100}

@@ -4,10 +4,17 @@ import jwt from "jsonwebtoken";
 import { type TokenData } from "./transfers";
 import { TRPCError } from "@trpc/server";
 import { env } from "~/env";
+import { addProductSchema } from "~/schemas/zod";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 export const categoryRouter = createTRPCRouter({
   getCategoryItems: protectedProcedure
-    .input(z.object({ categoryName: z.string() }))
+    .input(
+      z.object({
+        categoryName: z.string().min(1, "categoryName не може бути порожнім"),
+        searchFilter: z.string().nullish(),
+      }),
+    )
     .query(async ({ ctx, input }) => {
       const data = await ctx.db.category.findUnique({
         where: {
@@ -18,7 +25,13 @@ export const categoryRouter = createTRPCRouter({
         },
       });
 
-      return data?.items;
+      if (input.searchFilter) {
+        return data?.items.filter((item) =>
+          item.title.toLowerCase().includes(input.searchFilter!.toLowerCase()),
+        );
+      } else {
+        return data?.items;
+      }
     }),
 
   getCategoryNames: protectedProcedure.query(async ({ ctx }) => {
@@ -54,7 +67,7 @@ export const categoryRouter = createTRPCRouter({
     }),
 
   getItemsByToken: protectedProcedure
-    .input(z.object({ token: z.string() }))
+    .input(z.object({ token: z.string().min(1, "token не може бути порожнім") }))
     .query(async ({ ctx, input }) => {
       const decryptedToken = jwt.verify(
         input.token,
@@ -111,11 +124,11 @@ export const categoryRouter = createTRPCRouter({
   updateProduct: sellerProcedure
     .input(
       z.object({
-        id: z.string(),
-        title: z.string(),
-        imageSrc: z.string().url(),
-        count: z.number(),
-        price: z.number(),
+        id: z.string().min(1, "id не може бути порожнім"),
+        title: z.string().min(1, "title не може бути порожнім"),
+        imageSrc: z.string().url().min(1, "imageSrc не може бути порожнім"),
+        count: z.number().min(1, "count не може бути порожнім"),
+        price: z.number().min(1, "price не може бути порожнім"),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -135,13 +148,96 @@ export const categoryRouter = createTRPCRouter({
   deleteProduct: sellerProcedure
     .input(
       z.object({
-        id: z.string(),
+        id: z.string().min(1, "id не може бути порожнім"),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       await ctx.db.categoryItem.delete({
         where: {
           id: input.id,
+        },
+      });
+    }),
+
+  addProduct: sellerProcedure
+    .input(addProductSchema)
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.categoryItem.create({
+        data: {
+          title: input.title,
+          image: input.imageSrc,
+          count: input.count,
+          pricePerOne: input.price,
+          Category: {
+            connect: {
+              name: input.category,
+            },
+          },
+        },
+      });
+    }),
+
+  addCategory: sellerProcedure
+    .input(
+      z.object({
+        categoryName: z.string().min(1, "categoryName не може бути порожнім"),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        await ctx.db.category.create({
+          data: {
+            name: input.categoryName,
+          },
+        });
+      } catch (error) {
+        if (error instanceof PrismaClientKnownRequestError) {
+          if (error.code === "P2002") {
+            throw new TRPCError({
+              code: "CONFLICT",
+              message: "Категорія вже існує",
+            });
+          }
+        }
+      }
+    }),
+
+  deleteCategory: sellerProcedure
+    .input(
+      z.object({
+        categoryName: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.categoryItem.deleteMany({
+        where: {
+          Category: {
+            name: input.categoryName,
+          },
+        },
+      });
+
+      await ctx.db.category.delete({
+        where: {
+          name: input.categoryName,
+        },
+      });
+    }),
+
+  updateCategory: sellerProcedure
+    .input(
+      z.object({
+        categoryName: z.string().min(1, "categoryName не може бути порожнім"),
+        newName: z.string().min(1, "newName не може бути порожнім"),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.category.update({
+        where: {
+          name: input.categoryName,
+        },
+        data: {
+          name: input.newName,
         },
       });
     }),

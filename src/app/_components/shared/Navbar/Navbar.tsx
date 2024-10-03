@@ -4,6 +4,7 @@ import TeacherItem from "./TeacherItem";
 import ShoppingCart from "../../(seller)/home/ShoppingCart";
 import StudentItem from "./StudentItem";
 import ScanQr from "./ScanQr";
+import AdminItem from "./AdminItem";
 
 export default async function Navbar() {
   const session = await getServerAuthSession();
@@ -22,7 +23,7 @@ export default async function Navbar() {
             <ScanQr />
           </>
         )}
-        {session?.user.role === "ADMIN" && <div>Admin Panel</div>}
+        {session?.user.role === "ADMIN" && <AdminItem />}
         {session?.user.role === "SELLER" && <ShoppingCart />}
       </div>
 

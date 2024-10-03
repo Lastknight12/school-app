@@ -5,6 +5,7 @@ import Navbar from "./_components/shared/Navbar/Navbar";
 import "../styles/globals.css";
 import BottomNavigationWrapper from "./_components/shared/BottomNavigation/BottomNavigationContainer";
 import { Toaster } from "sonner";
+import { Orbitron, Source_Code_Pro } from 'next/font/google'
 
 const metropolis = localFont({
   src: [
@@ -22,6 +23,16 @@ const metropolis = localFont({
   variable: "--font-metropolis",
 });
 
+const orbitron = Orbitron({
+  subsets: ['latin'],
+  variable: '--font-orbitron',
+})
+
+const source_code_pro = Source_Code_Pro({
+  subsets: ['latin'],
+  variable: '--font-source-code-pro',
+})
+
 export default function RootLayout({
   children,
 }: {
@@ -29,7 +40,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${metropolis.className}`}>
+      <body className={`${metropolis.variable} ${orbitron.variable} ${source_code_pro.variable} font-metropolis`}>
         <TRPCReactProvider>
           <NextAuthProvider>
             <Toaster

@@ -9,11 +9,11 @@ import { Button } from "~/components/ui/button";
 
 interface Props {
   onSuccess?: (imageSrc: string) => void;
-  defaultSrc?: string;
+  defaultImageSrc?: string;
 }
 
-export default function UploadImage({ onSuccess, defaultSrc }: Props) {
-  const [perviewSrc, setPerviewSrc] = useState(defaultSrc ?? "");
+export default function UploadImage({ onSuccess, defaultImageSrc }: Props) {
+  const [perviewSrc, setPerviewSrc] = useState(defaultImageSrc ?? "");
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -52,16 +52,14 @@ export default function UploadImage({ onSuccess, defaultSrc }: Props) {
         <div className="relative">
           <Image src={perviewSrc} alt="post perview" width={150} height={150} />
           <button
-            className="absolute -top-1 -right-1 rounded-full border border-red-500 bg-red-100"
+            className="absolute -right-1 -top-1 rounded-full border border-red-500 bg-red-100"
             onClick={() => setPerviewSrc("")}
           >
             <MdClose size={15} color="red" />
           </button>
         </div>
       ) : (
-        <Button
-          onClick={() => fileInputRef.current?.click()}
-        >
+        <Button onClick={() => fileInputRef.current?.click()}>
           <MdFileUpload size={25} />
         </Button>
       )}

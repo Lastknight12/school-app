@@ -69,11 +69,10 @@ export default function QrReader({
   // Fail
   const onScanFail = (err: string | Error) => {
     // 🖨 Print the "err" to browser console.
-    console.log(err);
+    console.log(err)
   };
 
   useEffect(() => {
-    console.log(scanner.current);
     if (videoEl?.current && !scanner.current) {
       // 👉 Instantiate the QR Scanner
       scanner.current = new QrScanner(videoEl?.current, onScanSuccess, {
@@ -128,7 +127,7 @@ export default function QrReader({
 
       {qrOn && (isOpen ?? open) && (
         // disable on desktop
-        <div className="absolute left-0 top-1/2 -translate-y-1/2 min-[600px]:hidden">
+        <div className="absolute left-0 top-1/2 -translate-y-1/2 min-[600px]:hidden z-10">
           <video ref={videoEl} />
           <div ref={qrBoxEl} className="relative">
             <Image

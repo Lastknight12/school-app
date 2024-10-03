@@ -1,12 +1,12 @@
 "use client";
 
 import { api } from "~/trpc/react";
-import Spinner from "~/components/ui/spinner";
 import Image from "next/image";
-import { Skeleton } from "~/components/ui/skeleton";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { cn } from "~/lib/utils";
+import CategoryNamesList from "~/app/_components/shared/CategoryNamesList";
+import { Loader2 } from "lucide-react";
 
 export default function SellerHomePage() {
   const [currentCategoryName, setCurrentCategoryName] = useState("");
@@ -35,38 +35,16 @@ export default function SellerHomePage() {
   return (
     <main>
       <div className="flex h-[calc(100vh-72px)] flex-col gap-5">
-        <div className="flex gap-2">
-          {getCategoryNames.isPending ? (
-            <div className="overflow-x-auto">
-              <div className="inline-flex space-x-2 pb-2">
-                {Array.from({ length: 10 }).map((_, index) => (
-                  <Skeleton
-                    key={index}
-                    className="h-[38px] w-[77px] flex-shrink-0"
-                  />
-                ))}
-              </div>
-            </div>
-          ) : (
-            getCategoryNames.data?.map((category) => {
-              return (
-                <div
-                  key={category.name}
-                  className="rounded-md select-none bg-card px-4 py-2"
-                  onClick={() => {
-                    setCurrentCategoryName(category.name);
-                  }}
-                >
-                  {category.name}
-                </div>
-              );
-            })
-          )}
-        </div>
+        <CategoryNamesList
+          categories={getCategoryNames.data ?? []}
+          isLoading={getCategoryNames.isPending}
+          onClick={setCurrentCategoryName}
+        />
+
         {/* If data is loading show spinner */}
         {getCategoryItems.isPending ? (
           <div className="flex h-full items-center justify-center">
-            <Spinner />
+            <Loader2 className="h-6 w-6 animate-spin text-[#b5b5b5]" />
           </div>
         ) : // if not loading and data is empty show message
         getCategoryItems.data?.length === 0 ? (
@@ -80,7 +58,7 @@ export default function SellerHomePage() {
             return (
               <div
                 className={cn(
-                  "flex items-start gap-3",
+                  "flex items-center gap-3",
                   item.count === 0 && "opacity-30",
                 )}
                 key={item.id}
