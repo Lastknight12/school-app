@@ -12,7 +12,6 @@ import Link from "next/link";
 import { useDrag } from "@use-gesture/react";
 import { useSpring, animated } from "@react-spring/web";
 import { FiShoppingBag } from "react-icons/fi";
-import { cn } from "~/lib/utils";
 import { useRef } from "react";
 
 interface Props {
