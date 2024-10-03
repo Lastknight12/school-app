@@ -1,8 +1,10 @@
 import Image from "next/image";
 import { getServerAuthSession } from "~/server/auth";
-import NavbarLeftItem from "./StudentItem";
 import TeacherItem from "./TeacherItem";
 import ShoppingCart from "../../(seller)/home/ShoppingCart";
+import StudentItem from "./StudentItem";
+import ScanQr from "./ScanQr";
+import AdminItem from "./AdminItem";
 
 export default async function Navbar() {
   const session = await getServerAuthSession();
@@ -12,13 +14,16 @@ export default async function Navbar() {
   }
 
   return (
-    <nav className="flex justify-between items-center px-6 py-4">
+    <nav className="flex items-center justify-between px-6 py-4">
       <div className="flex items-center gap-3 text-white">
         {session?.user.role === "TEACHER" && <TeacherItem />}
         {session?.user.role === "STUDENT" && (
-          <NavbarLeftItem userBalance={session.user.balance} />
+          <>
+            <StudentItem userBalance={session.user.balance} />
+            <ScanQr />
+          </>
         )}
-        {session?.user.role === "ADMIN" && <div>Admin Panel</div>}
+        {session?.user.role === "ADMIN" && <AdminItem />}
         {session?.user.role === "SELLER" && <ShoppingCart />}
       </div>
 

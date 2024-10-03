@@ -11,6 +11,8 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useDrag } from "@use-gesture/react";
 import { useSpring, animated } from "@react-spring/web";
+import { FiShoppingBag } from "react-icons/fi";
+import { useRef } from "react";
 
 interface Props {
   allowedUrls: string[];
@@ -47,6 +49,7 @@ export default function BottomNavigation({ allowedUrls }: Props) {
     },
   );
 
+  // navigation items and icons that be displayed
   const navigationItems = [
     { name: "Home", href: "/", icon: <BiHome size={24} /> },
     {
@@ -55,31 +58,32 @@ export default function BottomNavigation({ allowedUrls }: Props) {
       icon: <GrTransaction size={24} />,
     },
     { name: "Stats", href: "/stats", icon: <IoMdStats size={24} /> },
+    { name: "Shop", href: "/shop", icon: <FiShoppingBag size={22} /> },
   ];
 
+  const rootEl = useRef<HTMLDivElement>(null);
+
+  // filter out navigation items that are allowed
   const filteredNavigationItems = navigationItems.filter(
     (item) => allowedUrls.includes(item.href) || item.href === "/",
   );
 
-  if (!filteredNavigationItems.some((item) => item.href === pathname)) {
-    return null;
-  }
-
   return (
     <animated.div
+      ref={rootEl}
       style={{
+        // 24px * 2 padding on left and right,
+        // filteredNavigationItems.length - 1 * items and gap between items,
+        // 24px * 2 items width
         left: `calc(50% - (24px * 2 + 40px * ${filteredNavigationItems.length - 1} + 24px * ${filteredNavigationItems.length}) / 2) !important`,
         y,
-        // 24px * 2 padding on left and right,
-        // 40px * items - 1 gap between items,
-        // 24px * 2 items width
       }}
-      className="fixed bottom-[calc(0%-65.6px)] rounded-bl-sm rounded-br-sm border border-[#fafafa15] bg-[#28292b] py-5 backdrop-blur-sm"
+      className="fixed bottom-[calc(0%-66px)] rounded-sm border border-[#fafafa15] bg-[#28292b] py-5 backdrop-blur-sm"
     >
       {/* Top line */}
       <button
         {...bind()}
-        className={`fixed -top-4 left-[-1px] flex h-4 w-[calc(100%+2px)] touch-none items-center justify-center rounded-tl-full rounded-tr-full border border-[#fafafa15] border-b-[#28292b] bg-[#28292b]`}
+        className={`fixed -top-4 left-1/2 flex h-4 w-[calc(50%)] -translate-x-1/2 touch-none items-center justify-center rounded-tl-full rounded-tr-full border border-[#fafafa15] border-b-[#28292b] bg-[#28292b]`}
       >
         <div className="flex h-full w-full items-center justify-center">
           <div className="h-[2px] w-[40%] bg-[#5a5a5b]" />

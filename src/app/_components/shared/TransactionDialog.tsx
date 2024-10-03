@@ -13,7 +13,7 @@ import { z } from "zod";
 import { sendAmountSchema } from "~/schemas/zod";
 import { toast } from "sonner";
 import { api } from "~/trpc/react";
-import Spinner from "~/components/ui/spinner";
+import { Loader2 } from "lucide-react";
 
 interface Props {
   user: User;
@@ -45,12 +45,11 @@ export default function TransactionDialog({
   const sendMoneyMutation = api.transfers.sendMoney.useMutation({
     onSuccess: () => {
       toast.success("Платіж успішно відправлений");
-      console.log(onMutationSuccess);
       onMutationSuccess?.(setIsDialogOpen);
       setIsDialogOpen(false);
     },
     onError: (error) => {
-      toast.error(error.message);
+      error.data?.zodError ? toast.error(error.data.zodError[0]?.message) : toast.error(error.message);
     },
   });
 
@@ -94,7 +93,7 @@ export default function TransactionDialog({
       onOpenChange={onOpenChange ?? setIsDialogOpen}
     >
       <DialogTrigger>{children}</DialogTrigger>
-      <DialogContent className="h-full !rounded-none backdrop-blur-md max-md:max-w-full">
+      <DialogContent className="max-md:max-w-full h-full !rounded-none backdrop-blur-md">
         <div className="flex flex-col justify-between">
           <div className="flex items-center gap-3">
             <Image
@@ -129,7 +128,7 @@ export default function TransactionDialog({
           >
             Відправити{" "}
             {sendMoneyMutation.isPending && (
-              <Spinner containerClassName="!h-4 !w-4" />
+              <Loader2 className="h-4 w-4 animate-spin text-[#b5b5b5]" />
             )}
           </button>
         </div>

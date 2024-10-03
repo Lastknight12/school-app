@@ -5,9 +5,12 @@ import type { Session } from "next-auth";
 import type { UserRole } from "@prisma/client";
 import { env } from "./env";
 
+// IMPORTANT: add url in matcher
 export const urls = new Map<string, UserRole[]>([
   ["/stats", ["STUDENT"]],
   ["/transactions", ["STUDENT"]],
+  ["/shop", ["STUDENT"]],
+  ["/buy", ["STUDENT"]]
 ]);
 const redirectUrl = "/not-found";
 
@@ -32,5 +35,5 @@ export default async function middleware(request: NextRequest) {
 
 // See "Matching Paths" below to learn more
 export const config = {
-  matcher: ["/stats", "/transactions", "/settings"],
+  matcher: ["/stats", "/transactions", "/shop", "/buy"],
 };

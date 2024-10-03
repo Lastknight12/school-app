@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { addKlassSchema } from "~/schemas/zod";
 import {
   adminProcerure,
   createTRPCRouter,
@@ -64,7 +65,7 @@ export const klassRouter = createTRPCRouter({
     }),
 
   addKlass: adminProcerure
-    .input(z.object({ name: z.string(), teacherId: z.string() }))
+    .input(addKlassSchema)
     .mutation(async ({ ctx, input }) => {
       const klass = await ctx.db.klass.create({
         data: {

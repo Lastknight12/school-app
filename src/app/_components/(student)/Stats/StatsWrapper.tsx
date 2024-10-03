@@ -1,9 +1,9 @@
 "use client";
 
 import { api } from "~/trpc/react";
-import Spinner from "~/components/ui/spinner";
 import Chart from "./Chart";
 import StatsInfo from "./StatsInfo";
+import { Loader2 } from "lucide-react";
 
 export default function Stats() {
   const chartData = api.transfers.getChartData.useQuery();
@@ -13,7 +13,7 @@ export default function Stats() {
     return (
       // 72px - navbar, 57px - 20px - bottom navigation
       <div className="flex h-[calc(100vh-72px-57px-20px)] w-full items-center justify-center">
-        <Spinner containerClassName="!h-7 !w-7" />
+        <Loader2 className="h-6 w-6 animate-spin text-[#b5b5b5]" />
       </div>
     );
   }

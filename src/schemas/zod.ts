@@ -14,3 +14,21 @@ export const addKlassSchema = z.object({
     .max(3, { message: "Максимальна довжина назви 3" }),
   teacherId: z.string().min(1, { message: "Виберіть викладача" }),
 });
+
+export const addProductSchema = z.object({
+  title: z
+    .string()
+    .min(1, { message: "Вкажіть назву продукту" }),
+    count: z
+    .number()
+    .max(99999999, { message: "Максимальна кількість 999" }),
+    price: z
+    .number()
+    .min(1, { message: "Мінімальна ціна 1" })
+    .max(99999999, { message: "Максимальна ціна 999" }),
+    imageSrc: z
+      .string()
+      .min(1, { message: "Завантажте зображення" })
+      .url({ message: "Вкажіть коректний URL зображення" }),
+    category: z.string().min(1, { message: "Виберіть категорію" }),
+})

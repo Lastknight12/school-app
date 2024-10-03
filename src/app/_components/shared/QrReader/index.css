@@ -1,0 +1,7 @@
+.code-outline-highlight {
+  position: absolute;
+  top: 0;
+  left: 0;
+  stroke: red !important;
+  stroke-width: 10px !important;
+}

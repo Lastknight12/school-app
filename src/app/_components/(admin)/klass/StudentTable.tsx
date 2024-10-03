@@ -21,7 +21,7 @@ import {
 
 import Image from "next/image";
 import { api } from "~/trpc/react";
-import Spinner from "~/components/ui/spinner";
+import { Loader2 } from "lucide-react";
 
 interface Student {
   name: string;
@@ -117,7 +117,7 @@ export default function StudentsTable({ klassId }: Props) {
           ) : (
             <TableRow>
               <TableCell colSpan={columns.length}>
-                <Spinner containerClassName=" mx-auto" />
+                <Loader2 className="mx-auto h-5 w-5 animate-spin text-[#b5b5b5]" />
               </TableCell>
             </TableRow>
           )}
