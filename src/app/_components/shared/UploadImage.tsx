@@ -6,13 +6,25 @@ import { type ChangeEvent, useRef, useState } from "react";
 import { MdClose, MdFileUpload } from "react-icons/md";
 import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
+import { cn } from "~/lib/utils";
 
 interface Props {
   onSuccess?: (imageSrc: string) => void;
   defaultImageSrc?: string;
+  imageSize?: number;
+  imageClassName?: string;
+  closeButtonClassName?: string;
+  closeIconColor?: string;
 }
 
-export default function UploadImage({ onSuccess, defaultImageSrc }: Props) {
+export default function UploadImage({
+  onSuccess,
+  defaultImageSrc,
+  imageSize,
+  imageClassName,
+  closeButtonClassName,
+  closeIconColor,
+}: Props) {
   const [perviewSrc, setPerviewSrc] = useState(defaultImageSrc ?? "");
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -49,14 +61,28 @@ export default function UploadImage({ onSuccess, defaultImageSrc }: Props) {
   return (
     <>
       {perviewSrc ? (
-        <div className="relative">
-          <Image src={perviewSrc} alt="post perview" width={150} height={150} />
-          <button
-            className="absolute -right-1 -top-1 rounded-full border border-red-500 bg-red-100"
-            onClick={() => setPerviewSrc("")}
-          >
-            <MdClose size={15} color="red" />
-          </button>
+        <div>
+          <div className="relative w-max">
+            <button
+              className={cn(
+                "absolute -right-1 -top-1 rounded-full border border-red-500 bg-red-100",
+                closeButtonClassName,
+              )}
+              onClick={() => setPerviewSrc("")}
+            >
+              <MdClose
+                size={15}
+                className={cn(closeIconColor ?? "text-red-500")}
+              />
+            </button>
+            <Image
+              src={perviewSrc}
+              alt="post perview"
+              className={cn(imageClassName)}
+              width={imageSize ?? 150}
+              height={imageSize ?? 150}
+            />
+          </div>
         </div>
       ) : (
         <Button onClick={() => fileInputRef.current?.click()}>

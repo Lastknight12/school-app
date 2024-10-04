@@ -58,7 +58,7 @@ export default function ButtonsGroup() {
   }
 
   return (
-    <div className="mb-3">
+    <div className="mb-5">
       <Dialog onOpenChange={setIsOpen} open={isOpen}>
         <DialogTrigger asChild>
           <button

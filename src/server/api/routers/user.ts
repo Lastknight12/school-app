@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 import {
@@ -38,4 +39,51 @@ export const userRouter = createTRPCRouter({
       },
     });
   }),
+
+  getUserClass: protectedProcedure
+    .input(z.object({ id: z.string().nullish() }))
+    .query(async ({ input, ctx }) => {
+      if (!input.id) return null;
+
+      const klass = await ctx.db.klass.findUnique({
+        where: {
+          id: input.id,
+        },
+        select: {
+          id: true,
+          students: {
+            select: {
+              id: true,
+            },
+          },
+          name: true,
+        },
+      });
+
+      if (
+        !klass?.students.some((student) => student.id === ctx.session.user.id)
+      ) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Ти не знаходишся у цьому класі",
+        });
+      }
+
+      return klass;
+    }),
+
+    updateUser: protectedProcedure.input(z.object({
+      newName: z.string().min(1, "newName не може бути порожнім"),
+      newImageSrc: z.string().min(1, "newImageSrc не може бути порожнім"),
+    })).mutation(async ({ ctx, input }) => {
+      await ctx.db.user.update({
+        where: {
+          id: ctx.session.user.id
+        },
+        data: {
+          name: input.newName,
+          image: input.newImageSrc
+        }
+      })
+    })
 });

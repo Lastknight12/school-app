@@ -58,7 +58,7 @@ export default function UpdateCategory({
         </p>,
       );
 
-      setIsOpen(false);
+      onOpenChange(false);
     },
   });
 

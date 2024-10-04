@@ -10,7 +10,8 @@ export const urls = new Map<string, UserRole[]>([
   ["/stats", ["STUDENT"]],
   ["/transactions", ["STUDENT"]],
   ["/shop", ["STUDENT"]],
-  ["/buy", ["STUDENT"]]
+  ["/buy", ["STUDENT"]],
+  ["/settings", ["STUDENT", "TEACHER"]],
 ]);
 const redirectUrl = "/not-found";
 

@@ -61,6 +61,11 @@ export default function AddNewProduct({ currentCategoryName }: Props) {
       );
       setIsOpen(false);
     },
+    onError: (error) => {
+      error.data?.zodError && error.data?.zodError.length > 0
+        ? toast.error(error.data.zodError[0]!.message)
+        : toast.error(error.message);
+    },
   });
 
   function handleClick() {
@@ -93,7 +98,10 @@ export default function AddNewProduct({ currentCategoryName }: Props) {
       <DialogTrigger asChild>
         <Button className="flex-grow">Додати продукт</Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]" onOpenAutoFocus={(e) => e.preventDefault()}>
+      <DialogContent
+        className="sm:max-w-[425px]"
+        onOpenAutoFocus={(e) => e.preventDefault()}
+      >
         <DialogHeader>
           <DialogTitle>Додати продукт</DialogTitle>
           <DialogDescription>

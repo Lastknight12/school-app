@@ -5,6 +5,7 @@ import ShoppingCart from "../../(seller)/home/ShoppingCart";
 import StudentItem from "./StudentItem";
 import ScanQr from "./ScanQr";
 import AdminItem from "./AdminItem";
+import Link from "next/link";
 
 export default async function Navbar() {
   const session = await getServerAuthSession();
@@ -29,13 +30,15 @@ export default async function Navbar() {
 
       <div>
         {session?.user && (
-          <Image
-            src={session.user.image!}
-            className="rounded-full"
-            alt="avatar"
-            width={40}
-            height={40}
-          />
+          <Link href="/settings" className=" cursor-pointer">
+            <Image
+              src={session.user.image!}
+              className="rounded-full"
+              alt="avatar"
+              width={40}
+              height={40}
+            />
+          </Link>
         )}
       </div>
     </nav>

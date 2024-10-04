@@ -54,7 +54,7 @@ export default function RootLayout({
               position="top-center"
             />
             <Navbar />
-            <div className=" px-6">
+            <div className="px-6 h-[calc(100vh-72px-16px)]">
             {children}
             </div>
             <BottomNavigationWrapper />

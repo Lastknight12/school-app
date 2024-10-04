@@ -13,6 +13,7 @@ import { useDrag } from "@use-gesture/react";
 import { useSpring, animated } from "@react-spring/web";
 import { FiShoppingBag } from "react-icons/fi";
 import { useRef } from "react";
+import { MdSettings } from "react-icons/md";
 
 interface Props {
   allowedUrls: string[];
@@ -59,6 +60,7 @@ export default function BottomNavigation({ allowedUrls }: Props) {
     },
     { name: "Stats", href: "/stats", icon: <IoMdStats size={24} /> },
     { name: "Shop", href: "/shop", icon: <FiShoppingBag size={22} /> },
+    { name: "Settings", href: "/settings", icon: <MdSettings size={24} /> },
   ];
 
   const rootEl = useRef<HTMLDivElement>(null);

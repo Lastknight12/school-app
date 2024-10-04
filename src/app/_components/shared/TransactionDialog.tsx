@@ -34,7 +34,7 @@ export default function TransactionDialog({
   onMutationSuccess,
 }: Props) {
   const [amount, setAmount] = useState(0);
-  const [isOpen, setIsOpen] = useState(customIsOpen ?? false);
+  const [isOpen, setIsOpen] = useState(false);
 
   const isAmountValid = amount > 0;
   const maxValue = 99999999; // 99 999 999
@@ -46,9 +46,7 @@ export default function TransactionDialog({
       setIsOpen(false);
     },
     onError: (error) => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
-      error.data?.zodError
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+      error.data?.zodError && error.data?.zodError.length > 0
         ? toast.error(error.data.zodError[0]!.message)
         : toast.error(error.message);
     },

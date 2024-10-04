@@ -43,6 +43,7 @@ export default function GenerateQRModal({ onSuccess, children }: Props) {
   };
 
   const genQRToken = api.transfers.generateProductToken.useMutation();
+  
   const decrementProductsCount =
     api.category.decrementProductsCount.useMutation();
 

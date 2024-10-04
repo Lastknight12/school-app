@@ -39,6 +39,10 @@ export default function ButtonsGroup({ klassId }: Props) {
       void utils.klass.getKlassStudents.invalidate();
       toast.success(`Учня додано до класу`);
     },
+
+    onError: () => {
+      toast.error(`Помилка додавання учня до класу`);
+    }
   });
 
   function onSelect(studentId: string) {

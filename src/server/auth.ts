@@ -53,6 +53,7 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     jwt: async ({ token }) => {
+
       const dbUser = await db.user.findFirst({
         where: { id: token.sub },
         select: {

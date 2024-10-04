@@ -46,9 +46,9 @@ export default function AddNewCategory() {
       setIsOpen(false);
     },
     onError: (error) => {
-      // is zod error? show first error
-      error.data?.zodError
-        ? toast.error(error.data.zodError[0]?.message)
+      // is zod error show first error
+      error.data?.zodError && error.data?.zodError.length > 0
+        ? toast.error(error.data.zodError[0]!.message)
         : toast.error(error.message);
     },
   });
