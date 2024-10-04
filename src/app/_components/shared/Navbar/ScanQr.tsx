@@ -6,11 +6,11 @@ import QrReader from "../QrReader";
 import { toast } from "sonner";
 import { env } from "~/env";
 import { api } from "~/trpc/react";
-import { IoMdCloseCircle } from "react-icons/io";
 
 export default function ScanQr() {
   const [isOpen, setIsOpen] = useState(false);
-  const utils = api.useUtils()
+  const utils = api.useUtils();
+
   const payment = api.transfers.pay.useMutation({
     onSuccess: () => {
       void utils.transfers.getTransfers.invalidate();
@@ -18,7 +18,9 @@ export default function ScanQr() {
       setIsOpen(false);
     },
     onError: (error) => {
-      error.data?.zodError ? toast.error(error.data.zodError[0]?.message) : toast.error(error.message);
+      error.data?.zodError
+        ? toast.error(error.data.zodError[0]?.message)
+        : toast.error(error.message);
       setIsOpen(false);
     },
   });
@@ -45,23 +47,13 @@ export default function ScanQr() {
   }
 
   return (
-    <div className="flex items-center gap-2">
       <QrReader
         isOpen={isOpen}
         onDataScanned={handleDataScanned}
         onOpenChange={setIsOpen}
+        onCloseButtonClick={() => setIsOpen(false)}
       >
-        {/* Close button */}
-        {isOpen && (
-          <div
-            className="absolute right-3 top-3 z-20"
-            onClick={() => setIsOpen(false)}
-          >
-            <IoMdCloseCircle size={35} />
-          </div>
-        )}
         <LuScanLine className="cursor-pointer text-2xl" />
       </QrReader>
-    </div>
   );
 }

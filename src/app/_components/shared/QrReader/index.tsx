@@ -12,12 +12,14 @@ import QrFrame from "images/qr-frame.svg";
 
 import useClickOutside from "~/hooks/useClickOutside";
 import { toast } from "sonner";
+import { IoMdClose } from "react-icons/io";
 
 interface Props {
   children: React.ReactNode;
   isOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
   onDataScanned?: (data: string) => void;
+  onCloseButtonClick?: () => void;
 }
 
 /**
@@ -27,6 +29,7 @@ interface Props {
  * @param {boolean} isOpen - Custom state for scanner
  * @param {(data: string) => void} onDataScanned - Callback when qr code is scanned
  * @param {(open: boolean) => void} handleOpenChange - Callback when scanner is opened or closed
+ * @param {() => void} onCloseButtonClick - Callback when close button is clicked
  *
  * @example
  * <QrReader isOpen={isOpen} onDataScanned={onDataScanned} handleOpenChange={handleOpenChange}>
@@ -39,38 +42,41 @@ export default function QrReader({
   isOpen,
   onDataScanned,
   onOpenChange,
+  onCloseButtonClick,
 }: Props) {
   // QR States
   const scanner = useRef<QrScanner>();
   const videoEl = useRef<HTMLVideoElement>(null);
   const qrBoxEl = useRef<HTMLDivElement>(null);
   const rootEl = useRef<HTMLDivElement>(null);
+
   const [qrOn, setQrOn] = useState<boolean>(true);
   const [open, setOpen] = useState<boolean>(isOpen ?? false);
 
-  function handleClick() {
-    setOpen(!open);
-    onOpenChange?.(!open);
-  }
+  const [disabled, setDisabled] = useState<boolean>(false);
 
-  // close scanner when user clicks outside
-  useClickOutside(rootEl, () => {
-    if (open) {
-      setOpen(false);
-      onOpenChange?.(false);
+  // not necessary but for better adaptive check
+  useEffect(() => {
+    function handleResize() {
+      if (window.innerWidth > 1024) {
+        scanner.current?.stop();
+        setOpen(false);
+        setDisabled(true);
+      } else {
+        void scanner.current?.start();
+        setDisabled(false);
+        setOpen(isOpen ?? false);
+      }
     }
-  });
-  // Success
-  const onScanSuccess = (result: QrScanner.ScanResult) => {
-    onDataScanned?.(result.data);
-    scanner.current?.stop();
-  };
 
-  // Fail
-  const onScanFail = (err: string | Error) => {
-    // 🖨 Print the "err" to browser console.
-    console.log(err)
-  };
+    window.addEventListener("resize", handleResize);
+    handleResize();
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (videoEl?.current && !scanner.current) {
@@ -110,7 +116,7 @@ export default function QrReader({
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen ?? open]);
+  }, [isOpen, open]);
 
   // ❌ If "camera" is not allowed in browser permissions, show an alert.
   useEffect(() => {
@@ -120,27 +126,68 @@ export default function QrReader({
       );
   }, [qrOn]);
 
-  return (
-    <div ref={rootEl}>
-      {/* Button to open scanner */}
-      <button onClick={handleClick}>{children}</button>
+  function handleClick() {
+    setOpen(!open);
+    onOpenChange?.(!open);
+  }
 
-      {qrOn && (isOpen ?? open) && (
-        // disable on desktop
-        <div className="absolute left-0 top-1/2 -translate-y-1/2 min-[600px]:hidden z-10">
-          <video ref={videoEl} />
-          <div ref={qrBoxEl} className="relative">
-            <Image
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-              src={QrFrame}
-              alt="QR Frame"
-              className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-              width={150}
-              height={150}
-            />
+  // close scanner when user clicks outside
+  useClickOutside(rootEl, () => {
+    if (open) {
+      setOpen(false);
+      onOpenChange?.(false);
+    }
+  });
+  // Success
+  const onScanSuccess = (result: QrScanner.ScanResult) => {
+    onDataScanned?.(result.data);
+    scanner.current?.stop();
+  };
+
+  // Fail
+  const onScanFail = (err: string | Error) => {
+    // 🖨 Print the "err" to browser console.
+    console.log(err);
+  };
+
+  return (
+    <>
+      <div ref={rootEl} className="min-[1024px]:hidden flex">
+      <button
+        disabled={disabled}
+        onClick={handleClick}
+        className="min-[1024px]:hidden"
+      >
+        {children}
+      </button>
+        {qrOn && (isOpen ?? open) && (
+          // disable on desktop
+          <div className="absolute left-0 top-1/2 z-10 -translate-y-1/2">
+            <div
+              className="absolute right-3 top-3 z-20"
+              onClick={() => {
+                setOpen(false);
+                onCloseButtonClick?.();
+              }}
+            >
+              <IoMdClose size={30} />
+            </div>
+
+            <video ref={videoEl} />
+
+            <div ref={qrBoxEl} className="relative">
+              <Image
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                src={QrFrame}
+                alt="QR Frame"
+                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+                width={150}
+                height={150}
+              />
+            </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </>
   );
 }

@@ -92,7 +92,11 @@ export default function Settings({ session }: Props) {
       </div>
 
       <Button
-        disabled={updateUserMutation.isPending}
+        disabled={
+          updateUserMutation.isPending ||
+          (newUsername === session.user.name &&
+            newImageSrc === session.user.image)
+        }
         onClick={() =>
           updateUserMutation.mutate({
             newName: newUsername,

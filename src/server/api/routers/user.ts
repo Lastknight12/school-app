@@ -73,8 +73,8 @@ export const userRouter = createTRPCRouter({
     }),
 
     updateUser: protectedProcedure.input(z.object({
-      newName: z.string().min(1, "newName не може бути порожнім"),
-      newImageSrc: z.string().min(1, "newImageSrc не може бути порожнім"),
+      newName: z.string().min(1, "Назва користувача не може бути пустою"),
+      newImageSrc: z.string().min(1, "Аватарка не може бути пустою"),
     })).mutation(async ({ ctx, input }) => {
       await ctx.db.user.update({
         where: {
