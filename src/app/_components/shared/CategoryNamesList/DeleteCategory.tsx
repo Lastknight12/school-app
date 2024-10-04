@@ -15,17 +15,25 @@ import { api } from "~/trpc/react";
 
 interface Props {
   categoryName: string;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export function DeleteCategory({ categoryName }: Props) {
-  const [isOpen, setIsOpen] = useState(false);
+export function DeleteCategory({ categoryName, open, onOpenChange }: Props) {
+  const [isOpen, setIsOpen] = useState(open ?? false);
 
   const utils = api.useUtils();
-
+  
+  function handleOpenChange(state: boolean) {
+    setIsOpen(!state);
+    onOpenChange?.(state);
+  }
+  
   const deleteCategoryMutation = api.category.deleteCategory.useMutation({
     onSuccess: () => {
       void utils.category.getCategoryNames.invalidate();
       void utils.category.getCategoryItems.invalidate();
+
       toast.success(
         <p className="text-white">
           Категорію{" "}
@@ -37,13 +45,15 @@ export function DeleteCategory({ categoryName }: Props) {
           видалено
         </p>,
       );
+      
       setIsOpen(false);
-    },
+    }
   });
-
+  
+  
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger className="text-red-400">Видалити</DialogTrigger>
+    <Dialog open={open ?? isOpen} onOpenChange={handleOpenChange}>
+      <DialogTrigger className="text-red-400 outline-none">Видалити</DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>

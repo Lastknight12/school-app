@@ -16,10 +16,12 @@ import { Loader2 } from "lucide-react";
 
 interface Props {
     categoryName: string
+    open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export default function UpdateCategory({ categoryName }: Props) {
-  const [isOpen, setIsOpen] = useState(false);
+export default function UpdateCategory({ categoryName, open, onOpenChange }: Props) {
+  const [isOpen, setIsOpen] = useState(open ?? false);
 
   const [name, setName] = useState("");
 
@@ -33,6 +35,12 @@ export default function UpdateCategory({ categoryName }: Props) {
       }, 150);
     }
   }, [isOpen]);
+
+  function handleOpenChange(state: boolean) {
+    console.log(open)
+    setIsOpen(!state);
+    onOpenChange?.(!state);
+  }
 
   const updateCategoryMutation = api.category.updateCategory.useMutation({
     onSuccess: () => {
@@ -53,8 +61,8 @@ export default function UpdateCategory({ categoryName }: Props) {
   });
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger>
+    <Dialog open={open ?? isOpen} onOpenChange={handleOpenChange}>
+      <DialogTrigger className=" outline-none">
         Оновити
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
