@@ -16,15 +16,16 @@ import { Loader2 } from "lucide-react";
 
 interface Props {
   categoryName: string;
-  isOpen: boolean;
-  onOpenChange: (isOpen: boolean) => void;
+  isOpen?: boolean;
+  onOpenChange?: (isOpen: boolean) => void;
 }
 
 export default function UpdateCategory({
   categoryName,
-  isOpen,
+  isOpen: customIsOpen,
   onOpenChange,
 }: Props) {
+  const [isOpen, setIsOpen] = useState(false);
   const [name, setName] = useState("");
 
   const utils = api.useUtils();
@@ -58,22 +59,28 @@ export default function UpdateCategory({
         </p>,
       );
 
-      onOpenChange(false);
+      setIsOpen(false);
+      onOpenChange?.(false);
     },
   });
 
   return (
     <Dialog
       // here
-      open={isOpen}
-      onOpenChange={onOpenChange}
+      open={customIsOpen ?? isOpen}
+      onOpenChange={(open) => {
+        onOpenChange?.(open);
+        setIsOpen(open);
+      }}
     >
       <DialogTrigger className="select-none outline-none">
         Оновити
       </DialogTrigger>
       <DialogContent
         className="sm:max-w-[425px]"
-        onEscapeKeyDown={() => onOpenChange(false)}
+        onEscapeKeyDown={() =>
+          customIsOpen ? onOpenChange?.(false) : setIsOpen(false)
+        }
       >
         <DialogHeader>
           <DialogTitle>Оновити категорію</DialogTitle>

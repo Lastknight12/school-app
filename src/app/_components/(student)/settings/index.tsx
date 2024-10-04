@@ -50,7 +50,7 @@ export default function Settings({ session }: Props) {
           <UploadImage
             onSuccess={(imageSrc) => setNewImageSrc(imageSrc)}
             defaultImageSrc={session.user.image ?? undefined}
-            imageSize={40}
+            imageSize={50}
             imageClassName=" rounded-full"
             closeButtonClassName="bg-[#4c0000] border-none text-red-700"
           />

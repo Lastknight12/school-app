@@ -6,7 +6,6 @@ import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
 import {
   useState,
   type ChangeEvent,
-  useEffect,
 } from "react";
 import { z } from "zod";
 import { sendAmountSchema } from "~/schemas/zod";
@@ -52,10 +51,10 @@ export default function TransactionDialog({
     },
   });
 
-  useEffect(() => {
-    onOpenChange?.(isOpen);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen]);
+  function handleOpenChange(open: boolean) {
+    onOpenChange?.(open);
+    setIsOpen(open);
+  }
 
   function handleAmountChange(e: ChangeEvent<HTMLInputElement>) {
     const onlyNumbers = e.target.value
@@ -92,9 +91,9 @@ export default function TransactionDialog({
   }
 
   return (
-    <Dialog open={customIsOpen ?? isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger>{children}</DialogTrigger>
-      <DialogContent className="max-md:max-w-full h-full !rounded-none backdrop-blur-md">
+    <Dialog open={customIsOpen ?? isOpen} onOpenChange={handleOpenChange}>
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogContent className="max-md:max-w-full h-full !rounded-none backdrop-blur-md" onEscapeKeyDown={() => setIsOpen(false)}>
         <div className="flex flex-col justify-between">
           <div className="flex items-center gap-3">
             <Image

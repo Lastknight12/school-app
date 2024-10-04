@@ -11,14 +11,22 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog";
 import { api } from "~/trpc/react";
+import { useState } from "react";
 
 interface Props {
   categoryName: string;
-  isOpen: boolean;
-  onOpenChange: (isOpen: boolean) => void;
+  isOpen?: boolean;
+  onOpenChange?: (isOpen: boolean) => void;
+  triggerClassName?: string;
 }
 
-export function DeleteCategory({ categoryName, isOpen, onOpenChange }: Props) {
+export function DeleteCategory({
+  categoryName,
+  isOpen: customIsOpen,
+  onOpenChange,
+}: Props) {
+  const [isOpen, setIsOpen] = useState(false);
+
   const utils = api.useUtils();
 
   const deleteCategoryMutation = api.category.deleteCategory.useMutation({
@@ -37,18 +45,27 @@ export function DeleteCategory({ categoryName, isOpen, onOpenChange }: Props) {
         </p>,
       );
 
-      onOpenChange(false);
+      setIsOpen(false);
+      onOpenChange?.(false);
     },
   });
 
   return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogTrigger className="select-none text-red-400 outline-none">
+    <Dialog
+      open={customIsOpen ?? isOpen}
+      onOpenChange={(open) => {
+        onOpenChange?.(open);
+        setIsOpen(open);
+      }}
+    >
+      <DialogTrigger className="text-red-400 outline-none">
         Видалити
       </DialogTrigger>
       <DialogContent
         className="sm:max-w-[425px]"
-        onEscapeKeyDown={() => onOpenChange(false)}
+        onEscapeKeyDown={() =>
+          onOpenChange ? onOpenChange(false) : setIsOpen(false)
+        }
       >
         <DialogHeader>
           <DialogTitle>

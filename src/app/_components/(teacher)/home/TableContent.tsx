@@ -11,10 +11,6 @@ interface Props {
 export default function TableContent({ student, onSuccess }: Props) {
   const [isOpen, setIsOpen] = useState(false);
 
-  function handleOpenChange() {
-    setIsOpen(!isOpen);
-  }
-
   function onMutationSuccess() {
     setIsOpen(false);
     onSuccess();
@@ -22,18 +18,19 @@ export default function TableContent({ student, onSuccess }: Props) {
 
   return (
     <>
-      <TableRow key={student.id} onClick={handleOpenChange}>
-        <TableCell className="font-medium">{student.name}</TableCell>
-        <TableCell>{student.email}</TableCell>
-        <TableCell>${student.balance}</TableCell>
-      </TableRow>
       <TransactionDialog
-        isOpen={isOpen}
         user={student}
+        isOpen={isOpen}
+        onOpenChange={setIsOpen}
         isTeacher={true}
         onMutationSuccess={onMutationSuccess}
-        onOpenChange={handleOpenChange}
-      />
+      >
+        <TableRow key={student.id}>
+          <TableCell className="font-medium">{student.name}</TableCell>
+          <TableCell>{student.email}</TableCell>
+          <TableCell>${student.balance}</TableCell>
+        </TableRow>
+      </TransactionDialog>
     </>
   );
 }

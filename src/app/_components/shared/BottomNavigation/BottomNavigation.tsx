@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 "use client";
 
 import { BiHome } from "react-icons/bi";
@@ -13,7 +9,6 @@ import { useDrag } from "@use-gesture/react";
 import { useSpring, animated } from "@react-spring/web";
 import { FiShoppingBag } from "react-icons/fi";
 import { useRef } from "react";
-import { MdSettings } from "react-icons/md";
 
 interface Props {
   allowedUrls: string[];
@@ -59,8 +54,7 @@ export default function BottomNavigation({ allowedUrls }: Props) {
       icon: <GrTransaction size={24} />,
     },
     { name: "Stats", href: "/stats", icon: <IoMdStats size={24} /> },
-    { name: "Shop", href: "/shop", icon: <FiShoppingBag size={22} /> },
-    { name: "Settings", href: "/settings", icon: <MdSettings size={24} /> },
+    { name: "Shop", href: "/shop", icon: <FiShoppingBag size={24} /> },
   ];
 
   const rootEl = useRef<HTMLDivElement>(null);
@@ -74,13 +68,12 @@ export default function BottomNavigation({ allowedUrls }: Props) {
     <animated.div
       ref={rootEl}
       style={{
-        // 24px * 2 padding on left and right,
-        // filteredNavigationItems.length - 1 * items and gap between items,
-        // 24px * 2 items width
-        left: `calc(50% - (24px * 2 + 40px * ${filteredNavigationItems.length - 1} + 24px * ${filteredNavigationItems.length}) / 2) !important`,
+        // 42px padding on left and right (24px),
+        // 24px item width
+        left: `calc(50% - (48px + 24px) * ${filteredNavigationItems.length} / 2) !important`,
         y,
       }}
-      className="fixed bottom-[calc(0%-66px)] rounded-sm border border-[#fafafa15] bg-[#28292b] py-5 backdrop-blur-sm"
+      className="fixed bottom-[calc(0%-66px)] rounded-sm border border-[#fafafa15] bg-[#28292b] backdrop-blur-sm"
     >
       {/* Top line */}
       <button
@@ -91,9 +84,9 @@ export default function BottomNavigation({ allowedUrls }: Props) {
           <div className="h-[2px] w-[40%] bg-[#5a5a5b]" />
         </div>
       </button>
-      <div className="flex gap-10 px-6">
+      <div className="flex">
         {filteredNavigationItems.map((item) => (
-          <Link key={item.name} href={item.href}>
+          <Link key={item.name} href={item.href} className="py-5 px-6">
             <div
               className={`${pathname === item.href ? "text-[#4181FF]" : "text-[#fafafa]"}`}
             >

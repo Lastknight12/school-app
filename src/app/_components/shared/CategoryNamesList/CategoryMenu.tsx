@@ -19,7 +19,7 @@ export function CategoryMenu({ categoryName }: Props) {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="outline-none">
+      <DropdownMenuTrigger className="outline-none py-2 pr-4">
         <HiDotsVertical />
       </DropdownMenuTrigger>
       <DropdownMenuContent
@@ -39,7 +39,7 @@ export function CategoryMenu({ categoryName }: Props) {
           <UpdateCategory
             categoryName={categoryName}
             isOpen={isUpdateOpen}
-            onOpenChange={setIsUpdateOpen}
+            onOpenChange={(isOpen) => setIsUpdateOpen(isOpen)}
           />
         </DropdownMenuItem>
 

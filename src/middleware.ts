@@ -11,7 +11,6 @@ export const urls = new Map<string, UserRole[]>([
   ["/transactions", ["STUDENT"]],
   ["/shop", ["STUDENT"]],
   ["/buy", ["STUDENT"]],
-  ["/settings", ["STUDENT", "TEACHER"]],
 ]);
 const redirectUrl = "/not-found";
 
