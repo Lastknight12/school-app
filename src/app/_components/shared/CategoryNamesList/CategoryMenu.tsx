@@ -1,5 +1,3 @@
-"use client";
-
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,21 +18,27 @@ export function CategoryMenu({ categoryName }: Props) {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
   return (
-    <DropdownMenu modal>
+    <DropdownMenu>
       <DropdownMenuTrigger className="outline-none">
         <HiDotsVertical />
       </DropdownMenuTrigger>
-      <DropdownMenuContent>
+      <DropdownMenuContent
+        onEscapeKeyDown={(e) => {
+          (isUpdateOpen || isDeleteOpen) && e.preventDefault();
+        }}
+      >
+        {/* when dont prevent default the modal will close instantly after click */}
+        {/* Also if user slick outside modal with touchpad press, it will close and open again. Idk how to fix this */}
         <DropdownMenuItem
           onSelect={(e) => {
-            // disable autofocus
             e.preventDefault();
-            setIsUpdateOpen(!isUpdateOpen);
+            // if dont check, the close button in modal will not work
+            !isUpdateOpen && setIsUpdateOpen(true);
           }}
         >
           <UpdateCategory
             categoryName={categoryName}
-            open={isUpdateOpen}
+            isOpen={isUpdateOpen}
             onOpenChange={setIsUpdateOpen}
           />
         </DropdownMenuItem>
@@ -42,12 +46,12 @@ export function CategoryMenu({ categoryName }: Props) {
         <DropdownMenuItem
           onSelect={(e) => {
             e.preventDefault();
-            setIsDeleteOpen(!isDeleteOpen);
+            !isDeleteOpen && setIsDeleteOpen(true);
           }}
         >
           <DeleteCategory
             categoryName={categoryName}
-            open={isDeleteOpen}
+            isOpen={isDeleteOpen}
             onOpenChange={setIsDeleteOpen}
           />
         </DropdownMenuItem>

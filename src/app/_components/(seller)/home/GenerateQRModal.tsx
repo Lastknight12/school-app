@@ -126,6 +126,7 @@ export default function GenerateQRModal({ onSuccess, children }: Props) {
         <DialogFooter className="justify-end">
         {!genQRToken.isSuccess ? (
             <Button
+              disabled={genQRToken.isPending}
               type="submit"
               onClick={() => genQRToken.mutate({ products })}
             >

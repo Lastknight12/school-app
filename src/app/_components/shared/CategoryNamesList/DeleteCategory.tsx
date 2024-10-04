@@ -1,5 +1,4 @@
 import { Loader2 } from "lucide-react";
-import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
 import {
@@ -15,25 +14,17 @@ import { api } from "~/trpc/react";
 
 interface Props {
   categoryName: string;
-  open?: boolean;
-  onOpenChange?: (open: boolean) => void;
+  isOpen: boolean;
+  onOpenChange: (isOpen: boolean) => void;
 }
 
-export function DeleteCategory({ categoryName, open, onOpenChange }: Props) {
-  const [isOpen, setIsOpen] = useState(open ?? false);
-
+export function DeleteCategory({ categoryName, isOpen, onOpenChange }: Props) {
   const utils = api.useUtils();
-  
-  function handleOpenChange(state: boolean) {
-    setIsOpen(!state);
-    onOpenChange?.(state);
-  }
-  
+
   const deleteCategoryMutation = api.category.deleteCategory.useMutation({
     onSuccess: () => {
       void utils.category.getCategoryNames.invalidate();
       void utils.category.getCategoryItems.invalidate();
-
       toast.success(
         <p className="text-white">
           Категорію{" "}
@@ -45,16 +36,20 @@ export function DeleteCategory({ categoryName, open, onOpenChange }: Props) {
           видалено
         </p>,
       );
-      
-      setIsOpen(false);
-    }
+
+      onOpenChange(false);
+    },
   });
-  
-  
+
   return (
-    <Dialog open={open ?? isOpen} onOpenChange={handleOpenChange}>
-      <DialogTrigger className="text-red-400 outline-none">Видалити</DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+      <DialogTrigger className="select-none text-red-400 outline-none">
+        Видалити
+      </DialogTrigger>
+      <DialogContent
+        className="sm:max-w-[425px]"
+        onEscapeKeyDown={() => onOpenChange(false)}
+      >
         <DialogHeader>
           <DialogTitle>
             Видалити{" "}

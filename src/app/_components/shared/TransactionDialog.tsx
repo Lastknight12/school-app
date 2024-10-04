@@ -4,10 +4,9 @@ import type { User } from "@prisma/client";
 import Image from "next/image";
 import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
 import {
-  type Dispatch,
-  type SetStateAction,
   useState,
   type ChangeEvent,
+  useEffect,
 } from "react";
 import { z } from "zod";
 import { sendAmountSchema } from "~/schemas/zod";
@@ -21,9 +20,7 @@ interface Props {
   children?: React.ReactNode;
   isOpen?: boolean;
   isTeacher?: boolean;
-  onMutationSuccess?: (
-    setIsDialogOpen: Dispatch<SetStateAction<boolean>>,
-  ) => void;
+  onMutationSuccess?: () => void;
   onOpenChange?: (open: boolean) => void;
 }
 
@@ -32,12 +29,12 @@ export default function TransactionDialog({
   children,
   sessionBalance,
   isTeacher,
-  isOpen,
+  isOpen: customIsOpen,
   onOpenChange,
   onMutationSuccess,
 }: Props) {
   const [amount, setAmount] = useState(0);
-  const [isDialogOpen, setIsDialogOpen] = useState(isOpen ?? false);
+  const [isOpen, setIsOpen] = useState(customIsOpen ?? false);
 
   const isAmountValid = amount > 0;
   const maxValue = 99999999; // 99 999 999
@@ -45,13 +42,22 @@ export default function TransactionDialog({
   const sendMoneyMutation = api.transfers.sendMoney.useMutation({
     onSuccess: () => {
       toast.success("Платіж успішно відправлений");
-      onMutationSuccess?.(setIsDialogOpen);
-      setIsDialogOpen(false);
+      onMutationSuccess?.();
+      setIsOpen(false);
     },
     onError: (error) => {
-      error.data?.zodError ? toast.error(error.data.zodError[0]?.message) : toast.error(error.message);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+      error.data?.zodError
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+        ? toast.error(error.data.zodError[0]!.message)
+        : toast.error(error.message);
     },
   });
+
+  useEffect(() => {
+    onOpenChange?.(isOpen);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
 
   function handleAmountChange(e: ChangeEvent<HTMLInputElement>) {
     const onlyNumbers = e.target.value
@@ -88,10 +94,7 @@ export default function TransactionDialog({
   }
 
   return (
-    <Dialog
-      open={isOpen ?? isDialogOpen}
-      onOpenChange={onOpenChange ?? setIsDialogOpen}
-    >
+    <Dialog open={customIsOpen ?? isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger>{children}</DialogTrigger>
       <DialogContent className="max-md:max-w-full h-full !rounded-none backdrop-blur-md">
         <div className="flex flex-col justify-between">

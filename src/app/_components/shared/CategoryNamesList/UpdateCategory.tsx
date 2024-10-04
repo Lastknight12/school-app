@@ -15,14 +15,16 @@ import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 
 interface Props {
-    categoryName: string
-    open?: boolean;
-  onOpenChange?: (open: boolean) => void;
+  categoryName: string;
+  isOpen: boolean;
+  onOpenChange: (isOpen: boolean) => void;
 }
 
-export default function UpdateCategory({ categoryName, open, onOpenChange }: Props) {
-  const [isOpen, setIsOpen] = useState(open ?? false);
-
+export default function UpdateCategory({
+  categoryName,
+  isOpen,
+  onOpenChange,
+}: Props) {
   const [name, setName] = useState("");
 
   const utils = api.useUtils();
@@ -36,12 +38,6 @@ export default function UpdateCategory({ categoryName, open, onOpenChange }: Pro
     }
   }, [isOpen]);
 
-  function handleOpenChange(state: boolean) {
-    console.log(open)
-    setIsOpen(!state);
-    onOpenChange?.(!state);
-  }
-
   const updateCategoryMutation = api.category.updateCategory.useMutation({
     onSuccess: () => {
       void utils.category.getCategoryNames.invalidate();
@@ -50,36 +46,49 @@ export default function UpdateCategory({ categoryName, open, onOpenChange }: Pro
         <p className="text-white">
           Категорію{" "}
           <span className="text-emerald-300">
-            {categoryName.length > 10 ? categoryName.slice(0, 10) + "..." : categoryName}
+            {categoryName.length > 10
+              ? categoryName.slice(0, 10) + "..."
+              : categoryName}
           </span>{" "}
-          змінено на 
-          <span className="text-emerald-300"> {name.length > 10 ? name.slice(0, 10) + "..." : name}</span>
+          змінено на
+          <span className="text-emerald-300">
+            {" "}
+            {name.length > 10 ? name.slice(0, 10) + "..." : name}
+          </span>
         </p>,
       );
+
       setIsOpen(false);
     },
   });
 
   return (
-    <Dialog open={open ?? isOpen} onOpenChange={handleOpenChange}>
-      <DialogTrigger className=" outline-none">
+    <Dialog
+      // here
+      open={isOpen}
+      onOpenChange={onOpenChange}
+    >
+      <DialogTrigger className="select-none outline-none">
         Оновити
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent
+        className="sm:max-w-[425px]"
+        onEscapeKeyDown={() => onOpenChange(false)}
+      >
         <DialogHeader>
           <DialogTitle>Оновити категорію</DialogTitle>
-          <DialogDescription>
-            Змініть назву категорії
-          </DialogDescription>
+          <DialogDescription>Змініть назву категорії</DialogDescription>
         </DialogHeader>
         <div className="grid gap-3 py-4">
           <div className="grid grid-cols-3 items-center">
             {/* New name */}
             <Label className="text-left text-base">Нова назва:</Label>
             <input
-              className="col-span-2 rounded-md border-card bg-card px-3 py-1 outline-none"
+              className="col-span-2 rounded-md bg-card px-3 py-1 outline-none"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => {
+                setName(e.target.value);
+              }}
             />
           </div>
         </div>

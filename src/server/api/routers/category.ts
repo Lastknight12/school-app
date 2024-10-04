@@ -180,7 +180,7 @@ export const categoryRouter = createTRPCRouter({
   addCategory: sellerProcedure
     .input(
       z.object({
-        categoryName: z.string().min(1, "categoryName не може бути порожнім"),
+        categoryName: z.string().min(1, "Назва категорії не може бути пустою"),
       }),
     )
     .mutation(async ({ ctx, input }) => {

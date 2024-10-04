@@ -22,9 +22,8 @@ export default function SearchResult({
     return <div>Loading...</div>;
   }
 
-  function onMutationSuccess(setIsDialogOpen: (open: boolean) => void) {
+  function onMutationSuccess() {
     router.refresh();
-    setIsDialogOpen(false);
   }
 
   return (

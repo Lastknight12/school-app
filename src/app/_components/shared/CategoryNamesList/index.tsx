@@ -18,7 +18,7 @@ export default function CategoryNamesList({
   showMenu,
 }: Props) {
   return (
-    // if no categories and not loading, hide the list
+    // if no categories and not loading, hide list
     <div
       className={cn(
         "overflow-x-auto",
@@ -37,15 +37,12 @@ export default function CategoryNamesList({
               return (
                 <div
                   key={category.name}
-                  className="flex flex-shrink-0 items-center gap-2 rounded-md bg-card px-4 py-2"
+                  className="flex flex-shrink-0 select-none items-center gap-2 rounded-md bg-card px-4 py-2"
+                  onClick={() => {
+                    onClick?.(category.name);
+                  }}
                 >
-                  <div
-                    onClick={() => {
-                      onClick?.(category.name);
-                    }}
-                  >
-                    {category.name}
-                  </div>
+                  <div>{category.name}</div>
                   {showMenu && <CategoryMenu categoryName={category.name} />}
                 </div>
               );
