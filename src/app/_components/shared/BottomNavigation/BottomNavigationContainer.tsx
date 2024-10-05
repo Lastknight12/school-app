@@ -18,5 +18,9 @@ export default async function BottomNavigationContainer() {
   // if no allowed urls return null and render nothing
   if (!allowedUrls || allowedUrls.length <= 1) return null;
 
-  return <BottomNavigation allowedUrls={allowedUrls} />;
+  return (
+    <div className="fixed bottom-0 left-1/2 -translate-x-1/2 flex justify-center">
+      <BottomNavigation allowedUrls={allowedUrls} />
+    </div>
+  );
 }

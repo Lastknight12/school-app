@@ -64,37 +64,42 @@ export default function BottomNavigation({ allowedUrls }: Props) {
     (item) => allowedUrls.includes(item.href) || item.href === "/",
   );
 
+  console.log()
+
+  // if current path not included in navigation items, hide element
+  if (!filteredNavigationItems.some((item) => item.href === pathname))
+    return null;
+
   return (
-    <animated.div
-      ref={rootEl}
-      style={{
-        // 42px padding on left and right (24px),
-        // 24px item width
-        left: `calc(50% - (48px + 24px) * ${filteredNavigationItems.length} / 2) !important`,
-        y,
-      }}
-      className="fixed bottom-[calc(0%-66px)] rounded-sm border border-[#fafafa15] bg-[#28292b] backdrop-blur-sm"
-    >
-      {/* Top line */}
-      <button
-        {...bind()}
-        className={`fixed -top-4 left-1/2 flex h-4 w-[calc(50%)] -translate-x-1/2 touch-none items-center justify-center rounded-tl-full rounded-tr-full border border-[#fafafa15] border-b-[#28292b] bg-[#28292b]`}
+    <>
+      <animated.div
+        ref={rootEl}
+        style={{
+          y,
+        }}
+        className="fixed bottom-[calc(0%-66px)] rounded-sm border border-[#fafafa15] bg-[#28292b] backdrop-blur-sm"
       >
-        <div className="flex h-full w-full items-center justify-center">
-          <div className="h-[2px] w-[40%] bg-[#5a5a5b]" />
+        {/* Top line */}
+        <button
+          {...bind()}
+          className={`fixed -top-4 left-1/2 flex h-4 w-[calc(50%)] -translate-x-1/2 touch-none items-center justify-center rounded-tl-full rounded-tr-full border border-[#fafafa15] border-b-[#28292b] bg-[#28292b]`}
+        >
+          <div className="flex h-full w-full items-center justify-center">
+            <div className="h-[2px] w-[40%] bg-[#5a5a5b]" />
+          </div>
+        </button>
+        <div className="flex">
+          {filteredNavigationItems.map((item) => (
+            <Link key={item.name} href={item.href} className="px-6 py-5">
+              <div
+                className={`${pathname === item.href ? "text-[#4181FF]" : "text-[#fafafa]"}`}
+              >
+                {item.icon}
+              </div>
+            </Link>
+          ))}
         </div>
-      </button>
-      <div className="flex">
-        {filteredNavigationItems.map((item) => (
-          <Link key={item.name} href={item.href} className="py-5 px-6">
-            <div
-              className={`${pathname === item.href ? "text-[#4181FF]" : "text-[#fafafa]"}`}
-            >
-              {item.icon}
-            </div>
-          </Link>
-        ))}
-      </div>
-    </animated.div>
+      </animated.div>
+    </>
   );
 }
