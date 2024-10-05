@@ -99,7 +99,7 @@ export default function TransactionDialog({
             <Image
               src={user.image}
               alt="avatar"
-              className="rounded-full"
+              className="rounded-full h-[35px]"
               width={35}
               height={35}
             />

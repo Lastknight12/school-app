@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import Stats from "~/app/_components/(student)/Stats/StatsWrapper";
+import Stats from "~/app/_components/(student)/stats/StatsWrapper";
 import { getServerAuthSession } from "~/server/auth";
 
 export default async function Page() {

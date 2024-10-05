@@ -2,6 +2,7 @@ import type { User } from "@prisma/client";
 import TransactionDialog from "../../shared/TransactionDialog";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
 
 interface Props {
   users?: User[];
@@ -19,7 +20,7 @@ export default function SearchResult({
   const router = useRouter();
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <Loader2 className="h-6 w-6 animate-spin text-[#b5b5b5] mx-auto" />;
   }
 
   function onMutationSuccess() {
@@ -28,7 +29,7 @@ export default function SearchResult({
 
   return (
     // 72px - navbar, 41px - SearchInput, 3px - bottomPadding, 24px - gap between serachInput and results
-    <div className="flex max-h-[calc(100vh-72px-41px-3px-24px)] flex-col gap-6 overflow-x-hidden overflow-y-scroll">
+    <div className="flex max-h-[calc(100vh-72px-41px-3px-24px)] flex-col gap-6 overflow-x-hidden overflow-y-auto">
       {!users?.length ? (
         <div className="w-full text-center">Таких користувачів немає</div>
       ) : (
@@ -46,7 +47,7 @@ export default function SearchResult({
                     <Image
                       src={user.image}
                       alt="avatar"
-                      className="rounded-full"
+                      className="rounded-full h-[35px]"
                       width={35}
                       height={35}
                     />
