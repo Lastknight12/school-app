@@ -128,7 +128,7 @@ export default function Settings({ session }: Props) {
 
       <Label className="text-left text-base">Дизайн карти:</Label>
 
-      <div className="min-h-min overflow-x-auto">
+      <div className="mt-4 min-h-min overflow-x-auto">
         <div className="inline-flex space-x-4 pb-2">
           {Array.from({ length: 7 }).map((_, index) => (
             <div key={index} className="relative" onClick={() => handleCardClick(index + 1)}>
