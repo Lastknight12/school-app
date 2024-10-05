@@ -67,11 +67,11 @@ export default function TransactionDialog({
   }
 
   function handleSubmit() {
-    if (!isTeacher)
+    if (!isTeacher && sessionBalance)
       try {
         sendAmountSchema.parse({ amount });
 
-        if (amount > user.balance) {
+        if (amount > sessionBalance) {
           throw new z.ZodError([
             {
               code: "custom",

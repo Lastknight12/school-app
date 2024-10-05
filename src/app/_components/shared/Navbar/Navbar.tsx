@@ -33,7 +33,7 @@ export default async function Navbar() {
           <Link href="/settings" className=" cursor-pointer">
             <Image
               src={session.user.image!}
-              className="rounded-full"
+              className="rounded-full h-10"
               alt="avatar"
               width={40}
               height={40}

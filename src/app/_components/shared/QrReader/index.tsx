@@ -162,7 +162,7 @@ export default function QrReader({
       </button>
         {qrOn && (isOpen ?? open) && (
           // disable on desktop
-          <div className="absolute left-0 top-1/2 z-10 -translate-y-1/2">
+          <div className="absolute left-0 top-1/2 z-30 -translate-y-1/2">
             <div
               className="absolute right-3 top-3 z-20"
               onClick={() => {

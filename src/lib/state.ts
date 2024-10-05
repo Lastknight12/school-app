@@ -24,6 +24,11 @@ interface UpdateProductState {
   reset: () => void;
 }
 
+interface CardVariant {
+  variant: number;
+  setVariant: (variant: number) => void;
+}
+
 export const useProducts = create<ProductsState>((set, get) => ({
   products: [],
   addProduct: (product) =>
@@ -62,3 +67,11 @@ export const useUpdateProduct = create<UpdateProductState>((set) => ({
   updatePrice: (newPrice: number) => set((state) => ({ product: { ...state.product, newPrice } })),
   reset: () => set({ product: { newTitle: "", newCount: 0, newImageSrc: "", newPrice: 0 } }),
 }));
+
+export const useCardVariant = create<CardVariant>((set) => ({
+  variant: localStorage.getItem("variant") ? Number(localStorage.getItem("variant")) : 2,
+  setVariant: (variant) => {
+    set({ variant })
+    localStorage.setItem("variant", String(variant))
+  },
+}))

@@ -32,7 +32,7 @@ export default async function Page({
                   alt="avatar"
                   width={30}
                   height={30}
-                  className="rounded-full"
+                  className="rounded-full h-[30px]"
                 />
                 <p>{klass.teacher.name}</p>
               </div>

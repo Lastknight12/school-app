@@ -15,12 +15,6 @@ export default async function Home() {
 
   switch (userRole) {
     case "STUDENT":
-      if (!session.user.klassId)
-        return (
-          <div className="px-5">
-            <p className=" text-center">Зачекайте поки адміністратор добавить вас в потрібний клас</p>
-          </div>
-        );
       return <StudentHomePage />;
     case "SELLER":
       return <SellerHomePage />;

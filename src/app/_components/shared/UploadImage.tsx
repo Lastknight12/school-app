@@ -78,6 +78,7 @@ export default function UploadImage({
             <Image
               src={perviewSrc}
               alt="post perview"
+              style={{ height: imageSize ?? 150}}
               className={cn(imageClassName)}
               width={imageSize ?? 150}
               height={imageSize ?? 150}

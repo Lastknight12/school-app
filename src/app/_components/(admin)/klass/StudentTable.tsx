@@ -42,7 +42,7 @@ export const columns: ColumnDef<Student>[] = [
         alt="image"
         width={40}
         height={40}
-        className="rounded-full"
+        className="rounded-full h-10"
       />
     ),
   },

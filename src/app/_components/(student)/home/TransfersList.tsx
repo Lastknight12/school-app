@@ -2,6 +2,7 @@
 
 import { Loader2 } from "lucide-react";
 import { type Session } from "next-auth";
+import Image from "next/image";
 import { type CSSProperties } from "react";
 import { MdOutlineShoppingCart } from "react-icons/md";
 import { type formatedTransfer } from "~/server/api/routers/transfers";
@@ -12,9 +13,12 @@ interface Props {
 }
 
 export default function TransfersList({ session }: Props) {
-  const { data: transfers, isFetching } = api.transfers.getTransfers.useQuery(void 0, {
-    refetchOnWindowFocus: false,
-  });
+  const { data: transfers, isFetching } = api.transfers.getTransfers.useQuery(
+    void 0,
+    {
+      refetchOnWindowFocus: false,
+    },
+  );
 
   return (
     <div className="mt-12 min-h-[350px] w-screen -translate-x-[24px] overflow-hidden rounded-tl-[30px] rounded-tr-[30px] border-t border-[#535353] bg-[#323232b3] pb-4">
@@ -37,7 +41,8 @@ export default function TransfersList({ session }: Props) {
       {/* List */}
       <div className="h-[calc(100%-60px)] overflow-y-scroll px-5">
         <div className="flex flex-col gap-5">
-          {(!isFetching && transfers?.map((transfer) => {
+          {!isFetching &&
+            transfers?.map((transfer) => {
               const formatedGradient =
                 transfer.randomGradient as formatedTransfer["randomGradient"];
 
@@ -49,16 +54,34 @@ export default function TransfersList({ session }: Props) {
                   key={transfer.id}
                 >
                   <div className="flex items-center gap-4">
-                    <div
-                      className={`flex items-center justify-center rounded-full bg-gradient-to-tr p-3`}
-                      style={
-                        {
-                          "--tw-gradient-stops": `${formatedGradient.from}, ${formatedGradient.to}`,
-                        } as CSSProperties
-                      }
-                    >
-                      <MdOutlineShoppingCart fill="#232323a1" size={20} />
-                    </div>
+                    {transfer.type === "BUY" ? (
+                      <div
+                        className={`flex items-center justify-center rounded-full bg-gradient-to-tr p-3`}
+                        style={
+                          {
+                            "--tw-gradient-stops": `${formatedGradient.from}, ${formatedGradient.to}`,
+                          } as CSSProperties
+                        }
+                      >
+                        <MdOutlineShoppingCart fill="#232323a1" size={20} />
+                      </div>
+                    ) : isUserSender ? (
+                      <Image
+                        src={transfer.reciever!.image}
+                        alt="avatar"
+                        width={40}
+                        height={40}
+                        className="rounded-full h-10"
+                      />
+                    ) : (
+                      <Image
+                        src={transfer.sender!.image}
+                        alt="avatar"
+                        width={40}
+                        height={40}
+                        className="rounded-full h-10"
+                      />
+                    )}
 
                     <div>
                       <h1 className="font-bold tracking-wide text-[#fafafa]">
@@ -86,8 +109,7 @@ export default function TransfersList({ session }: Props) {
                   </div>
                 </div>
               );
-            })
-          )}
+            })}
         </div>
       </div>
     </div>

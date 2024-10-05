@@ -96,7 +96,7 @@ export default function ButtonsGroup({ klassId }: Props) {
                           alt="avatar"
                           width={30}
                           height={30}
-                          className="rounded-full"
+                          className="rounded-full h-[30px]"
                         />
                         <p>{student.name}</p>
                       </div>

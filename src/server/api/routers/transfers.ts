@@ -138,13 +138,16 @@ export const transfersRouter = createTRPCRouter({
         randomGradient: true,
         reciever: {
           select: {
+            id: true,
             name: true,
+            image: true,
           },
         },
         sender: {
           select: {
             id: true,
             name: true,
+            image: true,
           },
         },
         type: true,

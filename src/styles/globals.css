@@ -9,6 +9,10 @@
   }
 }
 
+img {
+  object-fit: cover;
+}
+
 ::-webkit-scrollbar {
   height: 7px;
 }
