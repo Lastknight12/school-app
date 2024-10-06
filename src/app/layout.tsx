@@ -57,7 +57,7 @@ export default function RootLayout({
             <div className="px-6 h-[calc(100vh-72px-16px)]">
             {children}
             </div>
-            <BottomNavigationWrapper />
+            <BottomNavigationWrapper position="left" />
           </NextAuthProvider>
         </TRPCReactProvider>
       </body>

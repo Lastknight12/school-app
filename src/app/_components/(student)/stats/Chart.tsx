@@ -71,7 +71,7 @@ export default function StatsChart({ chartData }: Props) {
             </linearGradient>
           </defs>
           <Area
-            dataKey="incoming"
+            dataKey="outgoing"
             type="monotone"
             fill="url(#fillMobile)"
             fillOpacity={0.4}
@@ -79,7 +79,7 @@ export default function StatsChart({ chartData }: Props) {
             stackId="a"
           />
           <Area
-            dataKey="outgoing"
+            dataKey="incoming"
             type="monotone"
             fill="url(#fillDesktop)"
             fillOpacity={0.4}
