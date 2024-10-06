@@ -54,8 +54,7 @@ export default function BurgerMenu({ allowedUrls }: Props) {
 
   return (
     <div className="lg:hidden relative flex">
-      {/* disable when menu is open */}
-      <button disabled={debauncedIsOpen} ref={ref}>
+      <button ref={ref}>
         <PiHamburger size={25} onClick={() => setOpen((prev) => !prev)} />
       </button>
 
@@ -65,7 +64,7 @@ export default function BurgerMenu({ allowedUrls }: Props) {
         transition={{ duration: 0.2 }}
         className={cn(
           "shadow-4xl fixed left-0 top-0 z-50 flex h-screen w-full flex-col bg-[#15151569] backdrop-blur-lg",
-          !isOpen && "pointer-events-none",
+          !debauncedIsOpen && "pointer-events-none",
         )}
       >
         <IoMdClose
