@@ -369,16 +369,17 @@ export const transfersRouter = createTRPCRouter({
       }
 
       if (ctx.session.user.balance < transaction.amount) {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        ctx.pusher.trigger(decryptedToken.randomChannelId, "pay", {
+        await ctx.pusher.trigger(decryptedToken.randomChannelId, "pay", {
           error: "Недостатньо коштів",
         });
-
+        
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "Недостатньо коштів",
         });
       }
+
+      await ctx.pusher.trigger(decryptedToken.randomChannelId, "pay", {});
 
       const promises = [
         ctx.db.transaction.update({
@@ -422,6 +423,5 @@ export const transfersRouter = createTRPCRouter({
 
       await Promise.all(promises);
 
-      void ctx.pusher.trigger(decryptedToken.randomChannelId, "pay", {});
     }),
 });

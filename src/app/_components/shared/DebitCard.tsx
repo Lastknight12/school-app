@@ -84,7 +84,7 @@ export default function DebitCard({
         width: cardWidth + "px",
       }}
       className={cn(
-        `relative rounded-[21px] p-5`,
+        `relative rounded-[21px] p-5 select-none`,
         className,
         variant_.isBgGradient ? variant_.twGradient : variant_.twBg,
       )}

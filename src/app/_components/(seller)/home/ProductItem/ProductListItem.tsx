@@ -16,8 +16,8 @@ import {
 } from "~/components/ui/dialog";
 import { useProducts, useUpdateProduct } from "~/lib/state";
 import { cn } from "~/lib/utils";
-import AddProductInList from "./AddProductInList";
-import { UpdateProduct } from "./UpdateProduct";
+import AddProductInList from "./AddProductContent";
+import { UpdateProduct } from "./UpdateProductContent";
 import { api } from "~/trpc/react";
 import { toast } from "sonner";
 import { IoMdClose } from "react-icons/io";
@@ -96,20 +96,12 @@ export default function ProductListItem({ children, item }: Props) {
     setIsOpen(false);
   }
 
-  const incrementCount = () => {
-    if (productCount < item.count) setProductCount((prev) => prev + 1);
-  };
-
-  const decrementCount = () => {
-    if (productCount > 1) setProductCount((prev) => prev - 1);
-  };
-
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild className={cn(item.count === 0 && "opacity-30")}>
         {children}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px]" onOpenAutoFocus={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>
             Додати <span className="text-emerald-300">{item.title}</span> до
@@ -130,8 +122,7 @@ export default function ProductListItem({ children, item }: Props) {
             <AddProductInList
               item={item}
               remainingCount={item.count}
-              decrementCountCallback={decrementCount}
-              incrementCountCallback={incrementCount}
+              onCountChange={setProductCount}
               productCount={productCount}
             />
           )}
@@ -195,7 +186,7 @@ export default function ProductListItem({ children, item }: Props) {
             >
               Оновити{" "}
               {updateProductMutation.isPending && (
-                <Loader2 className="ml-2 h-4 w-4 animate-spin bg-[#b5b5b5]" />
+                <Loader2 className="ml-2 h-4 w-4 animate-spin text-[#b5b5b5]" />
               )}
             </Button>
           )}

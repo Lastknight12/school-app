@@ -1,5 +1,7 @@
 "use client";
 
+// this component dont used in project, but i want to keep it :)
+
 import { BiHome } from "react-icons/bi";
 import { IoMdStats } from "react-icons/io";
 import { GrTransaction } from "react-icons/gr";
@@ -13,7 +15,7 @@ import { cn } from "~/lib/utils";
 import { Settings } from "lucide-react";
 
 interface Props {
-  allowedUrls: string[];
+  allowedUrls?: string[];
   position?: "left" | "bottom";
 }
 
@@ -101,13 +103,12 @@ export default function BottomNavigation({
 
   const rootEl = useRef<HTMLDivElement>(null);
 
-  // filter out navigation items that are allowed
-  const filteredNavigationItems = navigationItems.filter(
+  const allowedNavItems = allowedUrls ? navigationItems.filter(
     (item) => allowedUrls.includes(item.href) || item.href === "/",
-  );
+  ) : navigationItems;
 
   // if current path not included in navigation items, hide element
-  if (!filteredNavigationItems.some((item) => item.href === pathname))
+  if (!allowedNavItems.some((item) => item.href === pathname))
     return null;
 
   return (
@@ -148,7 +149,7 @@ export default function BottomNavigation({
         </button>
 
         <div className={cn(position === "left" && "flex-col", "flex")}>
-          {filteredNavigationItems.map((item) => (
+          {allowedNavItems.map((item) => (
             <Link key={item.name} href={item.href} className="px-6 py-5">
               <div
                 className={`${pathname === item.href ? "text-[#4181FF]" : "text-[#fafafa]"}`}

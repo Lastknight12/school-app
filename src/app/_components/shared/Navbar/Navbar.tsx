@@ -6,6 +6,8 @@ import StudentItem from "./StudentItem";
 import ScanQr from "./ScanQr";
 import AdminItem from "./AdminItem";
 import Link from "next/link";
+import BurgerMenu from "../BurgerMenu";
+import { urls } from "~/middleware";
 
 export default async function Navbar() {
   const session = await getServerAuthSession();
@@ -14,9 +16,18 @@ export default async function Navbar() {
     return null;
   }
 
+  const allowedUrls: string[] = [];
+  // check allowed urls
+  urls.forEach((value, url) => {
+    if (value.includes(session.user.role)) return allowedUrls.push(url);
+  });
+
   return (
     <nav className="flex items-center justify-between px-6 py-4">
       <div className="flex items-center gap-3 text-white">
+        
+        <BurgerMenu allowedUrls={allowedUrls} />
+
         {session?.user.role === "TEACHER" && <TeacherItem />}
         {session?.user.role === "STUDENT" && (
           <>

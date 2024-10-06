@@ -30,6 +30,8 @@ export default function GenerateQRModal({ onSuccess, children }: Props) {
   const [isSuccess, setIsSuccess] = useState(false);
   const [paymentError, setPaymentError] = useState("");
 
+  const utils = api.useUtils()
+
   const resetProductList = useProducts((state) => state.reset);
 
   const products = useProducts((state) => state.products);
@@ -45,7 +47,11 @@ export default function GenerateQRModal({ onSuccess, children }: Props) {
   const genQRToken = api.transfers.generateProductToken.useMutation();
   
   const decrementProductsCount =
-    api.category.decrementProductsCount.useMutation();
+    api.category.decrementProductsCount.useMutation({
+      onSuccess: () => {
+        void utils.category.getCategoryItems.invalidate();
+      }
+    });
 
   useEffect(() => {
     if (genQRToken.data) {
@@ -57,12 +63,13 @@ export default function GenerateQRModal({ onSuccess, children }: Props) {
           setTimeout(() => {
             resetStates();
           }, 1500);
+
           return;
         }
-
+        
         setPaymentError("");
         setIsSuccess(true);
-
+        
         decrementProductsCount.mutate(
           products.map((product) => {
             return {

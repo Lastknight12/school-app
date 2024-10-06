@@ -127,11 +127,18 @@ export const categoryRouter = createTRPCRouter({
         id: z.string().min(1, "id не може бути порожнім"),
         title: z.string().min(1, "title не може бути порожнім"),
         imageSrc: z.string().url().min(1, "imageSrc не може бути порожнім"),
-        count: z.number().min(1, "count не може бути порожнім"),
-        price: z.number().min(1, "price не може бути порожнім"),
+        count: z.number(),
+        price: z.number(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      if((input.price || input.count) < 0) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Ціна або кількість не можуть бути відємними",
+        })
+      }
+
       await ctx.db.categoryItem.update({
         where: {
           id: input.id,

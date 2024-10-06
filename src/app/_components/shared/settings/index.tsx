@@ -5,29 +5,29 @@ import { Label } from "~/components/ui/label";
 import { useState } from "react";
 import { api } from "~/trpc/react";
 import { Loader2 } from "lucide-react";
-import UploadImage from "../../shared/UploadImage";
+import UploadImage from "../UploadImage";
 import { Button } from "~/components/ui/button";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import DebitCard from "../../shared/DebitCard";
+import DebitCard from "../DebitCard";
 import { FaCheck } from "react-icons/fa";
 import { cn } from "~/lib/utils";
 import { useCardVariant } from "~/lib/state";
 
 interface Props {
   session: Session;
+  showCardDesign: boolean;
 }
 
-export default function Settings({ session }: Props) {
+export default function Settings({ session, showCardDesign }: Props) {
   const [newUsername, setNewUsername] = useState(session.user.name!);
   const [newImageSrc, setNewImageSrc] = useState(session.user.image!);
 
-  const currentCardVariant = useCardVariant((state) => state.variant)
-  console.log(currentCardVariant)
-  const setCardVariant = useCardVariant((state) => state.setVariant)
+  const currentCardVariant = useCardVariant((state) => state.variant);
+  const setCardVariant = useCardVariant((state) => state.setVariant);
 
   function handleCardClick(variant: number) {
-    setCardVariant(variant)
+    setCardVariant(variant);
   }
 
   const router = useRouter();
@@ -126,27 +126,37 @@ export default function Settings({ session }: Props) {
         </Button>
       </div>
 
-      <Label className="text-left text-base">Дизайн карти:</Label>
+      {showCardDesign && (
+        <>
+          <Label className="text-left text-base">Дизайн карти:</Label>
 
-      <div className="mt-4 min-h-min overflow-x-auto">
-        <div className="inline-flex space-x-4 pb-2">
-          {Array.from({ length: 7 }).map((_, index) => (
-            <div key={index} className="relative" onClick={() => handleCardClick(index + 1)}>
-              {index + 1 === currentCardVariant && (
-              <div className="absolute -right-2 top-0 flex items-center justify-center rounded-full z-10 h-6 w-6 bg-blue-500">
-                <FaCheck className="text-blue-900"/>
-              </div>
-              )}
-              <DebitCard
-              className={cn(index + 1 === currentCardVariant && "opacity-50")}
-                variant={index + 1}
-                balance={session.user.balance}
-                cardHolder={session.user.name!}
-              />
+          <div className="mt-4 min-h-min overflow-x-auto">
+            <div className="inline-flex space-x-4 pb-2">
+              {Array.from({ length: 7 }).map((_, index) => (
+                <div
+                  key={index}
+                  className="relative"
+                  onClick={() => handleCardClick(index + 1)}
+                >
+                  {index + 1 === currentCardVariant && (
+                    <div className="absolute -right-2 top-0 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-blue-500">
+                      <FaCheck className="text-blue-900" />
+                    </div>
+                  )}
+                  <DebitCard
+                    className={cn(
+                      index + 1 === currentCardVariant && "opacity-50",
+                    )}
+                    variant={index + 1}
+                    balance={session.user.balance}
+                    cardHolder={session.user.name!}
+                  />
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </div>
+          </div>
+        </>
+      )}
     </>
   );
 }
