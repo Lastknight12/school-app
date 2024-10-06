@@ -4,7 +4,8 @@ import localFont from "next/font/local";
 import Navbar from "./_components/shared/Navbar/Navbar";
 import "../styles/globals.css";
 import { Toaster } from "sonner";
-import { Orbitron, Source_Code_Pro } from 'next/font/google'
+import { Orbitron, Source_Code_Pro } from "next/font/google";
+import PageTransition from "./_components/shared/PageTrabsition";
 
 const metropolis = localFont({
   src: [
@@ -23,14 +24,14 @@ const metropolis = localFont({
 });
 
 const orbitron = Orbitron({
-  subsets: ['latin'],
-  variable: '--font-orbitron',
-})
+  subsets: ["latin"],
+  variable: "--font-orbitron",
+});
 
 const source_code_pro = Source_Code_Pro({
-  subsets: ['latin'],
-  variable: '--font-source-code-pro',
-})
+  subsets: ["latin"],
+  variable: "--font-source-code-pro",
+});
 
 export default function RootLayout({
   children,
@@ -39,7 +40,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${metropolis.variable} ${orbitron.variable} ${source_code_pro.variable} font-metropolis`}>
+      <body
+        className={`${metropolis.variable} ${orbitron.variable} ${source_code_pro.variable} font-metropolis`}
+      >
         <TRPCReactProvider>
           <NextAuthProvider>
             <Toaster
@@ -54,9 +57,9 @@ export default function RootLayout({
             />
 
             <Navbar />
-            
-            <div className="px-6 h-[calc(100vh-72px-16px)]">
-            {children}
+
+            <div className="h-[calc(100vh-72px-16px)] px-6">
+              <PageTransition>{children}</PageTransition>
             </div>
           </NextAuthProvider>
         </TRPCReactProvider>

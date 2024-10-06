@@ -13,6 +13,7 @@ import { IoMdClose, IoMdStats } from "react-icons/io";
 import { MdAdminPanelSettings } from "react-icons/md";
 import { cn } from "~/lib/utils";
 import { useDebounceValue } from "~/hooks/useDebounceValue";
+import Link from "next/link";
 
 interface Props {
   allowedUrls?: string[];
@@ -86,12 +87,12 @@ export default function BurgerMenu({ allowedUrls }: Props) {
                   type: "spring",
                   stiffness: 260,
                   damping: 20,
-                  delay: isOpen ? 0.1 + idx / 10 : 0,
+                  delay: isOpen ? 0.1 + idx / 20 : 0,
                 }}
                 key={name}
                 className="rounded-xl bg-gradient-to-tr"
               >
-                <a
+                <Link
                   onClick={() => setOpen((prev) => !prev)}
                   className={
                     "flex items-center justify-between rounded-xl bg-[#141414] p-5"
@@ -100,7 +101,7 @@ export default function BurgerMenu({ allowedUrls }: Props) {
                 >
                   <span className="flex gap-1 text-lg">{name}</span>
                   {icon}
-                </a>
+                </Link>
               </motion.li>
             );
           })}
