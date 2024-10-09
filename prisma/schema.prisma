@@ -100,8 +100,7 @@ model Transaction {
   sender         User?        @relation(fields: [senderId], references: [id], name: "senderIn")
   recieverId     String?
   senderId       String?
-  products       CategoryItem? @relation(fields: [categoryItemId], references: [id])
-  categoryItemId String?
+  productsBought CategoryItem[]
 }
 
 model Klass {

@@ -135,6 +135,7 @@ export const transfersRouter = createTRPCRouter({
       },
       select: {
         id: true,
+        productsBought: true,
         randomGradient: true,
         reciever: {
           select: {
@@ -154,8 +155,9 @@ export const transfersRouter = createTRPCRouter({
         amount: true,
         createdAt: true,
       },
-    });
 
+    });
+    
     return transfers.reverse();
   }),
 
@@ -372,7 +374,7 @@ export const transfersRouter = createTRPCRouter({
         await ctx.pusher.trigger(decryptedToken.randomChannelId, "pay", {
           error: "Недостатньо коштів",
         });
-        
+
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "Недостатньо коштів",
@@ -391,6 +393,11 @@ export const transfersRouter = createTRPCRouter({
               connect: {
                 id: ctx.session.user.id,
               },
+            },
+            productsBought: {
+              connect: products.map((product) => ({
+                id: product.id,
+              })),
             },
             success: true,
           },
@@ -422,6 +429,56 @@ export const transfersRouter = createTRPCRouter({
       ];
 
       await Promise.all(promises);
+    }),
 
+  getTransfersByPeriod: protectedProcedure
+    .input(
+      z.object({
+        from: z.date({message: "from не може бути порожнім"}),
+        to: z.date({ message: "to не може бути порожнім" }),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const day = new Date(input.from.toISOString().slice(0,10))
+      const next_day = new Date(input.to.setDate(input.to.getDate() + 1));
+
+      console.log(day, next_day)
+
+      const transfer = await ctx.db.transaction.findMany({
+        where: {
+          createdAt: {
+            gte: day,
+            lt: next_day,
+          },
+          type: "BUY",
+          success: true
+        },
+        select: {
+          id: true,
+          sender: true,
+          productsBought: true,
+          amount: true,
+          createdAt: true,
+          success: true,
+        }
+
+      });
+
+      const totalAmount = transfer.reduce((total, transfer) => {
+        return total + transfer.amount
+      }, 0)
+      
+      const productsWithBalance = transfer.map((transfer) => {
+        return {
+          ...transfer,
+          balanceAtTransaction: transfer.sender!.balance,
+          balanceAfterTransaction: (transfer.sender!.balance) - transfer.amount
+        }
+      })
+
+      return {
+        totalAmount,
+        productsWithBalance
+      }
     }),
 });

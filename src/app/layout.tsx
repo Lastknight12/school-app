@@ -1,11 +1,11 @@
 import NextAuthProvider from "~/providers/NextAuthProvider";
 import { TRPCReactProvider } from "~/trpc/react";
 import localFont from "next/font/local";
-import Navbar from "./_components/shared/Navbar/Navbar";
+import Navbar from "./_components/shared/Navbar";
 import "../styles/globals.css";
 import { Toaster } from "sonner";
 import { Orbitron, Source_Code_Pro } from "next/font/google";
-import PageTransition from "./_components/shared/PageTrabsition";
+import PageTransition from "./_components/shared/PageTransition";
 
 const metropolis = localFont({
   src: [
