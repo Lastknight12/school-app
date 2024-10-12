@@ -132,7 +132,11 @@ export default function DebitCard({
         >
           <div className="flex flex-col">
             <p className="text-[10px]">Card holder</p>
-            <p>{cardHolder}</p>
+            <p>
+              {cardHolder.length > 13
+                ? cardHolder.slice(0, 13) + "..."
+                : cardHolder}
+            </p>
           </div>
 
           <div className="flex flex-col">
