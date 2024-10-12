@@ -1,9 +1,11 @@
 "use client";
 
-import { api } from "~/trpc/react";
-import Link from "next/link";
-import ButtonsGroup from "../_components/(admin)/home/ButtonsGroup";
 import { Loader2 } from "lucide-react";
+import Link from "next/link";
+
+import { api } from "~/trpc/react";
+
+import ButtonsGroup from "../_components/(admin)/home/ButtonsGroup";
 
 export default function KlassesTable() {
   const klassNames = api.klass.getAllKlasses.useQuery(void 0, {
@@ -23,7 +25,7 @@ export default function KlassesTable() {
           {klassNames.data?.length === 0 && !klassNames.isFetching && (
             <div className="w-full text-center">Жодних класів не знайдено</div>
           )}
-          
+
           <div className="flex w-full flex-col gap-2">
             {klassNames.data?.map((klass) => {
               return (

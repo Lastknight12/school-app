@@ -1,19 +1,22 @@
 "use client";
 
+import { motion } from "framer-motion";
+import { Settings } from "lucide-react";
+import Link from "next/link";
 import { useRef } from "react";
 import { useState } from "react";
-import { PiHamburger } from "react-icons/pi";
-import { motion } from "framer-motion";
-import useClickOutside from "~/hooks/useClickOutside";
-import { Settings } from "lucide-react";
 import { BiHome } from "react-icons/bi";
+import { FaMoneyBillTransfer } from "react-icons/fa6";
 import { FiShoppingBag } from "react-icons/fi";
 import { GrTransaction } from "react-icons/gr";
 import { IoMdClose, IoMdStats } from "react-icons/io";
-import { MdAdminPanelSettings } from "react-icons/md";
+import { MdAdminPanelSettings, MdLeaderboard } from "react-icons/md";
+import { PiHamburger } from "react-icons/pi";
+
 import { cn } from "~/lib/utils";
+
+import useClickOutside from "~/hooks/useClickOutside";
 import { useDebounceValue } from "~/hooks/useDebounceValue";
-import Link from "next/link";
 
 interface Props {
   allowedUrls?: string[];
@@ -28,12 +31,18 @@ export default function BurgerMenu({ allowedUrls }: Props) {
 
   useClickOutside(ref, () => setOpen(false));
 
+  // all items used here must be added to middleware.ts
   const navigationItems = [
     { name: "Home", href: "/", icon: <BiHome size={24} /> },
     {
       name: "Admin Panel",
       href: "/admin",
       icon: <MdAdminPanelSettings size={24} />,
+    },
+    {
+      name: "Transfers",
+      href: "/admin/transfers",
+      icon: <FaMoneyBillTransfer size={24} />,
     },
     {
       name: "Transactions",
@@ -47,6 +56,11 @@ export default function BurgerMenu({ allowedUrls }: Props) {
       href: "/settings",
       icon: <Settings size={24} />,
     },
+    {
+      name: "Leaderboard",
+      href: "/leaderboard",
+      icon: <MdLeaderboard size={24} />,
+    },
   ];
 
   const allowedNavItems = allowedUrls
@@ -54,7 +68,7 @@ export default function BurgerMenu({ allowedUrls }: Props) {
     : navigationItems;
 
   return (
-    <div className="lg:hidden relative flex">
+    <div className="relative flex">
       <button ref={ref}>
         <PiHamburger size={25} onClick={() => setOpen((prev) => !prev)} />
       </button>
@@ -95,7 +109,7 @@ export default function BurgerMenu({ allowedUrls }: Props) {
                 <Link
                   onClick={() => setOpen((prev) => !prev)}
                   className={
-                    "flex items-center justify-between rounded-xl bg-[#141414] p-5"
+                    "flex items-center justify-between rounded-xl bg-[#0a0a0a] p-5"
                   }
                   href={href}
                 >

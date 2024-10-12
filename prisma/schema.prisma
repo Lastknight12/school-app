@@ -2,7 +2,7 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["typedSql"]
 }
 
@@ -51,20 +51,23 @@ enum UserRole {
 }
 
 model User {
-  id            String        @id @default(cuid())
-  name          String
-  email         String        @unique
-  image         String
-  recieverIn    Transaction[] @relation(name: "recieverIn")
-  senderIn      Transaction[] @relation(name: "senderIn")
-  emailVerified Boolean?
-  balance       Float         @default(0.00)
-  role          UserRole      @default(STUDENT)
-  accounts      Account[]
-  sessions      Session[]
-  teacherIn     Klass[]       @relation(name: "teacherIn")
-  studentIn     Klass?        @relation(name: "studentIn", fields: [klassId], references: [id])
-  klassId       String?
+  id             String        @id @default(cuid())
+  name           String
+  email          String        @unique
+  image          String
+  balance        Float         @default(0.00)
+  role           UserRole      @default(STUDENT)
+  emailVerified  Boolean?
+  accounts       Account[]
+  sessions       Session[]
+
+  recieverTransactions Transaction[] @relation(name: "recieverTransactions")
+  senderTransactions       Transaction[] @relation(name: "senderTransactions")
+
+  teacherClasses Klass[]       @relation(name: "teacherClasses")
+
+  studentClass   Klass?        @relation(name: "studentClass", fields: [studentClassId], references: [id])
+  studentClassId String?
 }
 
 model Category {
@@ -79,8 +82,10 @@ model CategoryItem {
   title       String
   pricePerOne Float
   count       Int
+
   Category    Category      @relation(fields: [categoryId], references: [id])
   categoryId  String
+
   Transaction Transaction[]
 }
 
@@ -90,23 +95,26 @@ enum TransactionType {
 }
 
 model Transaction {
-  id             String       @id @default(cuid())
+  id             String          @id @default(cuid())
   amount         Float
-  type TransactionType
-  reciever       User?        @relation(fields: [recieverId], references: [id], name: "recieverIn")
+  type           TransactionType
+  success        Boolean         @default(false)
   randomGradient Json
-  success        Boolean      @default(false)
-  createdAt      DateTime     @default(now())
-  sender         User?        @relation(fields: [senderId], references: [id], name: "senderIn")
-  recieverId     String?
-  senderId       String?
   productsBought CategoryItem[]
+  
+  reciever       User?           @relation(fields: [recieverId], references: [id], name: "recieverTransactions")
+  recieverId     String?
+  
+  sender         User?           @relation(fields: [senderId], references: [id], name: "senderTransactions")
+  senderId       String?
+  
+  createdAt      DateTime        @default(now())
 }
 
 model Klass {
-  id        String @id @default(cuid())
-  name      String
-  teacherId String
-  teacher   User?  @relation(fields: [teacherId], references: [id], name: "teacherIn")
-  students  User[] @relation(name: "studentIn")
+  id       String @id @default(cuid())
+  name     String @unique
+  
+  teachers User[] @relation(name: "teacherClasses")
+  students User[] @relation(name: "studentClass")
 }

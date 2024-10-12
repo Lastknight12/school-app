@@ -1,22 +1,25 @@
-import { Label } from "~/components/ui/label";
-import UploadImage from "../../../shared/UploadImage";
+import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
-import Counter from "~/components/ui/counter";
-import { Button } from "~/components/ui/button";
+import { toast } from "sonner";
+import { ZodError } from "zod";
+import { addProductSchema } from "~/schemas/zod";
+
+import { api } from "~/trpc/react";
+
+import UploadImage from "../../../shared/UploadImage";
+
+import { Button } from "~/shadcn/ui/button";
+import Counter from "~/shadcn/ui/counter";
 import {
-  DialogHeader,
   Dialog,
-  DialogTrigger,
   DialogContent,
   DialogDescription,
-  DialogTitle,
   DialogFooter,
-} from "~/components/ui/dialog";
-import { api } from "~/trpc/react";
-import { toast } from "sonner";
-import { addProductSchema } from "~/schemas/zod";
-import { ZodError } from "zod";
-import { Loader2 } from "lucide-react";
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "~/shadcn/ui/dialog";
+import { Label } from "~/shadcn/ui/label";
 
 interface Props {
   currentCategoryName: string;

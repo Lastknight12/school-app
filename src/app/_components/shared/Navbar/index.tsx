@@ -1,13 +1,15 @@
 import Image from "next/image";
-import { getServerAuthSession } from "~/server/auth";
-import TeacherItem from "./TeacherItem";
-import ShoppingCart from "../../(seller)/home/ShoppingCart";
-import StudentItem from "./StudentItem";
-import ScanQr from "./ScanQr";
-import AdminItem from "./AdminItem";
 import Link from "next/link";
-import BurgerMenu from "../BurgerMenu";
 import { urls } from "~/middleware";
+
+import { getServerAuthSession } from "~/server/auth";
+
+import ShoppingCart from "../../(seller)/home/ShoppingCart";
+import BurgerMenu from "../BurgerMenu";
+import AdminItem from "./AdminItem";
+import ScanQr from "./ScanQr";
+import StudentItem from "./StudentItem";
+import TeacherItem from "./TeacherItem";
 
 export default async function Navbar() {
   const session = await getServerAuthSession();
@@ -25,7 +27,6 @@ export default async function Navbar() {
   return (
     <nav className="flex items-center justify-between px-6 py-4">
       <div className="flex items-center gap-3 text-white">
-        
         <BurgerMenu allowedUrls={allowedUrls} />
 
         {session?.user.role === "TEACHER" && <TeacherItem />}
@@ -43,7 +44,7 @@ export default async function Navbar() {
         {session?.user && (
           <Link href="/settings" className=" cursor-pointer">
             <Image
-              src={session.user.image!}
+              src={session.user.image}
               className="rounded-full h-10"
               alt="avatar"
               width={40}

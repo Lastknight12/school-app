@@ -1,9 +1,12 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import ButtonsGroup from "~/app/_components/(admin)/klass/ButtonsGroup";
-import StudentsTable from "~/app/_components/(admin)/klass/StudentTable";
 
 import { api } from "~/trpc/server";
+
+import { cn } from "~/lib/utils";
+
+import ButtonsGroup from "~/app/_components/(admin)/klass/ButtonsGroup";
+import StudentsTable from "~/app/_components/(admin)/klass/StudentTable";
 
 export default async function Page({
   params,
@@ -23,21 +26,16 @@ export default async function Page({
       <div className="mb-3">
         <h1 className="text-lg">{klass.name} Клас</h1>
         <div className="flex items-center gap-4">
-          {klass.teacher && (
-            <>
-              <h2 className="text-lg">Класний керівник:</h2>
-              <div className="flex items-center gap-2">
-                <Image
-                  src={klass.teacher.image}
-                  alt="avatar"
-                  width={30}
-                  height={30}
-                  className="rounded-full h-[30px]"
-                />
-                <p>{klass.teacher.name}</p>
-              </div>
-            </>
-          )}
+          {klass.teachers?.map((teacher, i) => (
+            <Image
+              key={teacher.id}
+              src={teacher.image}
+              alt="avatar"
+              width={25}
+              height={25}
+              className={cn("rounded-full shadow-md", i !== 0 && "-ml-2")}
+            />
+          ))}
         </div>
       </div>
 

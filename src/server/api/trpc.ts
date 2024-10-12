@@ -129,7 +129,7 @@ export const publicProcedure = t.procedure.use(timingMiddleware);
  * @see https://trpc.io/docs/procedures
  */
 export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
-  if (!ctx.session || !ctx.session.user) {
+  if (!ctx.session) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
   return next({
@@ -141,7 +141,7 @@ export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
 });
 
 export const sellerProcedure = t.procedure.use(({ ctx, next }) => {
-  if (!ctx.session || !ctx.session.user || ctx.session.user.role !== "SELLER") {
+  if (!ctx.session || ctx.session.user.role !== "SELLER") {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
 
@@ -153,8 +153,8 @@ export const sellerProcedure = t.procedure.use(({ ctx, next }) => {
   });
 });
 
-export const teacherProcerure = t.procedure.use(({ ctx, next }) => {
-  if (!ctx.session || !ctx.session.user || ctx.session.user.role !== "TEACHER") {
+export const teacherProcedure = t.procedure.use(({ ctx, next }) => {
+  if (!ctx.session || ctx.session.user.role !== "TEACHER") {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
 
@@ -167,7 +167,7 @@ export const teacherProcerure = t.procedure.use(({ ctx, next }) => {
 });
 
 export const adminProcerure = t.procedure.use(({ ctx, next }) => {
-  if (!ctx.session || !ctx.session.user || ctx.session.user.role !== "ADMIN") {
+  if (!ctx.session || ctx.session.user.role !== "ADMIN") {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
 

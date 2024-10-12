@@ -1,12 +1,15 @@
 "use client";
 
-import { api } from "~/trpc/react";
+import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+
+import { api } from "~/trpc/react";
+
 import { cn } from "~/lib/utils";
+
 import CategoryNamesList from "~/app/_components/shared/CategoryNamesList";
-import { Loader2 } from "lucide-react";
 
 export default function SellerHomePage() {
   const [currentCategoryName, setCurrentCategoryName] = useState("");
@@ -34,7 +37,7 @@ export default function SellerHomePage() {
 
   return (
     <main>
-      <div className="flex h-[calc(100vh-72px)] flex-col gap-5">
+      <div className="flex h-[calc(100vh-72px)] flex-col gap-5 px-6">
         <CategoryNamesList
           categories={getCategoryNames.data ?? []}
           isLoading={getCategoryNames.isPending}

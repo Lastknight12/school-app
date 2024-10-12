@@ -1,8 +1,9 @@
 import type { User } from "@prisma/client";
-import TransactionDialog from "../../shared/TransactionDialog";
+import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
+
+import TransactionDialog from "../../shared/TransactionDialog";
 
 interface Props {
   users?: User[];

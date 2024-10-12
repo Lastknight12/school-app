@@ -1,12 +1,14 @@
 "use client";
 
-import { env } from "~/env";
 import Image from "next/image";
 import { type ChangeEvent, useRef, useState } from "react";
 import { MdClose, MdFileUpload } from "react-icons/md";
 import { toast } from "sonner";
-import { Button } from "~/components/ui/button";
+import { env } from "~/env";
+
 import { cn } from "~/lib/utils";
+
+import { Button } from "~/shadcn/ui/button";
 
 interface Props {
   onSuccess?: (imageSrc: string) => void;
@@ -78,7 +80,7 @@ export default function UploadImage({
             <Image
               src={perviewSrc}
               alt="post perview"
-              style={{ height: imageSize ?? 150}}
+              style={{ height: imageSize ?? 150 }}
               className={cn(imageClassName)}
               width={imageSize ?? 150}
               height={imageSize ?? 150}

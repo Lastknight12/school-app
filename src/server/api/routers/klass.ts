@@ -3,24 +3,10 @@ import { addKlassSchema } from "~/schemas/zod";
 import {
   adminProcerure,
   createTRPCRouter,
-  teacherProcerure,
+  teacherProcedure,
 } from "~/server/api/trpc";
 
 export const klassRouter = createTRPCRouter({
-  getKlass: teacherProcerure.query(async ({ ctx }) => {
-    const klass = await ctx.db.klass.findFirst({
-      where: {
-        teacherId: ctx.session.user.id,
-      },
-      select: {
-        name: true,
-        teacherId: true,
-        students: true,
-      },
-    });
-
-    return klass;
-  }),
   getAllKlasses: adminProcerure.query(async ({ ctx }) => {
     return await ctx.db.klass.findMany({
       select: {
@@ -58,7 +44,22 @@ export const klassRouter = createTRPCRouter({
         select: {
           id: true,
           name: true,
-          teacher: true,
+          teachers: true,
+          students: true,
+        },
+      });
+    }),
+
+  getTeacherKlassData: teacherProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ input, ctx }) => {
+      return await ctx.db.klass.findUnique({
+        where: {
+          id: input.id,
+        },
+        select: {
+          id: true,
+          name: true,
           students: true,
         },
       });
@@ -67,26 +68,11 @@ export const klassRouter = createTRPCRouter({
   addKlass: adminProcerure
     .input(addKlassSchema)
     .mutation(async ({ ctx, input }) => {
-      const klass = await ctx.db.klass.create({
+      await ctx.db.klass.create({
         data: {
           name: input.name,
-          teacher: {
-            connect: {
-              id: input.teacherId,
-            },
-          },
-        },
-      });
-
-      await ctx.db.user.update({
-        where: {
-          id: input.teacherId,
-        },
-        data: {
-          teacherIn: {
-            connect: {
-              id: klass.id,
-            },
+          teachers: {
+            connect: input.teacherIds.map((id) => ({ id })),
           },
         },
       });
@@ -113,7 +99,7 @@ export const klassRouter = createTRPCRouter({
           id: input.studentId,
         },
         data: {
-          studentIn: {
+          studentClass: {
             connect: {
               id: input.klassId,
             },

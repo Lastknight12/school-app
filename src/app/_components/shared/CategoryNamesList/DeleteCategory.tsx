@@ -1,6 +1,10 @@
 import { Loader2 } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
-import { Button } from "~/components/ui/button";
+
+import { api } from "~/trpc/react";
+
+import { Button } from "~/shadcn/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -9,9 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "~/components/ui/dialog";
-import { api } from "~/trpc/react";
-import { useState } from "react";
+} from "~/shadcn/ui/dialog";
 
 interface Props {
   categoryName: string;

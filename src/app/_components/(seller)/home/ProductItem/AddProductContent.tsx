@@ -1,7 +1,8 @@
+import { type CategoryItem } from "@prisma/client";
 import React from "react";
-import { Label } from "~/components/ui/label";
-import {type CategoryItem } from "@prisma/client";
-import Counter from "~/components/ui/counter";
+
+import Counter from "~/shadcn/ui/counter";
+import { Label } from "~/shadcn/ui/label";
 
 interface Props {
   onCountChange: (value: number) => void;

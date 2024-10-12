@@ -1,24 +1,28 @@
 "use client";
 
+import { Loader2 } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import QRCode from "react-qr-code";
+import { env } from "~/env";
+
+import { api } from "~/trpc/react";
+
+import { pusherClient } from "~/lib/pusher-client";
+import { useProducts } from "~/lib/state";
+import { cn } from "~/lib/utils";
+
+import { ProductCarousel } from "../../shared/Product/ProductsCarousel";
+
+import { Button } from "~/shadcn/ui/button";
 import {
   Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogTitle,
-  DialogHeader,
-  DialogFooter,
   DialogClose,
-} from "~/components/ui/dialog";
-import React, { useState, useEffect } from "react";
-import { Button } from "~/components/ui/button";
-import { pusherClient } from "~/lib/pusher-client";
-import { api } from "~/trpc/react";
-import { ProductCarousel } from "../../shared/Product/ProductsCarousel";
-import QRCode from "react-qr-code";
-import { useProducts } from "~/lib/state";
-import { env } from "~/env";
-import { cn } from "~/lib/utils";
-import { Loader2 } from "lucide-react";
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "~/shadcn/ui/dialog";
 
 interface Props {
   onSuccess?: () => void;
@@ -30,7 +34,7 @@ export default function GenerateQRModal({ onSuccess, children }: Props) {
   const [isSuccess, setIsSuccess] = useState(false);
   const [paymentError, setPaymentError] = useState("");
 
-  const utils = api.useUtils()
+  const utils = api.useUtils();
 
   const resetProductList = useProducts((state) => state.reset);
 
@@ -45,12 +49,12 @@ export default function GenerateQRModal({ onSuccess, children }: Props) {
   };
 
   const genQRToken = api.transfers.generateProductToken.useMutation();
-  
+
   const decrementProductsCount =
     api.category.decrementProductsCount.useMutation({
       onSuccess: () => {
         void utils.category.getCategoryItems.invalidate();
-      }
+      },
     });
 
   useEffect(() => {
@@ -66,10 +70,10 @@ export default function GenerateQRModal({ onSuccess, children }: Props) {
 
           return;
         }
-        
+
         setPaymentError("");
         setIsSuccess(true);
-        
+
         decrementProductsCount.mutate(
           products.map((product) => {
             return {
@@ -102,22 +106,32 @@ export default function GenerateQRModal({ onSuccess, children }: Props) {
             genQRToken.reset();
           }, 150);
         }
-        
+
         // open only if there are products
         products.length > 0 && setOpen(isOpen);
       }}
     >
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className={cn("sm:max-w-[425px] gap-8", (genQRToken.data && !isSuccess && !paymentError) && "bg-white")}>
+      <DialogContent
+        className={cn(
+          "sm:max-w-[425px] gap-8",
+          genQRToken.data && !isSuccess && !paymentError && "bg-white",
+        )}
+      >
         <DialogHeader>
-          <DialogTitle className={cn("text-center", (genQRToken.data && !isSuccess && !paymentError) && "text-black")}>
+          <DialogTitle
+            className={cn(
+              "text-center",
+              genQRToken.data && !isSuccess && !paymentError && "text-black",
+            )}
+          >
             {genQRToken.data ? "Відскануй QR код" : "Список доданих продуктів"}
           </DialogTitle>
         </DialogHeader>
         <div className="flex w-full justify-center">
           {genQRToken.data ? (
             <>
-              {(!isSuccess && !paymentError) && (
+              {!isSuccess && !paymentError && (
                 <QRCode
                   value={
                     env.NEXT_PUBLIC_BUY_URL + `?token=${genQRToken.data.token}`
@@ -132,18 +146,22 @@ export default function GenerateQRModal({ onSuccess, children }: Props) {
           )}
         </div>
         <DialogFooter className="justify-end">
-        {!genQRToken.isSuccess ? (
+          {!genQRToken.isSuccess ? (
             <Button
               disabled={genQRToken.isPending}
               type="submit"
               onClick={() => genQRToken.mutate({ products })}
             >
               Створити QR код
-              {genQRToken.isPending && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
+              {genQRToken.isPending && (
+                <Loader2 className="ml-2 h-4 w-4 animate-spin" />
+              )}
             </Button>
-        ) : (
-          <DialogClose className="text-black"><Button className=" bg-black">Закрити</Button></DialogClose>
-        )}
+          ) : (
+            <DialogClose className="text-black">
+              <Button className=" bg-black">Закрити</Button>
+            </DialogClose>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>

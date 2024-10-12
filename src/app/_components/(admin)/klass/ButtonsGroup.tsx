@@ -1,7 +1,13 @@
 "use client";
 
+import { Loader2 } from "lucide-react";
+import Image from "next/image";
 import * as React from "react";
-import { Button } from "~/components/ui/button";
+import { toast } from "sonner";
+
+import { api } from "~/trpc/react";
+
+import { Button } from "~/shadcn/ui/button";
 import {
   Command,
   CommandEmpty,
@@ -9,17 +15,8 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "~/components/ui/command";
-
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "~/components/ui/popover";
-import { api } from "~/trpc/react";
-import Image from "next/image";
-import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+} from "~/shadcn/ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "~/shadcn/ui/popover";
 
 interface Props {
   klassId: string;
@@ -42,7 +39,7 @@ export default function ButtonsGroup({ klassId }: Props) {
 
     onError: () => {
       toast.error(`Помилка додавання учня до класу`);
-    }
+    },
   });
 
   function onSelect(studentId: string) {

@@ -1,4 +1,5 @@
 import {
+  adminProcerure,
   createTRPCRouter,
   protectedProcedure,
   sellerProcedure,
@@ -11,6 +12,7 @@ import type { Transaction } from "@prisma/client";
 import jwt from "jsonwebtoken";
 import { randomUUID } from "crypto";
 import { env } from "~/env";
+import { addDays } from "date-fns";
 
 export interface TokenData {
   randomChannelId: string;
@@ -86,7 +88,7 @@ export const transfersRouter = createTRPCRouter({
               balance: {
                 decrement: input.amount,
               },
-              senderIn: {
+              senderTransactions: {
                 connect: {
                   id: transaction.id,
                 },
@@ -104,7 +106,7 @@ export const transfersRouter = createTRPCRouter({
             balance: {
               increment: input.amount,
             },
-            recieverIn: {
+            recieverTransactions: {
               connect: {
                 id: transaction.id,
               },
@@ -155,9 +157,8 @@ export const transfersRouter = createTRPCRouter({
         amount: true,
         createdAt: true,
       },
-
     });
-    
+
     return transfers.reverse();
   }),
 
@@ -167,8 +168,8 @@ export const transfersRouter = createTRPCRouter({
         id: ctx.session.user.id,
       },
       select: {
-        senderIn: true,
-        recieverIn: true,
+        recieverTransactions: true,
+        senderTransactions: true,
       },
     });
 
@@ -188,12 +189,12 @@ export const transfersRouter = createTRPCRouter({
     ];
 
     const chartData = months.map((month) => {
-      const incoming = transfers?.recieverIn
+      const incoming = transfers?.recieverTransactions
         .filter(
           (transfer) => transfer.createdAt.toISOString().split("-")[1] == month,
         )
         .reduce((acc, curr) => acc + curr.amount, 0);
-      const outgoing = transfers?.senderIn
+      const outgoing = transfers?.senderTransactions
         .filter(
           (transfer) => transfer.createdAt.toISOString().split("-")[1] == month,
         )
@@ -215,12 +216,12 @@ export const transfersRouter = createTRPCRouter({
         id: ctx.session.user.id,
       },
       select: {
-        senderIn: {
+        senderTransactions: {
           select: {
             amount: true,
           },
         },
-        recieverIn: {
+        recieverTransactions: {
           select: {
             amount: true,
           },
@@ -228,22 +229,22 @@ export const transfersRouter = createTRPCRouter({
       },
     });
 
-    const incomingAmount = transfers?.recieverIn
+    const incomingAmount = transfers?.recieverTransactions
       .reduce((acc, curr) => acc + curr.amount, 0)
       .toFixed(2);
 
-    const outgoingAmount = transfers?.senderIn
+    const outgoingAmount = transfers?.senderTransactions
       .reduce((acc, curr) => acc + curr.amount, 0)
       .toFixed(2);
 
     return {
       incoming: {
         amount: incomingAmount!,
-        count: transfers?.recieverIn.length,
+        count: transfers?.recieverTransactions.length,
       },
       outgoing: {
         amount: outgoingAmount!,
-        count: transfers?.senderIn.length,
+        count: transfers?.senderTransactions.length,
       },
     };
   }),
@@ -431,54 +432,52 @@ export const transfersRouter = createTRPCRouter({
       await Promise.all(promises);
     }),
 
-  getTransfersByPeriod: protectedProcedure
+  getTransfersByPeriod: adminProcerure
     .input(
       z.object({
-        from: z.date({message: "from не може бути порожнім"}),
-        to: z.date({ message: "to не може бути порожнім" }),
+        range: z.object({
+          from: z.string(),
+          to: z.string().nullish(),
+        }),
       }),
     )
     .query(async ({ ctx, input }) => {
-      const day = new Date(input.from.toISOString().slice(0,10))
-      const next_day = new Date(input.to.setDate(input.to.getDate() + 1));
-
-      console.log(day, next_day)
-
       const transfer = await ctx.db.transaction.findMany({
         where: {
           createdAt: {
-            gte: day,
-            lt: next_day,
+            gte: new Date(input.range.from),
+            // if user dont provide range.to, take transfers in range.from day 
+            lt: new Date(addDays(input.range.to ?? input.range.from, 1))
           },
           type: "BUY",
-          success: true
+          success: true,
         },
         select: {
           id: true,
           sender: true,
-          productsBought: true,
           amount: true,
           createdAt: true,
           success: true,
-        }
-
+          productsBought: true,
+        },
       });
 
       const totalAmount = transfer.reduce((total, transfer) => {
-        return total + transfer.amount
-      }, 0)
-      
+        return total + transfer.amount;
+      }, 0);
+
       const productsWithBalance = transfer.map((transfer) => {
         return {
           ...transfer,
-          balanceAtTransaction: transfer.sender!.balance,
-          balanceAfterTransaction: (transfer.sender!.balance) - transfer.amount
-        }
-      })
+          balanceAtTransaction: transfer.sender?.balance,
+          balanceAfterTransaction:
+            (transfer.sender?.balance ?? 0) - transfer.amount,
+        };
+      });
 
       return {
         totalAmount,
-        productsWithBalance
-      }
+        productsWithBalance,
+      };
     }),
 });

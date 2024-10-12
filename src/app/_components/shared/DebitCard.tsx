@@ -1,16 +1,18 @@
-"use client"
+"use client";
 
+import { Nfc } from "lucide-react";
 import Image, { type StaticImageData } from "next/image";
+import { BiLogoVisa } from "react-icons/bi";
+
+import { useCardVariant } from "~/lib/state";
 import { cn } from "~/lib/utils";
-import variant_2 from "images/variant-2.png";
+
 import variant_1 from "images/variant-1.png";
+import variant_2 from "images/variant-2.png";
 import variant_3 from "images/variant-3.png";
 import variant_4 from "images/variant-4.png";
 import variant_5 from "images/variant-5.png";
 import variant_6 from "images/variant-6.png";
-import { BiLogoVisa } from "react-icons/bi";
-import { Nfc } from "lucide-react";
-import { useCardVariant } from "~/lib/state";
 
 const cardWidth = 350;
 const cardHeight = 200;
@@ -74,8 +76,10 @@ export default function DebitCard({
   variant,
 }: Props) {
   const currentCardVariant = useCardVariant((state) => state.variant);
-  
-  const variant_ = variants.find((v) => v.variant === (variant ?? currentCardVariant)) ?? variants[1]!;
+
+  const variant_ =
+    variants.find((v) => v.variant === (variant ?? currentCardVariant)) ??
+    variants[1]!;
 
   return (
     <div

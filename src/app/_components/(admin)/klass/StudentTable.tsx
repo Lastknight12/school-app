@@ -1,15 +1,6 @@
 "use client";
 
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "~/components/ui/table";
-
-import {
   type ColumnDef,
   flexRender,
   getCoreRowModel,
@@ -18,10 +9,19 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-
-import Image from "next/image";
-import { api } from "~/trpc/react";
 import { Loader2 } from "lucide-react";
+import Image from "next/image";
+
+import { api } from "~/trpc/react";
+
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "~/shadcn/ui/table";
 
 interface Student {
   name: string;

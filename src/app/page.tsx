@@ -1,7 +1,9 @@
-import { getServerAuthSession } from "~/server/auth";
 import { redirect } from "next/navigation";
-import StudentHomePage from "./_components/(student)/home";
+
+import { getServerAuthSession } from "~/server/auth";
+
 import SellerHomePage from "./_components/(seller)/home";
+import StudentHomePage from "./_components/(student)/home";
 import TeacherHomePage from "./_components/(teacher)/home/HomePage";
 
 export default async function Home() {
@@ -15,18 +17,21 @@ export default async function Home() {
 
   switch (userRole) {
     case "STUDENT":
-      return <StudentHomePage />;
+      return <StudentHomePage session={session} />;
     case "SELLER":
       return <SellerHomePage />;
     case "TEACHER":
-      if (session.user.teacherInIds?.length === 0) {
+      if (session.user.teacherClasses?.length === 0) {
         return (
           <div className="px-5">
-            <p>Зачекайте поки адміністратор добавить вас в потрібний клас</p>
+            <p>
+              Немає класів. Зачекайте поки адміністратор додасть вас у потрібний
+              клас
+            </p>
           </div>
         );
       }
-      return <TeacherHomePage />;
+      return <TeacherHomePage session={session} />;
     case "ADMIN":
       return redirect("/admin");
   }
