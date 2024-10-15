@@ -5,6 +5,7 @@ import { type Session } from "next-auth";
 import Image from "next/image";
 import { type CSSProperties } from "react";
 import { MdOutlineShoppingCart } from "react-icons/md";
+
 import { type formatedTransfer } from "~/server/api/routers/transfers";
 import { api } from "~/trpc/react";
 
@@ -21,7 +22,7 @@ export default function TransfersList({ session }: Props) {
   );
 
   return (
-    <div className="mt-12 min-h-[350px] w-screen -translate-x-[24px] overflow-hidden rounded-tl-[30px] rounded-tr-[30px] border-t border-[#535353] bg-[#323232b3] pb-4">
+    <div className="mt-12 min-h-[350px] overflow-hidden rounded-tl-[30px] rounded-tr-[30px] border-t border-[#535353] bg-[#323232b3] pb-4">
       {/* Top line */}
       <div className="flex items-center justify-center py-5">
         <div className="h-1 w-9 rounded bg-[#ffffff1a]" />

@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
-import Stats from "~/app/_components/(student)/stats/StatsWrapper";
+
 import { getServerAuthSession } from "~/server/auth";
+
+import Stats from "~/app/_components/(student)/stats/StatsWrapper";
 
 export default async function Page() {
   const session = await getServerAuthSession();

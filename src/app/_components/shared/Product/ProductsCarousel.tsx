@@ -1,13 +1,16 @@
+import { type CategoryItem } from "@prisma/client";
+
+import { cn } from "~/lib/utils";
+
+import ProductCard from "./ProductCard";
+
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "~/components/ui/carousel";
-import ProductCard from "./ProductCard";
-import { type CategoryItem } from "@prisma/client";
-import { cn } from "~/lib/utils";
+} from "~/shadcn/ui/carousel";
 
 interface Props {
   items: CategoryItem[];

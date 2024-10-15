@@ -1,11 +1,12 @@
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import type { UserRole } from "@prisma/client";
+import {type User } from "@prisma/client";
 import {
   getServerSession,
   type DefaultSession,
   type NextAuthOptions,
 } from "next-auth";
 import { type Adapter } from "next-auth/adapters";
+import {type JWT } from "next-auth/jwt";
 import DiscordProvider from "next-auth/providers/discord";
 import GoogleProvider from "next-auth/providers/google";
 
@@ -18,24 +19,22 @@ import { db } from "~/server/db";
  *
  * @see https://next-auth.js.org/getting-started/typescript#module-augmentation
  */
-declare module "next-auth" {
-  interface Session extends DefaultSession {
-    user: {
-      id: string;
-      // ...other properties
-      role: UserRole;
-      balance: number;
-      klassId?: string;
-      teacherInIds?: {
-        id: string;
-      }[];
-    } & DefaultSession["user"];
-  }
+interface CustomUser extends Omit<User, "emailVerified" | "studentClassId"> {
+  studentClass?: {
+    id: string;
+    name: string;
+  } | null,
+  teacherClasses: {
+    id: string;
+    name: string;
+  }[]
+}
 
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
+declare module "next-auth" {
+  interface Session {
+    user: CustomUser
+    expires: DefaultSession["expires"]
+  }
 }
 
 /**
@@ -52,34 +51,47 @@ export const authOptions: NextAuthOptions = {
     signIn: "/login",
   },
   callbacks: {
-    jwt: async ({ token }) => {
-
+    jwt: async ({ token }): Promise<JWT> => {
       const dbUser = await db.user.findFirst({
-        where: { id: token.sub },
+        where: { id: token.sub},
         select: {
+          id: true,
           name: true,
           email: true,
           image: true,
           balance: true,
           role: true,
-          klassId: true,
-          teacherIn: {
+          studentClass: {
             select: {
               id: true,
+              name: true,
+            },
+          },
+          teacherClasses: {
+            select: {
+              id: true,
+              name: true,
             },
           },
         },
       });
 
+      if(!dbUser) {
+        return token
+      }
+
       return {
-        sub: token.sub,
-        name: dbUser?.name,
-        email: dbUser?.email,
-        image: dbUser?.image,
-        balance: dbUser?.balance,
-        role: dbUser?.role,
-        klassId: dbUser?.klassId,
-        teacherInIds: dbUser?.teacherIn,
+        id: dbUser.id,
+        name: dbUser.name,
+        email: dbUser.email,
+        image: dbUser.image,
+        balance: dbUser.balance,
+        role: dbUser.role,
+        studentClass: dbUser.studentClass ?? null,
+        teacherClasses: dbUser.teacherClasses.map((klass) => ({
+          id: klass.id,
+          name: klass.name,
+        })),
       };
     },
     session: ({ session, token }) => {
@@ -87,7 +99,6 @@ export const authOptions: NextAuthOptions = {
         ...session,
         user: {
           ...token,
-          id: token.sub,
         },
       };
     },

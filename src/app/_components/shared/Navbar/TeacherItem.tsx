@@ -1,17 +1,32 @@
-"use server";
+"use client";
 
-import { api } from "~/trpc/server";
+import { usePathname, useSearchParams } from "next/navigation";
 
-export default async function TeacherItem() {
-  const klass = await api.klass.getKlass();
+export default function TeacherItem() {
+  const pathname = usePathname();
+  const klassName = useSearchParams().get("formatedName");
 
-  if (!klass) {
-    return null;
+  const paths = new Map<string | RegExp, React.ReactNode>([
+    [
+      // /klass/*
+      /^\/klass\/.+$/,
+      <>
+        <h1 className="text-xl">{klassName} Клас</h1>
+      </>,
+    ],
+    [
+      "/",
+      <>
+        <h1 className="text-xl">Список класів</h1>
+      </>,
+    ],
+  ]);
+
+  for (const [path, element] of paths.entries()) {
+    if (typeof path === "string" ? pathname === path : path.test(pathname)) {
+      return element;
+    }
   }
 
-  return (
-    <div className="flex items-center gap-4">
-      <h2 className="text-2xl font-bold">{klass.name} Класс</h2>
-    </div>
-  );
+  return paths.get(pathname);
 }

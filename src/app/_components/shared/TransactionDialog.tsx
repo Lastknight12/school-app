@@ -1,17 +1,16 @@
 "use client";
 
 import type { User } from "@prisma/client";
+import { Loader2 } from "lucide-react";
 import Image from "next/image";
-import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
-import {
-  useState,
-  type ChangeEvent,
-} from "react";
+import { type ChangeEvent, useState } from "react";
+import { toast } from "sonner";
 import { z } from "zod";
 import { sendAmountSchema } from "~/schemas/zod";
-import { toast } from "sonner";
+
 import { api } from "~/trpc/react";
-import { Loader2 } from "lucide-react";
+
+import { Dialog, DialogContent, DialogTrigger } from "~/shadcn/ui/dialog";
 
 interface Props {
   user: User;
@@ -93,7 +92,10 @@ export default function TransactionDialog({
   return (
     <Dialog open={customIsOpen ?? isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="max-md:max-w-full h-full !rounded-none backdrop-blur-md" onEscapeKeyDown={() => setIsOpen(false)}>
+      <DialogContent
+        className="max-md:max-w-full h-full !rounded-none backdrop-blur-md"
+        onEscapeKeyDown={() => setIsOpen(false)}
+      >
         <div className="flex flex-col justify-between">
           <div className="flex items-center gap-3">
             <Image

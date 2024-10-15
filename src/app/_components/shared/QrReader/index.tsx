@@ -1,18 +1,16 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-
-// Styles
-import "./index.css";
 import Image from "next/image";
-
-// Qr Scanner
 import QrScanner from "qr-scanner";
-import QrFrame from "images/qr-frame.svg";
+import { useEffect, useRef, useState } from "react";
+import { IoMdClose } from "react-icons/io";
+import { toast } from "sonner";
 
 import useClickOutside from "~/hooks/useClickOutside";
-import { toast } from "sonner";
-import { IoMdClose } from "react-icons/io";
+
+import QrFrame from "images/qr-frame.svg";
+
+import "./index.css";
 
 interface Props {
   children: React.ReactNode;
@@ -75,7 +73,7 @@ export default function QrReader({
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -153,13 +151,13 @@ export default function QrReader({
   return (
     <>
       <div ref={rootEl} className="min-[1024px]:hidden flex">
-      <button
-        disabled={disabled}
-        onClick={handleClick}
-        className="min-[1024px]:hidden"
-      >
-        {children}
-      </button>
+        <button
+          disabled={disabled}
+          onClick={handleClick}
+          className="min-[1024px]:hidden"
+        >
+          {children}
+        </button>
         {qrOn && (isOpen ?? open) && (
           // disable on desktop
           <div className="absolute left-0 top-1/2 z-30 -translate-y-1/2">

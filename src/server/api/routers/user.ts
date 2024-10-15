@@ -9,7 +9,11 @@ import {
 
 export const userRouter = createTRPCRouter({
   getUsersByName: protectedProcedure
-    .input(z.object({ name: z.string() }))
+    .input(
+      z.object({
+        name: z.string(),
+      }),
+    )
     .mutation(async ({ input, ctx }) => {
       if (input.name == "") return [];
       const users = await ctx.db.user.findMany({
@@ -41,13 +45,12 @@ export const userRouter = createTRPCRouter({
   }),
 
   getUserClass: protectedProcedure
-    .input(z.object({ id: z.string().nullish() }))
-    .query(async ({ input, ctx }) => {
-      if (!input.id) return null;
+    .query(async ({ ctx }) => {
+      if (!ctx.session.user.studentClass) return null;
 
       const klass = await ctx.db.klass.findUnique({
         where: {
-          id: input.id,
+          id: ctx.session.user.studentClass.id,
         },
         select: {
           id: true,
@@ -72,18 +75,53 @@ export const userRouter = createTRPCRouter({
       return klass;
     }),
 
-    updateUser: protectedProcedure.input(z.object({
-      newName: z.string().min(1, "Назва користувача не може бути пустою"),
-      newImageSrc: z.string().min(1, "Аватарка не може бути пустою"),
-    })).mutation(async ({ ctx, input }) => {
+  updateUser: protectedProcedure
+    .input(
+      z.object({
+        newName: z.string().min(1, "Назва користувача не може бути пустою"),
+        newImageSrc: z.string().min(1, "Аватарка не може бути пустою"),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
       await ctx.db.user.update({
         where: {
-          id: ctx.session.user.id
+          id: ctx.session.user.id,
         },
         data: {
           name: input.newName,
-          image: input.newImageSrc
-        }
-      })
-    })
+          image: input.newImageSrc,
+        },
+      });
+    }),
+
+  getLeaderboard: protectedProcedure
+    .input(
+      z.object({
+        limit: z.number().min(3).max(50).nullish(),
+        cursor: z.string().nullish(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+
+      const limit = input.limit ?? 50;
+      
+      const users = await ctx.db.user.findMany({
+        cursor: input.cursor ? { id: input.cursor } : undefined,
+        take: input.limit ? input.limit + 1 : undefined,
+        orderBy: {
+          balance: "desc",
+        },
+      });
+
+      let nextCursor: string | undefined = undefined;
+      if (users.length > limit) {
+        const nextItem = users.pop();
+        nextCursor = nextItem!.id;
+      }
+
+      return {
+        users,
+        nextCursor,
+      }
+    }),
 });

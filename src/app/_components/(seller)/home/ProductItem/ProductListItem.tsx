@@ -1,27 +1,31 @@
 "use client";
 
 import { type CategoryItem } from "@prisma/client";
+import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { GrUpdate } from "react-icons/gr";
+import { IoMdClose } from "react-icons/io";
 import { MdDelete } from "react-icons/md";
-import { Button } from "~/components/ui/button";
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "~/components/ui/dialog";
+import { toast } from "sonner";
+
+import { api } from "~/trpc/react";
+
 import { useProducts, useUpdateProduct } from "~/lib/state";
 import { cn } from "~/lib/utils";
+
 import AddProductInList from "./AddProductContent";
 import { UpdateProduct } from "./UpdateProductContent";
-import { api } from "~/trpc/react";
-import { toast } from "sonner";
-import { IoMdClose } from "react-icons/io";
-import { Loader2 } from "lucide-react";
+
+import { Button } from "~/shadcn/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "~/shadcn/ui/dialog";
 
 interface Props {
   children: React.ReactNode;
@@ -52,7 +56,7 @@ export default function ProductListItem({ children, item }: Props) {
     onSuccess: () => {
       toast.success("Продукт успішно оновлено");
       void utils.category.getCategoryItems.invalidate();
-        setIsOpen(false);
+      setIsOpen(false);
     },
     onError: () => {
       toast.error("Помилка під час оновлення продукту");
@@ -83,7 +87,7 @@ export default function ProductListItem({ children, item }: Props) {
         resetStates();
       }, 150);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
   function handleButtonClick() {
@@ -101,7 +105,10 @@ export default function ProductListItem({ children, item }: Props) {
       <DialogTrigger asChild className={cn(item.count === 0 && "opacity-30")}>
         {children}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]" onOpenAutoFocus={(e) => e.preventDefault()}>
+      <DialogContent
+        className="sm:max-w-[425px]"
+        onOpenAutoFocus={(e) => e.preventDefault()}
+      >
         <DialogHeader>
           <DialogTitle>
             Додати <span className="text-emerald-300">{item.title}</span> до
@@ -117,7 +124,6 @@ export default function ProductListItem({ children, item }: Props) {
           {updating ? (
             <UpdateProduct defaultImageSrc={item.image} />
           ) : (
-
             // TODO: rename it
             <AddProductInList
               item={item}

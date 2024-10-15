@@ -13,7 +13,12 @@ export default function StudentItem({ userBalance: balance }: Props) {
     [
       "/",
       <>
-        <h1 className="text-3xl">{"$" + balance}</h1>
+        <h1 className="text-3xl">
+          {"$" +
+            (balance.toString().length > 5
+              ? balance.toString().slice(0, 5) + "..."
+              : balance.toString())}
+        </h1>
       </>,
     ],
     [
@@ -45,7 +50,7 @@ export default function StudentItem({ userBalance: balance }: Props) {
       <h1 className="text-xl" key={"buy"}>
         Buy products
       </h1>,
-    ]
+    ],
   ]);
 
   return paths.get(pathname);

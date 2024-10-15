@@ -1,14 +1,16 @@
 import type { User } from "@prisma/client";
 import { useState } from "react";
-import { TableCell, TableRow } from "~/components/ui/table";
-import TransactionDialog from "../../shared/TransactionDialog";
+
+import TransactionDialog from "~/app/_components/shared/TransactionDialog";
+
+import { TableCell, TableRow } from "~/shadcn/ui/table";
 
 interface Props {
   student: User;
   onSuccess: () => void;
 }
 
-export default function TableContent({ student, onSuccess }: Props) {
+export default function KlassTableContent({ student, onSuccess }: Props) {
   const [isOpen, setIsOpen] = useState(false);
 
   function onMutationSuccess() {

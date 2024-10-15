@@ -1,18 +1,22 @@
 "use client";
 
-import { type Session } from "next-auth";
-import { Label } from "~/components/ui/label";
-import { useState } from "react";
-import { api } from "~/trpc/react";
 import { Loader2 } from "lucide-react";
-import UploadImage from "../UploadImage";
-import { Button } from "~/components/ui/button";
-import { toast } from "sonner";
+import { type Session } from "next-auth";
 import { useRouter } from "next/navigation";
-import DebitCard from "../DebitCard";
+import { useState } from "react";
 import { FaCheck } from "react-icons/fa";
-import { cn } from "~/lib/utils";
+import { toast } from "sonner";
+
+import { api } from "~/trpc/react";
+
 import { useCardVariant } from "~/lib/state";
+import { cn } from "~/lib/utils";
+
+import DebitCard from "../DebitCard";
+import UploadImage from "../UploadImage";
+
+import { Button } from "~/shadcn/ui/button";
+import { Label } from "~/shadcn/ui/label";
 
 interface Props {
   session: Session;
@@ -20,8 +24,8 @@ interface Props {
 }
 
 export default function Settings({ session, showCardDesign }: Props) {
-  const [newUsername, setNewUsername] = useState(session.user.name!);
-  const [newImageSrc, setNewImageSrc] = useState(session.user.image!);
+  const [newUsername, setNewUsername] = useState(session.user.name);
+  const [newImageSrc, setNewImageSrc] = useState(session.user.image);
 
   const currentCardVariant = useCardVariant((state) => state.variant);
   const setCardVariant = useCardVariant((state) => state.setVariant);
@@ -44,25 +48,20 @@ export default function Settings({ session, showCardDesign }: Props) {
     },
   });
 
-  const getUserClass = api.user.getUserClass.useQuery(
-    {
-      id: session.user.klassId,
-    },
-    {
-      refetchOnWindowFocus: false,
-    },
-  );
+  const getUserClass = api.user.getUserClass.useQuery(void 0, {
+    refetchOnWindowFocus: false,
+  });
 
   return (
     <>
-      <div className="mb-5 flex flex-col gap-3">
+      <div className="mb-5 flex flex-col gap-3 px-6">
         <div className="flex flex-col gap-5">
           <div className="grid grid-cols-2 items-center">
             {/* New name */}
             <Label className="text-left text-base">Аватарка:</Label>
             <UploadImage
               onSuccess={(imageSrc) => setNewImageSrc(imageSrc)}
-              defaultImageSrc={session.user.image ?? undefined}
+              defaultImageSrc={session.user.image}
               imageSize={50}
               imageClassName=" rounded-full"
               closeButtonClassName="bg-[#4c0000] border-none text-red-700"
@@ -77,7 +76,7 @@ export default function Settings({ session, showCardDesign }: Props) {
             <input
               className="rounded-md bg-card px-3 py-1 outline-none"
               value={newUsername}
-              placeholder={session.user.name!}
+              placeholder={session.user.name}
               onChange={(e) => setNewUsername(e.target.value)}
             />
           </div>
@@ -88,7 +87,7 @@ export default function Settings({ session, showCardDesign }: Props) {
             <input
               className="rounded-md bg-card px-3 py-1 outline-none"
               disabled
-              placeholder={session.user.email!}
+              placeholder={session.user.email}
             />
           </div>
 
@@ -149,7 +148,7 @@ export default function Settings({ session, showCardDesign }: Props) {
                     )}
                     variant={index + 1}
                     balance={session.user.balance}
-                    cardHolder={session.user.name!}
+                    cardHolder={session.user.name}
                   />
                 </div>
               ))}

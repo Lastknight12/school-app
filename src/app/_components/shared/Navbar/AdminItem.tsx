@@ -6,13 +6,13 @@ import React from "react";
 export default function AdminItem() {
   const pathname = usePathname();
   const klassName = decodeURIComponent(pathname.split("/")[3] ?? "");
-  
+
   const paths = new Map<string | RegExp, React.ReactNode>([
     [
       // /admin/klass/*
       /^\/admin\/klass\/.+$/,
       <>
-        <h1 className="text-xl">Admin Panel - Klass: {klassName}</h1>
+        <h1 className="text-xl">Клас: {klassName}</h1>
       </>,
     ],
     [

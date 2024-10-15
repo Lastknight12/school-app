@@ -1,6 +1,8 @@
-import { Skeleton } from "~/components/ui/skeleton";
 import { cn } from "~/lib/utils";
+
 import { CategoryMenu } from "./CategoryMenu";
+
+import { Skeleton } from "~/shadcn/ui/skeleton";
 
 interface Props {
   onClick?: (name: string) => void;

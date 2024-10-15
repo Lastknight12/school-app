@@ -6,11 +6,12 @@
  * TL;DR - This is where all the tRPC server stuff is created and plugged in. The pieces you will
  * need to use are documented accordingly near the end.
  */
-
-import { initTRPC, TRPCError } from "@trpc/server";
+import { TRPCError, initTRPC } from "@trpc/server";
+import { v2 as cloudinary } from "cloudinary";
+import Pusher from "pusher";
 import superjson from "superjson";
 import { ZodError } from "zod";
-import Pusher from "pusher"
+import { env } from "~/env";
 
 import { getServerAuthSession } from "~/server/auth";
 import { db } from "~/server/db";
@@ -27,21 +28,30 @@ import { db } from "~/server/db";
  *
  * @see https://trpc.io/docs/server/context
  */
+
 export const createTRPCContext = async (opts: { headers: Headers }) => {
   const session = await getServerAuthSession();
 
-  const pusher = new Pusher({
-    appId: "1735458",
-    key: "b4e0e3f4c22b744cc197",
-    secret: "6409db25b1c4e1a854bd",
-    cluster: "eu",
-    useTLS: true
+  cloudinary.config({
+    cloud_name: env.CLOUDINARY_CLOUD_NAME,
+    api_key: env.CLOUDINARY_API_KEY,
+    api_secret: env.CLOUDINARY_API_SECRET,
   });
 
   return {
     db,
     session,
-    pusher,
+
+    pusher: new Pusher({
+      appId: env.PUSHER_APP_ID,
+      key: env.PUSHER_KEY,
+      secret: env.PUSHER_SECRET,
+      cluster: env.PUSHER_CLUSTER,
+      useTLS: true,
+    }),
+
+    cloudinary,
+
     ...opts,
   };
 };
@@ -60,8 +70,7 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
       ...shape,
       data: {
         ...shape.data,
-        zodError:
-          error.cause instanceof ZodError ? error.cause.errors : null,
+        zodError: error.cause instanceof ZodError ? error.cause.errors : null,
       },
     };
   },
@@ -129,7 +138,7 @@ export const publicProcedure = t.procedure.use(timingMiddleware);
  * @see https://trpc.io/docs/procedures
  */
 export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
-  if (!ctx.session || !ctx.session.user) {
+  if (!ctx.session) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
   return next({
@@ -141,7 +150,7 @@ export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
 });
 
 export const sellerProcedure = t.procedure.use(({ ctx, next }) => {
-  if (!ctx.session || !ctx.session.user || ctx.session.user.role !== "SELLER") {
+  if (!ctx.session || ctx.session.user.role !== "SELLER") {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
 
@@ -153,8 +162,8 @@ export const sellerProcedure = t.procedure.use(({ ctx, next }) => {
   });
 });
 
-export const teacherProcerure = t.procedure.use(({ ctx, next }) => {
-  if (!ctx.session || !ctx.session.user || ctx.session.user.role !== "TEACHER") {
+export const teacherProcedure = t.procedure.use(({ ctx, next }) => {
+  if (!ctx.session || ctx.session.user.role !== "TEACHER") {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
 
@@ -167,7 +176,7 @@ export const teacherProcerure = t.procedure.use(({ ctx, next }) => {
 });
 
 export const adminProcerure = t.procedure.use(({ ctx, next }) => {
-  if (!ctx.session || !ctx.session.user || ctx.session.user.role !== "ADMIN") {
+  if (!ctx.session || ctx.session.user.role !== "ADMIN") {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
 

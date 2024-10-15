@@ -14,7 +14,8 @@ img {
 }
 
 ::-webkit-scrollbar {
-  height: 7px;
+  height: 4px;
+  width: 7px;
 }
 
 /* Track */

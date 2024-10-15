@@ -13,8 +13,10 @@ export const urls = new Map<string, UserRole[]>([
   ["/shop", ["STUDENT"]],
   ["/buy", ["STUDENT"]],
   ["/settings", ["TEACHER", "ADMIN", "SELLER", "STUDENT"]],
+  ["/leaderboard", ["ADMIN", "SELLER", "TEACHER", "STUDENT"]],
   ["/admin", ["ADMIN"]],
   ["/admin/klass/[klassName]", ["ADMIN"]],
+  ["/admin/transfers", ["ADMIN"]],
 ]);
 
 const not_found_url = "/404";

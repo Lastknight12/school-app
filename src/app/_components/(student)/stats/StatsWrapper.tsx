@@ -1,9 +1,11 @@
 "use client";
 
+import { Loader2 } from "lucide-react";
+
 import { api } from "~/trpc/react";
+
 import Chart from "./Chart";
 import StatsInfo from "./StatsInfo";
-import { Loader2 } from "lucide-react";
 
 export default function Stats() {
   const chartData = api.transfers.getChartData.useQuery();
@@ -19,7 +21,7 @@ export default function Stats() {
   }
 
   return (
-    <div className="mb-6 h-max">
+    <div className="mb-6 h-max px-6">
       <Chart chartData={chartData.data ?? []} />
       <StatsInfo statsData={statsData.data!} />
     </div>

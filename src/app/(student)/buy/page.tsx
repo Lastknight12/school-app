@@ -3,17 +3,20 @@
 import { Loader2 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
-import { ProductCarousel } from "~/app/_components/shared/Product/ProductsCarousel";
-import { Button } from "~/components/ui/button";
+
 import { api } from "~/trpc/react";
+
+import { ProductCarousel } from "~/app/_components/shared/Product/ProductsCarousel";
+
+import { Button } from "~/shadcn/ui/button";
 
 export default function BuyProduct() {
   const params = useSearchParams();
 
   const token = params.get("token");
-  
+
   if (!token) {
-    return <h1 className="w-full text-center text-red-400">Відсутній токен</h1>
+    return <h1 className="w-full text-center text-red-400">Відсутній токен</h1>;
   }
 
   const payMutation = api.transfers.pay.useMutation({
@@ -29,7 +32,7 @@ export default function BuyProduct() {
     {
       refetchOnWindowFocus: false,
       refetchOnMount: false,
-      retry: 1
+      retry: 1,
     },
   );
 
@@ -38,7 +41,9 @@ export default function BuyProduct() {
       toast.error(getItemsFromToken.error.data.zodError[0]?.message);
 
     return (
-      <h1 className="w-full text-center text-red-400">{getItemsFromToken.error.message}</h1>
+      <h1 className="w-full text-center text-red-400">
+        {getItemsFromToken.error.message}
+      </h1>
     );
   }
 

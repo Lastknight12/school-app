@@ -1,4 +1,5 @@
 import {
+  adminProcerure,
   createTRPCRouter,
   protectedProcedure,
   sellerProcedure,
@@ -11,6 +12,7 @@ import type { Transaction } from "@prisma/client";
 import jwt from "jsonwebtoken";
 import { randomUUID } from "crypto";
 import { env } from "~/env";
+import { addDays } from "date-fns";
 
 export interface TokenData {
   randomChannelId: string;
@@ -86,7 +88,7 @@ export const transfersRouter = createTRPCRouter({
               balance: {
                 decrement: input.amount,
               },
-              senderIn: {
+              senderTransactions: {
                 connect: {
                   id: transaction.id,
                 },
@@ -104,7 +106,7 @@ export const transfersRouter = createTRPCRouter({
             balance: {
               increment: input.amount,
             },
-            recieverIn: {
+            recieverTransactions: {
               connect: {
                 id: transaction.id,
               },
@@ -135,6 +137,7 @@ export const transfersRouter = createTRPCRouter({
       },
       select: {
         id: true,
+        productsBought: true,
         randomGradient: true,
         reciever: {
           select: {
@@ -165,8 +168,8 @@ export const transfersRouter = createTRPCRouter({
         id: ctx.session.user.id,
       },
       select: {
-        senderIn: true,
-        recieverIn: true,
+        recieverTransactions: true,
+        senderTransactions: true,
       },
     });
 
@@ -186,12 +189,12 @@ export const transfersRouter = createTRPCRouter({
     ];
 
     const chartData = months.map((month) => {
-      const incoming = transfers?.recieverIn
+      const incoming = transfers?.recieverTransactions
         .filter(
           (transfer) => transfer.createdAt.toISOString().split("-")[1] == month,
         )
         .reduce((acc, curr) => acc + curr.amount, 0);
-      const outgoing = transfers?.senderIn
+      const outgoing = transfers?.senderTransactions
         .filter(
           (transfer) => transfer.createdAt.toISOString().split("-")[1] == month,
         )
@@ -213,12 +216,12 @@ export const transfersRouter = createTRPCRouter({
         id: ctx.session.user.id,
       },
       select: {
-        senderIn: {
+        senderTransactions: {
           select: {
             amount: true,
           },
         },
-        recieverIn: {
+        recieverTransactions: {
           select: {
             amount: true,
           },
@@ -226,22 +229,22 @@ export const transfersRouter = createTRPCRouter({
       },
     });
 
-    const incomingAmount = transfers?.recieverIn
+    const incomingAmount = transfers?.recieverTransactions
       .reduce((acc, curr) => acc + curr.amount, 0)
       .toFixed(2);
 
-    const outgoingAmount = transfers?.senderIn
+    const outgoingAmount = transfers?.senderTransactions
       .reduce((acc, curr) => acc + curr.amount, 0)
       .toFixed(2);
 
     return {
       incoming: {
         amount: incomingAmount!,
-        count: transfers?.recieverIn.length,
+        count: transfers?.recieverTransactions.length,
       },
       outgoing: {
         amount: outgoingAmount!,
-        count: transfers?.senderIn.length,
+        count: transfers?.senderTransactions.length,
       },
     };
   }),
@@ -372,7 +375,7 @@ export const transfersRouter = createTRPCRouter({
         await ctx.pusher.trigger(decryptedToken.randomChannelId, "pay", {
           error: "Недостатньо коштів",
         });
-        
+
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "Недостатньо коштів",
@@ -391,6 +394,11 @@ export const transfersRouter = createTRPCRouter({
               connect: {
                 id: ctx.session.user.id,
               },
+            },
+            productsBought: {
+              connect: products.map((product) => ({
+                id: product.id,
+              })),
             },
             success: true,
           },
@@ -422,6 +430,54 @@ export const transfersRouter = createTRPCRouter({
       ];
 
       await Promise.all(promises);
+    }),
 
+  getTransfersByPeriod: adminProcerure
+    .input(
+      z.object({
+        range: z.object({
+          from: z.string(),
+          to: z.string().nullish(),
+        }),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const transfer = await ctx.db.transaction.findMany({
+        where: {
+          createdAt: {
+            gte: new Date(input.range.from),
+            // if user dont provide range.to, take transfers in range.from day 
+            lt: new Date(addDays(input.range.to ?? input.range.from, 1))
+          },
+          type: "BUY",
+          success: true,
+        },
+        select: {
+          id: true,
+          sender: true,
+          amount: true,
+          createdAt: true,
+          success: true,
+          productsBought: true,
+        },
+      });
+
+      const totalAmount = transfer.reduce((total, transfer) => {
+        return total + transfer.amount;
+      }, 0);
+
+      const productsWithBalance = transfer.map((transfer) => {
+        return {
+          ...transfer,
+          balanceAtTransaction: transfer.sender?.balance,
+          balanceAfterTransaction:
+            (transfer.sender?.balance ?? 0) - transfer.amount,
+        };
+      });
+
+      return {
+        totalAmount,
+        productsWithBalance,
+      };
     }),
 });

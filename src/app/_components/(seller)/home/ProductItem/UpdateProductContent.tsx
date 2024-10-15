@@ -1,7 +1,9 @@
-import { Label } from "~/components/ui/label";
-import UploadImage from "../../../shared/UploadImage";
 import { useUpdateProduct } from "~/lib/state";
-import Counter from "~/components/ui/counter";
+
+import UploadImage from "../../../shared/UploadImage";
+
+import Counter from "~/shadcn/ui/counter";
+import { Label } from "~/shadcn/ui/label";
 
 interface Props {
   defaultImageSrc: string;

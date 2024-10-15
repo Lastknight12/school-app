@@ -1,18 +1,20 @@
-import { Label } from "~/components/ui/label";
-import { Button } from "~/components/ui/button";
+import { Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+
+import { api } from "~/trpc/react";
+
+import { Button } from "~/shadcn/ui/button";
 import {
-  DialogHeader,
   Dialog,
-  DialogTrigger,
   DialogContent,
   DialogDescription,
-  DialogTitle,
   DialogFooter,
-} from "~/components/ui/dialog";
-import { api } from "~/trpc/react";
-import { toast } from "sonner";
-import { useEffect, useState } from "react";
-import { Loader2 } from "lucide-react";
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "~/shadcn/ui/dialog";
+import { Label } from "~/shadcn/ui/label";
 
 interface Props {
   categoryName: string;

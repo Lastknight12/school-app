@@ -1,11 +1,13 @@
 "use client";
 
-import { LuScanLine } from "react-icons/lu";
 import { useState } from "react";
-import QrReader from "../QrReader";
+import { LuScanLine } from "react-icons/lu";
 import { toast } from "sonner";
 import { env } from "~/env";
+
 import { api } from "~/trpc/react";
+
+import QrReader from "../QrReader";
 
 export default function ScanQr() {
   const [isOpen, setIsOpen] = useState(false);
@@ -47,13 +49,13 @@ export default function ScanQr() {
   }
 
   return (
-      <QrReader
-        isOpen={isOpen}
-        onDataScanned={handleDataScanned}
-        onOpenChange={setIsOpen}
-        onCloseButtonClick={() => setIsOpen(false)}
-      >
-        <LuScanLine className="cursor-pointer text-2xl" />
-      </QrReader>
+    <QrReader
+      isOpen={isOpen}
+      onDataScanned={handleDataScanned}
+      onOpenChange={setIsOpen}
+      onCloseButtonClick={() => setIsOpen(false)}
+    >
+      <LuScanLine className="cursor-pointer text-2xl" />
+    </QrReader>
   );
 }

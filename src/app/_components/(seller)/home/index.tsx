@@ -1,15 +1,18 @@
 "use client";
 
-import { api } from "~/trpc/react";
-import ProductListItem from "./ProductItem/ProductListItem";
+import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+
+import { api } from "~/trpc/react";
+
 import { useDebounceValue } from "~/hooks/useDebounceValue";
-import AddNewProduct from "./TopButtons/AddNewProduct";
-import AddNewCategory from "./TopButtons/AddNewCategory";
+
 import CategoryNamesList from "../../shared/CategoryNamesList";
-import { Loader2 } from "lucide-react";
+import ProductListItem from "./ProductItem/ProductListItem";
+import AddNewCategory from "./TopButtons/AddNewCategory";
+import AddNewProduct from "./TopButtons/AddNewProduct";
 
 export default function SellerHomePage() {
   const [currentCategoryName, setCurrentCategoryName] = useState("");
@@ -41,7 +44,7 @@ export default function SellerHomePage() {
 
   return (
     <main>
-      <div className="flex h-[calc(100vh-72px)] flex-col gap-5">
+      <div className="flex h-[calc(100vh-72px)] flex-col gap-5 px-6">
         <div className="flex flex-wrap gap-3">
           <AddNewCategory />
 

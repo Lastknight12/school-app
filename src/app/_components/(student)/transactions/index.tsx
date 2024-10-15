@@ -1,9 +1,11 @@
 "use client";
 
-import SearchResult from "./SearchResult";
-import SearchInput from "./SearchInput";
-import { api } from "~/trpc/react";
 import type { Session } from "next-auth";
+
+import { api } from "~/trpc/react";
+
+import SearchInput from "./SearchInput";
+import SearchResult from "./SearchResult";
 
 interface Props {
   session: Session;
@@ -21,7 +23,7 @@ export default function Transactions({ session }: Props) {
 
       <SearchResult
         users={getUsersByName.data ?? []}
-        sessionUsername={session.user.name!}
+        sessionUsername={session.user.name}
         sessionBalance={session.user.balance}
         isLoading={getUsersByName.isPending}
       />

@@ -1,8 +1,10 @@
 "use client";
 
 import { FaShoppingCart } from "react-icons/fa";
-import GenerateQRModal from "./GenerateQRModal";
+
 import { useProducts } from "~/lib/state";
+
+import GenerateQRModal from "./GenerateQRModal";
 
 export default function ShoppingCart() {
   const products = useProducts((state) => state.products);
@@ -14,7 +16,6 @@ export default function ShoppingCart() {
           <div className="text-base text-red-600">{products.length}</div>
         </div>
       </GenerateQRModal>
-      
     </div>
   );
 }

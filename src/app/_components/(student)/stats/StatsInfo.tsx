@@ -1,15 +1,16 @@
 "use client";
 
+import { GoArrowDownLeft } from "react-icons/go";
+import { GoArrowUpRight } from "react-icons/go";
+
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "~/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
-import { GoArrowDownLeft } from "react-icons/go";
-import { GoArrowUpRight } from "react-icons/go";
+} from "~/shadcn/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/shadcn/ui/tabs";
 
 interface Props {
   statsData: {

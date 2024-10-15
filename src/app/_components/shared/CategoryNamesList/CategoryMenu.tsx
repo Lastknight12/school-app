@@ -1,13 +1,15 @@
+import { useState } from "react";
+import { HiDotsVertical } from "react-icons/hi";
+
+import { DeleteCategory } from "./DeleteCategory";
+import UpdateCategory from "./UpdateCategory";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "~/components/ui/dropdown-menu";
-import { HiDotsVertical } from "react-icons/hi";
-import { DeleteCategory } from "./DeleteCategory";
-import UpdateCategory from "./UpdateCategory";
-import { useState } from "react";
+} from "~/shadcn/ui/dropdown-menu";
 
 interface Props {
   categoryName: string;
