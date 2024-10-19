@@ -134,7 +134,7 @@ export default function ProductListItem({ children, item }: Props) {
           )}
         </div>
 
-        <DialogFooter className="justify-end gap-2">
+        <DialogFooter className="justify-end gap-2 flex-wrap">
           {/* Delete Button */}
           <Button
             disabled={deleteProductMutation.isPending}

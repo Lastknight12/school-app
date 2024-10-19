@@ -2,6 +2,7 @@
 
 import type { User } from "@prisma/client";
 import { Loader2 } from "lucide-react";
+import { Session } from "next-auth";
 import Image from "next/image";
 import { type ChangeEvent, useState } from "react";
 import { toast } from "sonner";
@@ -14,10 +15,9 @@ import { Dialog, DialogContent, DialogTrigger } from "~/shadcn/ui/dialog";
 
 interface Props {
   user: User;
-  sessionBalance?: number;
   children?: React.ReactNode;
   isOpen?: boolean;
-  isTeacher?: boolean;
+  session: Session;
   onMutationSuccess?: () => void;
   onOpenChange?: (open: boolean) => void;
 }
@@ -25,8 +25,7 @@ interface Props {
 export default function TransactionDialog({
   user,
   children,
-  sessionBalance,
-  isTeacher,
+  session,
   isOpen: customIsOpen,
   onOpenChange,
   onMutationSuccess,
@@ -34,7 +33,7 @@ export default function TransactionDialog({
   const [amount, setAmount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
 
-  const isAmountValid = amount > 0;
+  const isAmountPositive = amount > 0;
   const maxValue = 99999999; // 99 999 999
 
   const sendMoneyMutation = api.transfers.sendMoney.useMutation({
@@ -66,11 +65,11 @@ export default function TransactionDialog({
   }
 
   function handleSubmit() {
-    if (!isTeacher && sessionBalance)
+    if (session.user.role === "STUDENT" || "TEACHER") {
       try {
         sendAmountSchema.parse({ amount });
 
-        if (amount > sessionBalance) {
+        if (amount > session.user.balance) {
           throw new z.ZodError([
             {
               code: "custom",
@@ -85,6 +84,7 @@ export default function TransactionDialog({
           return;
         }
       }
+    }
 
     sendMoneyMutation.mutate({ receiverId: user.id, amount });
   }
@@ -110,8 +110,10 @@ export default function TransactionDialog({
           </div>
 
           <div className="flex w-full flex-col items-center">
-            {!isTeacher ? (
-              <p className="text-[#6f6f6f]">Бланс: {sessionBalance ?? 0}</p>
+            {session.user.role === "STUDENT" || "TEACHER" ? (
+              <p className="text-[#6f6f6f]">
+                Бланс: {session.user.balance ?? 0}
+              </p>
             ) : (
               <p className="mb-1">Кількість баллів:</p>
             )}
@@ -124,9 +126,9 @@ export default function TransactionDialog({
           </div>
 
           <button
-            disabled={!isAmountValid}
+            disabled={!isAmountPositive || sendMoneyMutation.isPending}
             onClick={handleSubmit}
-            className={`flex items-center justify-center gap-3 rounded-lg bg-card px-4 py-2 transition-opacity ${(!isAmountValid || sendMoneyMutation.isPending) && "cursor-not-allowed opacity-40"}`}
+            className={`flex items-center justify-center gap-3 rounded-lg bg-card px-4 py-2 transition-opacity ${(!isAmountPositive || sendMoneyMutation.isPending) && "cursor-not-allowed opacity-40"}`}
           >
             Відправити{" "}
             {sendMoneyMutation.isPending && (

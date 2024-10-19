@@ -23,8 +23,7 @@ export default function Transactions({ session }: Props) {
 
       <SearchResult
         users={getUsersByName.data ?? []}
-        sessionUsername={session.user.name}
-        sessionBalance={session.user.balance}
+        session={session}
         isLoading={getUsersByName.isPending}
       />
     </main>

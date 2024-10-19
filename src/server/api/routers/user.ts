@@ -21,7 +21,7 @@ export const userRouter = createTRPCRouter({
           name: {
             contains: input.name,
           },
-          role: "STUDENT",
+          role: "TEACHER",
         },
       });
 
@@ -44,36 +44,35 @@ export const userRouter = createTRPCRouter({
     });
   }),
 
-  getUserClass: protectedProcedure
-    .query(async ({ ctx }) => {
-      if (!ctx.session.user.studentClass) return null;
+  getUserClass: protectedProcedure.query(async ({ ctx }) => {
+    if (!ctx.session.user.studentClass) return;
 
-      const klass = await ctx.db.klass.findUnique({
-        where: {
-          id: ctx.session.user.studentClass.id,
-        },
-        select: {
-          id: true,
-          students: {
-            select: {
-              id: true,
-            },
+    const klass = await ctx.db.klass.findUnique({
+      where: {
+        id: ctx.session.user.studentClass.id,
+      },
+      select: {
+        id: true,
+        students: {
+          select: {
+            id: true,
           },
-          name: true,
         },
+        name: true,
+      },
+    });
+
+    if (
+      !klass?.students.some((student) => student.id === ctx.session.user.id)
+    ) {
+      throw new TRPCError({
+        code: "UNAUTHORIZED",
+        message: "Ти не знаходишся у цьому класі",
       });
+    }
 
-      if (
-        !klass?.students.some((student) => student.id === ctx.session.user.id)
-      ) {
-        throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "Ти не знаходишся у цьому класі",
-        });
-      }
-
-      return klass;
-    }),
+    return klass;
+  }),
 
   updateUser: protectedProcedure
     .input(
@@ -102,9 +101,8 @@ export const userRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx, input }) => {
-
       const limit = input.limit ?? 50;
-      
+
       const users = await ctx.db.user.findMany({
         cursor: input.cursor ? { id: input.cursor } : undefined,
         take: input.limit ? input.limit + 1 : undefined,
@@ -122,6 +120,6 @@ export const userRouter = createTRPCRouter({
       return {
         users,
         nextCursor,
-      }
+      };
     }),
 });

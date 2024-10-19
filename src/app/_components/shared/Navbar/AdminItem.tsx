@@ -21,6 +21,12 @@ export default function AdminItem() {
         <h1 className="text-xl">Admin Panel</h1>
       </>,
     ],
+    [
+      "/transactions",
+      <>
+        <h1 className="text-xl">Transactions</h1>
+      </>,
+    ]
   ]);
 
   for (const [path, element] of paths.entries()) {
