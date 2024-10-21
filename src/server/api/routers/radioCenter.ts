@@ -40,7 +40,7 @@ export async function getSoundcloudTrackInfo(trackUrl: string) {
   try {
     const response = await fetch(trackUrl).then((res) => res.text());
 
-    const root = parse(data);
+    const root = parse(response);
 
     const musicTitle = root
       .querySelector('meta[property="og:title"]')
