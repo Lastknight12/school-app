@@ -47,18 +47,20 @@ export default function DialogDemo() {
   });
 
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const regExp =
+    const youtubeRegexp =
       /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-    const videoId = e.target.value.replace(regExp, "$2");
+
+    const soundcloudRegexp =
+      /^(?:(https?):\/\/)?(?:(?:www|m)\.)?(soundcloud\.com|snd\.sc)\/(.*)$/;
+
+    const videoId = e.target.value.replace(youtubeRegexp, "$2");
+
     setMusicUrl(e.target.value);
 
-    console.log(
-      e.target.value.split(
-        /^.*(?:(?:youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*))?.*/,
-      ),
-    );
-
-    if (regExp.test(e.target.value) && videoId.length >= 11) {
+    if (
+      (youtubeRegexp.test(e.target.value) && videoId.length >= 11) ||
+      soundcloudRegexp.test(e.target.value)
+    ) {
       getVideoInfoMutation.mutate(e.target.value);
     } else {
       videoInfo && setVideoInfo(undefined);

@@ -98,10 +98,10 @@ export const radioCenterRouter = createTRPCRouter({
       const youtubeRegexp =
         /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
 
-      const soundclodRegexp =
+      const soundcloudRegexp =
         /^(?:(https?):\/\/)?(?:(?:www|m)\.)?(soundcloud\.com|snd\.sc)\/(.*)$/;
 
-      if (!youtubeRegexp.test(input) && !soundclodRegexp.test(input)) {
+      if (!youtubeRegexp.test(input) && !soundcloudRegexp.test(input)) {
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "Невірний URL",
@@ -207,6 +207,7 @@ export const radioCenterRouter = createTRPCRouter({
         },
         select: {
           id: true,
+          musicUrl: true,
           musicImage: true,
           buyer: {
             select: {
@@ -218,6 +219,11 @@ export const radioCenterRouter = createTRPCRouter({
         },
       });
 
+      await ctx.pusher.trigger(
+        "radioCenter_client",
+        "add-track",
+        order.musicUrl,
+      );
       await ctx.pusher.trigger("radioCenter", "refresh", order.buyer.id);
     }),
 

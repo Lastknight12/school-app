@@ -16,17 +16,17 @@ export default function Player() {
   const youtubeRegexp =
     /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
 
-  const soundclodRegexp =
+  const soundcloudRegexp =
     /^(?:(https?):\/\/)?(?:(?:www|m)\.)?(soundcloud\.com|snd\.sc)\/(.*)$/;
 
+  console.log(currentTrackSrc);
   function handleAddTrack(data: string) {
-    if (!youtubeRegexp.test(data) || !soundclodRegexp.test(data)) {
+    if (!youtubeRegexp.test(data) && !soundcloudRegexp.test(data)) {
       return;
     }
 
     if (!currentTrackSrc && tracks.length === 0) {
       setCurrentTrackSrc(data);
-      return;
     } else {
       addTracks((prev) => [...prev, data]);
     }
@@ -45,7 +45,6 @@ export default function Player() {
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
     if (channel && channel.bind) {
-      console.log(!!channel, !!channel.bind);
       channel.bind("add-track", function (data: string) {
         handleAddTrack(data);
       });
@@ -59,7 +58,10 @@ export default function Player() {
 
   if (!userInteraction) {
     return (
-      <button className="overlay" onClick={() => setUserInteracted(true)}>
+      <button
+        className="w-screen h-screen flex items-center justify-center"
+        onClick={() => setUserInteracted(true)}
+      >
         <p>
           Клацніть щоб продовжити. Це необхідно для автоматичного відтворення
           аудіо
