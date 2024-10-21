@@ -4,6 +4,7 @@ import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
 import { categoryRouter } from "./routers/category";
 import { imageRouter } from "./routers/image";
 import { klassRouter } from "./routers/klass";
+import { radioCenterRouter } from "./routers/radioCenter";
 import { transfersRouter } from "./routers/transfers";
 
 /**
@@ -17,6 +18,7 @@ export const appRouter = createTRPCRouter({
   klass: klassRouter,
   category: categoryRouter,
   image: imageRouter,
+  radioCenter: radioCenterRouter,
 });
 
 // export type definition of API

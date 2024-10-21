@@ -48,7 +48,7 @@ export default function UploadImage({
   const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      uploadFileMutation.mutate({ file: file });
+      uploadFileMutation.mutate({ file });
     }
   };
   return (

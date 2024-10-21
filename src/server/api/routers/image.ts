@@ -16,9 +16,7 @@ export const imageRouter = createTRPCRouter({
 
       const image = await ctx.cloudinary.uploader.upload(fileUri, {
         overwrite: false,
-      });
-
-      console.log(image);
+      })
 
       return image.url;
     }),

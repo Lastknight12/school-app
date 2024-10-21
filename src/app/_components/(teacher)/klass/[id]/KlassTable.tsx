@@ -1,6 +1,7 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
+import { type Session } from "next-auth";
 
 import { api } from "~/trpc/react";
 
@@ -17,9 +18,10 @@ import {
 
 interface Props {
   id: string;
+  session: Session;
 }
 
-export default function KlassTable({ id }: Props) {
+export default function KlassTable({ id, session }: Props) {
   const klass = api.klass.getTeacherKlassData.useQuery({ id });
 
   return (
@@ -52,6 +54,7 @@ export default function KlassTable({ id }: Props) {
 
             {klass.data?.students?.map((student) => (
               <KlassTableContent
+                session={session}
                 key={student.id}
                 student={student}
                 onSuccess={() => klass.refetch()}

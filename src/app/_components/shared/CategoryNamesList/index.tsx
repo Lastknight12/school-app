@@ -42,7 +42,7 @@ export default function CategoryNamesList({
                   className="flex flex-shrink-0 select-none items-center gap-2 rounded-md bg-card"
                 >
                   <div
-                    className={cn("py-2", !showMenu ? "px-4" : "pl-2")}
+                    className={cn("py-2", !showMenu ? "px-4" : "pl-4")}
                     onClick={() => {
                       onClick?.(category.name);
                     }}

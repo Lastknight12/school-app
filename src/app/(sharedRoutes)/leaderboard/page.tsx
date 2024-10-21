@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 
 import { getServerAuthSession } from "~/server/auth";
 
-import Leaderboard from "~/app/_components/shared/leaderboard";
+import Leaderboard from "~/app/_components/shared/routes/leaderboard";
 
 export default async function LeaderboardPage() {
   const session = await getServerAuthSession();

@@ -58,6 +58,13 @@ export const columns: ColumnDef<Student>[] = [
       return <div className="font-medium">{row.getValue("email")}</div>;
     },
   },
+  {
+    accessorKey: "balance",
+    header: "Balance",
+    cell: ({ row }) => {
+      return <div>{row.getValue("balance")}$</div>;
+    },
+  }
 ];
 
 export default function StudentsTable({ klassId }: Props) {

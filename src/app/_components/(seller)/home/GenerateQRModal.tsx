@@ -154,7 +154,7 @@ export default function GenerateQRModal({ onSuccess, children }: Props) {
             >
               Створити QR код
               {genQRToken.isPending && (
-                <Loader2 className="ml-2 h-4 w-4 animate-spin" />
+                <Loader2 className="ml-2 h-4 w-4 animate-spin text-[#b5b5b5]" />
               )}
             </Button>
           ) : (

@@ -14,14 +14,14 @@ export default async function StudentHomePage({ session }: Props) {
         <DebitCard
           balance={session.user.balance}
           cardHolder={session.user.name ?? "Ім'я"}
-          className="max-[353px]:w-[300px]"
+          className="max-[353px]:!w-[300px]"
         />
 
         {/* blured bg */}
         <DebitCard
           balance={session.user.balance}
           cardHolder={session.user.name ?? "Ім'я"}
-          className="fixed left-1/2 -translate-x-1/2 blur-2xl max-[353px]:w-[300px]"
+          className="fixed left-1/2 -translate-x-1/2 blur-2xl max-[353px]:!w-[300px]"
         />
       </div>
 

@@ -20,8 +20,8 @@ export default async function Navbar() {
 
   const allowedUrls: string[] = [];
   // check allowed urls
-  urls.forEach((value, url) => {
-    if (value.includes(session.user.role)) return allowedUrls.push(url);
+  urls.forEach((item, url) => {
+    if (item.includes(session.user.role)) return allowedUrls.push(url);
   });
 
   return (
@@ -29,7 +29,7 @@ export default async function Navbar() {
       <div className="flex items-center gap-3 text-white">
         <BurgerMenu allowedUrls={allowedUrls} />
 
-        {session?.user.role === "TEACHER" && <TeacherItem />}
+        {session?.user.role === "TEACHER" && <TeacherItem session={session}/>}
         {session?.user.role === "STUDENT" && (
           <>
             <StudentItem userBalance={session.user.balance} />

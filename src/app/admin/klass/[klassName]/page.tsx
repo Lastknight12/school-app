@@ -1,12 +1,10 @@
-import Image from "next/image";
 import { notFound } from "next/navigation";
 
 import { api } from "~/trpc/server";
 
-import { cn } from "~/lib/utils";
-
 import ButtonsGroup from "~/app/_components/(admin)/klass/ButtonsGroup";
 import StudentsTable from "~/app/_components/(admin)/klass/StudentTable";
+import TeachersList from "~/app/_components/(admin)/klass/TeachersList";
 
 export default async function Page({
   params,
@@ -22,21 +20,10 @@ export default async function Page({
   }
 
   return (
-    <main className="px-5">
-      <div className="mb-3">
+    <main>
+      <div className="mb-3 flex gap-3 items-center">
         <h1 className="text-lg">{klass.name} Клас</h1>
-        <div className="flex items-center gap-4">
-          {klass.teachers?.map((teacher, i) => (
-            <Image
-              key={teacher.id}
-              src={teacher.image}
-              alt="avatar"
-              width={25}
-              height={25}
-              className={cn("rounded-full shadow-md", i !== 0 && "-ml-2")}
-            />
-          ))}
-        </div>
+        <TeachersList klassId={klass.id} />
       </div>
 
       <div className="mb-5">

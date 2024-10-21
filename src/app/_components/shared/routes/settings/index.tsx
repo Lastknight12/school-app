@@ -12,8 +12,8 @@ import { api } from "~/trpc/react";
 import { useCardVariant } from "~/lib/state";
 import { cn } from "~/lib/utils";
 
-import DebitCard from "../DebitCard";
-import UploadImage from "../UploadImage";
+import DebitCard from "../../DebitCard";
+import UploadImage from "../../UploadImage";
 
 import { Button } from "~/shadcn/ui/button";
 import { Label } from "~/shadcn/ui/label";
@@ -29,12 +29,12 @@ export default function Settings({ session, showCardDesign }: Props) {
 
   const currentCardVariant = useCardVariant((state) => state.variant);
   const setCardVariant = useCardVariant((state) => state.setVariant);
+  
+  const router = useRouter();
 
   function handleCardClick(variant: number) {
     setCardVariant(variant);
   }
-
-  const router = useRouter();
 
   const updateUserMutation = api.user.updateUser.useMutation({
     onSuccess: () => {
@@ -126,7 +126,7 @@ export default function Settings({ session, showCardDesign }: Props) {
       </div>
 
       {showCardDesign && (
-        <>
+        <div className="px-6">
           <Label className="text-left text-base">Дизайн карти:</Label>
 
           <div className="mt-4 min-h-min overflow-x-auto">
@@ -154,7 +154,7 @@ export default function Settings({ session, showCardDesign }: Props) {
               ))}
             </div>
           </div>
-        </>
+        </div>
       )}
     </>
   );

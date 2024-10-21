@@ -6,7 +6,6 @@ import {
   type NextAuthOptions,
 } from "next-auth";
 import { type Adapter } from "next-auth/adapters";
-import {type JWT } from "next-auth/jwt";
 import DiscordProvider from "next-auth/providers/discord";
 import GoogleProvider from "next-auth/providers/google";
 
@@ -51,7 +50,7 @@ export const authOptions: NextAuthOptions = {
     signIn: "/login",
   },
   callbacks: {
-    jwt: async ({ token }): Promise<JWT> => {
+    jwt: async ({ token }) => {
       const dbUser = await db.user.findFirst({
         where: { id: token.sub},
         select: {
@@ -81,7 +80,7 @@ export const authOptions: NextAuthOptions = {
       }
 
       return {
-        id: dbUser.id,
+        sub: token.sub,
         name: dbUser.name,
         email: dbUser.email,
         image: dbUser.image,
@@ -95,10 +94,14 @@ export const authOptions: NextAuthOptions = {
       };
     },
     session: ({ session, token }) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const {sub, ...formattedToken} = token
+
       return {
         ...session,
         user: {
-          ...token,
+          id: token.sub,
+          ...formattedToken,
         },
       };
     },

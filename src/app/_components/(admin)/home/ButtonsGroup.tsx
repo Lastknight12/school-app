@@ -34,6 +34,11 @@ export default function ButtonsGroup() {
       void utils.klass.getAllKlasses.invalidate();
       setIsOpen(false);
     },
+    onError: (error) => {
+      error.data?.zodError
+        ? toast.error(error.data.zodError[0]?.message)
+        : toast.error(error.message);
+    }
   });
 
   async function handleClick() {

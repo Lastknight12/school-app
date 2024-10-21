@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 
 import { getServerAuthSession } from "~/server/auth";
 
-import Transactions from "~/app/_components/(student)/transactions";
+import Transactions from "~/app/_components/shared/routes/transactions";
 
 export default async function Component() {
   const session = await getServerAuthSession();

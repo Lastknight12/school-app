@@ -1,8 +1,13 @@
 "use client";
 
+import type { Session } from "next-auth";
 import { usePathname, useSearchParams } from "next/navigation";
 
-export default function TeacherItem() {
+interface Props {
+  session: Session;
+}
+
+export default function TeacherItem({ session }: Props) {
   const pathname = usePathname();
   const klassName = useSearchParams().get("formatedName");
 
@@ -17,7 +22,7 @@ export default function TeacherItem() {
     [
       "/",
       <>
-        <h1 className="text-xl">Список класів</h1>
+        <h1 className="text-xl">Баланс: {session.user.balance}$</h1>
       </>,
     ],
   ]);

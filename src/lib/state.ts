@@ -69,7 +69,7 @@ export const useUpdateProduct = create<UpdateProductState>((set) => ({
 }));
 
 export const useCardVariant = create<CardVariant>((set) => ({
-  variant: localStorage.getItem("variant") ? Number(localStorage.getItem("variant")) : 2,
+  variant: 2,
   setVariant: (variant) => {
     set({ variant })
     localStorage.setItem("variant", String(variant))
