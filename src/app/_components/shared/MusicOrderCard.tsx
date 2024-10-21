@@ -6,6 +6,8 @@ import { EllipsisVertical } from "lucide-react";
 import Image from "next/image";
 import { toast } from "sonner";
 
+import { api } from "~/trpc/react";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,9 +15,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "~/shadcn/ui/dropdown-menu";
-import { api } from "~/trpc/react";
 
-export const statusColors = new Map<MusicOrderStatus, string>([
+const statusColors = new Map<MusicOrderStatus, string>([
   ["DELIVERED", "text-yellow-500"],
   ["ACCEPTED", "text-green-500"],
   ["CANCELLED", "text-red-500"],
@@ -63,7 +64,7 @@ export default function MusicOrderCard({
         : toast.error(error.message);
     },
   });
-  
+
   return (
     <motion.a
       initial={{ opacity: 0 }}
@@ -104,10 +105,14 @@ export default function MusicOrderCard({
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuGroup>
-              <DropdownMenuItem onSelect={() => acceptOrderMutation.mutate({id: order.id})}>
+              <DropdownMenuItem
+                onSelect={() => acceptOrderMutation.mutate({ id: order.id })}
+              >
                 <span className="text-green-500">Прийняти</span>
               </DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => cancelOrderMutation.mutate({id: order.id})}>
+              <DropdownMenuItem
+                onSelect={() => cancelOrderMutation.mutate({ id: order.id })}
+              >
                 <span className="text-red-500">Відмінити</span>
               </DropdownMenuItem>
             </DropdownMenuGroup>

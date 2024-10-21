@@ -1,6 +1,7 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
+import { type Session } from "next-auth";
 
 import { api } from "~/trpc/react";
 
@@ -14,7 +15,6 @@ import {
   TableHeader,
   TableRow,
 } from "~/shadcn/ui/table";
-import { Session } from "next-auth";
 
 interface Props {
   id: string;

@@ -11,7 +11,6 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "~/shadcn/ui/carousel";
-import { DoorClosed } from "lucide-react";
 
 interface Props {
   items: CategoryItem[];

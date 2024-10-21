@@ -1,7 +1,7 @@
 "use client";
 
+import { type User } from "@prisma/client";
 import { Loader2 } from "lucide-react";
-import { User } from "@prisma/client";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -50,13 +50,12 @@ export default function AddUser({
   }
 
   return (
-    <Popover open={customOpen ?? open} onOpenChange={customOnOpenChange ?? setOpen}>
+    <Popover
+      open={customOpen ?? open}
+      onOpenChange={customOnOpenChange ?? setOpen}
+    >
       <PopoverTrigger asChild>
-        <Button
-          role="combobox"
-          aria-expanded={open}
-          className="h-max"
-        >
+        <Button role="combobox" aria-expanded={open} className="h-max">
           {children}
         </Button>
       </PopoverTrigger>

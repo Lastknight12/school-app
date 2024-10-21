@@ -1,5 +1,5 @@
 import type { User } from "@prisma/client";
-import { Session } from "next-auth";
+import { type Session } from "next-auth";
 import { useState } from "react";
 
 import TransactionDialog from "~/app/_components/shared/TransactionDialog";
@@ -12,7 +12,11 @@ interface Props {
   onSuccess: () => void;
 }
 
-export default function KlassTableContent({ student, onSuccess, session }: Props) {
+export default function KlassTableContent({
+  student,
+  onSuccess,
+  session,
+}: Props) {
   const [isOpen, setIsOpen] = useState(false);
 
   function onMutationSuccess() {

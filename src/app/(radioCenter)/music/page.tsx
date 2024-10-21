@@ -1,6 +1,5 @@
 "use client";
 
-import { type MusicOrderStatus } from "@prisma/client";
 import { useEffect } from "react";
 
 import { api } from "~/trpc/react";
@@ -9,12 +8,6 @@ import { pusherClient } from "~/lib/pusher-client";
 
 import CreateOrderModal from "~/app/_components/(radioCenter)/music/CreateOrderModal";
 import MusicOrderCard from "~/app/_components/shared/MusicOrderCard";
-
-export const statusColors = new Map<MusicOrderStatus, string>([
-  ["DELIVERED", "text-yellow-500"],
-  ["ACCEPTED", "text-green-500"],
-  ["CANCELLED", "text-red-500"],
-]);
 
 export default function Page() {
   const utils = api.useUtils();

@@ -6,7 +6,6 @@ import {
   type NextAuthOptions,
 } from "next-auth";
 import { type Adapter } from "next-auth/adapters";
-import {type JWT } from "next-auth/jwt";
 import DiscordProvider from "next-auth/providers/discord";
 import GoogleProvider from "next-auth/providers/google";
 
@@ -95,6 +94,7 @@ export const authOptions: NextAuthOptions = {
       };
     },
     session: ({ session, token }) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const {sub, ...formattedToken} = token
 
       return {
