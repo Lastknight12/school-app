@@ -1,6 +1,6 @@
 import { TRPCError } from "@trpc/server";
-import cheerio from "cheerio";
 import { google } from "googleapis";
+import { parse } from "node-html-parser";
 import { z } from "zod";
 import { env } from "~/env";
 import { musicOrderStatusSchema } from "~/schemas/zod";
@@ -38,17 +38,16 @@ export async function getYoutubeVideoInfo(videoId: string) {
 
 export async function getSoundcloudTrackInfo(trackUrl: string) {
   try {
-    // Fetch the HTML from the SoundCloud track page
     const response = await fetch(trackUrl).then((res) => res.text());
 
-    // Load the HTML into cheerio
-    const $ = cheerio.load(response);
+    const root = parse(data);
 
-    // Extract the music title from the meta tag
-    const musicTitle = $('meta[property="og:title"]').attr("content");
-
-    // Extract the artwork image URL from the meta tag
-    const musicImage = $('meta[property="og:image"]').attr("content");
+    const musicTitle = root
+      .querySelector('meta[property="og:title"]')
+      ?.getAttribute("content");
+    const musicImage = root
+      .querySelector('meta[property="og:image"]')
+      ?.getAttribute("content");
 
     if (!musicTitle || !musicImage) {
       throw new TRPCError({
