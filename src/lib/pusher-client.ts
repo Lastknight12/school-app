@@ -1,7 +1,7 @@
 import Pusher from "pusher-js";
 
 export const pusherClient = new Pusher(
-  "b4e0e3f4c22b744cc197",
+  "a56a4ad70d0ff0245743",
   {
     cluster: "eu",
   }

@@ -1,3 +1,4 @@
+import { MusicOrderStatus } from "@prisma/client";
 import { z } from "zod";
 
 export const sendAmountSchema = z.object({
@@ -34,4 +35,17 @@ export const addProductSchema = z.object({
     .min(1, { message: "Завантажте зображення" })
     .url({ message: "Вкажіть коректний URL зображення" }),
   category: z.string().min(1, { message: "Виберіть категорію" }),
+});
+
+export const musicOrderStatusSchema = z.enum(["ACCEPTED", "DELIVERED", "CANCELLED"]).transform((value: string) => {
+  switch (value) {
+    case "ACCEPTED":
+      return MusicOrderStatus.ACCEPTED;
+    case "DELIVERED":
+      return MusicOrderStatus.DELIVERED;
+    case "CANCELLED":
+      return MusicOrderStatus.CANCELLED;
+    default:
+      throw new Error(`Невірний статус: ${value}`);
+  }
 });

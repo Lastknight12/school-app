@@ -6,12 +6,14 @@ await import("./src/env.js");
 
 /** @type {import("next").NextConfig} */
 const config = {
+  reactStrictMode: false,
   images: {
     remotePatterns: [
       { hostname: "cdn.discordapp.com" },
       { hostname: "lh3.googleusercontent.com" },
       { hostname: "*.gstatic.com" },
       { hostname: "res.cloudinary.com" },
+      { hostname: "i.ytimg.com" },
     ],
   },
 };

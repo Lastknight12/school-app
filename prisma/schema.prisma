@@ -48,26 +48,46 @@ enum UserRole {
   TEACHER
   STUDENT
   SELLER
+  RADIO_CENTER
+}
+
+enum MusicOrderStatus {
+  ACCEPTED
+  CANCELLED
+  DELIVERED
+}
+
+model MusicOrder {
+  id        String           @id @default(cuid())
+  status    MusicOrderStatus @default(DELIVERED)
+  buyer     User             @relation(fields: [buyerId], references: [id])
+  buyerId   String
+  musicUrl  String
+  musicImage String
+  musicTitle String
+  createdAt DateTime         @default(now())
 }
 
 model User {
-  id             String        @id @default(cuid())
-  name           String
-  email          String        @unique
-  image          String
-  balance        Float         @default(0.00)
-  role           UserRole      @default(STUDENT)
-  emailVerified  Boolean?
-  accounts       Account[]
-  sessions       Session[]
+  id            String    @id @default(cuid())
+  name          String
+  email         String    @unique
+  image         String
+  balance       Float     @default(0.00)
+  role          UserRole  @default(STUDENT)
+  emailVerified Boolean?
+  accounts      Account[]
+  sessions      Session[]
 
   recieverTransactions Transaction[] @relation(name: "recieverTransactions")
-  senderTransactions       Transaction[] @relation(name: "senderTransactions")
+  senderTransactions   Transaction[] @relation(name: "senderTransactions")
 
-  teacherClasses Klass[]       @relation(name: "teacherClasses")
+  teacherClasses Klass[] @relation(name: "teacherClasses")
 
-  studentClass   Klass?        @relation(name: "studentClass", fields: [studentClassId], references: [id])
+  studentClass   Klass?  @relation(name: "studentClass", fields: [studentClassId], references: [id])
   studentClassId String?
+
+  MusicOrders MusicOrder[]
 }
 
 model Category {
@@ -77,14 +97,14 @@ model Category {
 }
 
 model CategoryItem {
-  id          String        @id @default(cuid())
+  id          String @id @default(cuid())
   image       String
   title       String
   pricePerOne Float
   count       Int
 
-  Category    Category      @relation(fields: [categoryId], references: [id])
-  categoryId  String
+  Category   Category @relation(fields: [categoryId], references: [id])
+  categoryId String
 
   Transaction Transaction[]
 }
@@ -101,20 +121,20 @@ model Transaction {
   success        Boolean         @default(false)
   randomGradient Json
   productsBought CategoryItem[]
-  
-  reciever       User?           @relation(fields: [recieverId], references: [id], name: "recieverTransactions")
-  recieverId     String?
-  
-  sender         User?           @relation(fields: [senderId], references: [id], name: "senderTransactions")
-  senderId       String?
-  
-  createdAt      DateTime        @default(now())
+
+  reciever   User?   @relation(fields: [recieverId], references: [id], name: "recieverTransactions")
+  recieverId String?
+
+  sender   User?   @relation(fields: [senderId], references: [id], name: "senderTransactions")
+  senderId String?
+
+  createdAt DateTime @default(now())
 }
 
 model Klass {
-  id       String @id @default(cuid())
-  name     String @unique
-  
+  id   String @id @default(cuid())
+  name String @unique
+
   teachers User[] @relation(name: "teacherClasses")
   students User[] @relation(name: "studentClass")
 }
