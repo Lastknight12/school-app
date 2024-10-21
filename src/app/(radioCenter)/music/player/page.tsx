@@ -16,11 +16,11 @@ export default function Player() {
   const youtubeRegexp =
     /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
 
-  const soundclodRegexp =
+  const soundcloudRegexp =
     /^(?:(https?):\/\/)?(?:(?:www|m)\.)?(soundcloud\.com|snd\.sc)\/(.*)$/;
 
   function handleAddTrack(data: string) {
-    if (!youtubeRegexp.test(data) || !soundclodRegexp.test(data)) {
+    if (!youtubeRegexp.test(data) && !soundcloudRegexp.test(data)) {
       return;
     }
 
@@ -45,7 +45,6 @@ export default function Player() {
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
     if (channel && channel.bind) {
-      console.log(!!channel, !!channel.bind);
       channel.bind("add-track", function (data: string) {
         handleAddTrack(data);
       });
