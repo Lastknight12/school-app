@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import { urls } from "~/middleware";
 
 import { getServerAuthSession } from "~/server/auth";
 
@@ -10,6 +9,19 @@ import AdminItem from "./AdminItem";
 import ScanQr from "./ScanQr";
 import StudentItem from "./StudentItem";
 import TeacherItem from "./TeacherItem";
+import { type UserRole } from "@prisma/client";
+
+const urls = new Map<string, UserRole[]>([
+  ["/", ["TEACHER", "ADMIN", "SELLER", "STUDENT", "RADIO_CENTER"]],
+  ["/leaderboard", ["ADMIN", "SELLER", "TEACHER", "STUDENT", "RADIO_CENTER"]],
+  ["/settings", ["TEACHER", "ADMIN", "SELLER", "STUDENT", "RADIO_CENTER"]],
+  ["/admin", ["ADMIN"]],
+  ["/admin/transfers", ["ADMIN"]],
+  ["/transactions", ["ADMIN"]],
+  ["/stats", ["STUDENT", "RADIO_CENTER"]],
+  ["/shop", ["STUDENT", "RADIO_CENTER"]],
+  ["/music", ["STUDENT", "RADIO_CENTER"]],
+]);
 
 export default async function Navbar() {
   const session = await getServerAuthSession();
@@ -29,7 +41,7 @@ export default async function Navbar() {
       <div className="flex items-center gap-3 text-white">
         <BurgerMenu allowedUrls={allowedUrls} />
 
-        {session?.user.role === "TEACHER" && <TeacherItem session={session}/>}
+        {session?.user.role === "TEACHER" && <TeacherItem session={session} />}
         {session?.user.role === "STUDENT" && (
           <>
             <StudentItem userBalance={session.user.balance} />

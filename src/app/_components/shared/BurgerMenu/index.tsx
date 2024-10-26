@@ -11,6 +11,8 @@ import { FiShoppingBag } from "react-icons/fi";
 import { GrTransaction } from "react-icons/gr";
 import { IoMdClose, IoMdStats } from "react-icons/io";
 import { MdAdminPanelSettings, MdLeaderboard } from "react-icons/md";
+import { BsFillMusicPlayerFill } from "react-icons/bs";
+import { SiApplemusic } from "react-icons/si";
 import { PiHamburger } from "react-icons/pi";
 
 import { cn } from "~/lib/utils";
@@ -61,6 +63,16 @@ export default function BurgerMenu({ allowedUrls }: Props) {
       href: "/leaderboard",
       icon: <MdLeaderboard size={24} />,
     },
+    {
+      name: "Player",
+      href: "/music/player",
+      icon: <BsFillMusicPlayerFill size={24} />,
+    },
+    {
+      name: "Music orders",
+      href: "/musicOrders",
+      icon: <SiApplemusic size={24} />,
+    },
   ];
 
   const allowedNavItems = allowedUrls
@@ -79,7 +91,7 @@ export default function BurgerMenu({ allowedUrls }: Props) {
         transition={{ duration: 0.2 }}
         className={cn(
           "shadow-4xl fixed left-0 top-0 z-50 flex h-screen w-full flex-col bg-[#15151569] backdrop-blur-lg",
-          !debauncedIsOpen && "pointer-events-none",
+          !debauncedIsOpen && "pointer-events-none"
         )}
       >
         <IoMdClose
