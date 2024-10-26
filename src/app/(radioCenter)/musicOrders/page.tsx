@@ -62,7 +62,9 @@ export default function Page() {
           <Loader2 className="h-6 w-6 mx-auto animate-spin text-[#b5b5b5]" />
         )}
 
-        {orders.length === 0 && <h1>Немає поточних замовлень</h1>}
+        {!getOrders.isFetching && orders.length === 0 && (
+          <h1>Немає поточних замовлень</h1>
+        )}
 
         {orders.map((order) => (
           <MusicOrderCard key={order.id} order={order} type="radioCenter" />

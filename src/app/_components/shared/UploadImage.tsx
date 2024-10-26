@@ -5,11 +5,11 @@ import { type ChangeEvent, useRef, useState } from "react";
 import { MdClose, MdFileUpload } from "react-icons/md";
 import { toast } from "sonner";
 
-import { api } from "~/trpc/react";
-
 import { cn } from "~/lib/utils";
 
 import { Button } from "~/shadcn/ui/button";
+import { useMutation } from "@tanstack/react-query";
+import { type uploadImageRes } from "~/app/api/uploadImage/route";
 
 interface Props {
   onSuccess?: (imageSrc: string) => void;
@@ -32,23 +32,34 @@ export default function UploadImage({
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const uploadFileMutation = api.image.uploadImage.useMutation({
-    onSuccess: (imageUrl) => {
+  const uploadFile = (file: File): Promise<uploadImageRes> => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    return fetch("/api/uploadImage", {
+      method: "POST",
+      body: formData,
+    }).then((res) => res.json());
+  };
+
+  const uploadFileMutation = useMutation({
+    mutationFn: uploadFile,
+    onSuccess: ({ imageUrl, error }) => {
+      if (error) {
+        toast.error(error);
+        return;
+      }
+
       setPerviewSrc(imageUrl);
       onSuccess?.(imageUrl);
-    },
-
-    onError: (error) => {
-      error.data?.zodError
-        ? toast.error(error.data.zodError[0]?.message)
-        : toast.error(error.message);
     },
   });
 
   const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
+
     if (file) {
-      uploadFileMutation.mutate({ file });
+      uploadFileMutation.mutate(file);
     }
   };
   return (
@@ -59,7 +70,7 @@ export default function UploadImage({
             <button
               className={cn(
                 "absolute -right-1 -top-1 rounded-full border border-red-500 bg-red-100",
-                closeButtonClassName,
+                closeButtonClassName
               )}
               onClick={() => setPerviewSrc("")}
             >

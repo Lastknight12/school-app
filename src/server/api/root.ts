@@ -2,7 +2,6 @@ import { userRouter } from "~/server/api/routers/user";
 import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
 
 import { categoryRouter } from "./routers/category";
-import { imageRouter } from "./routers/image";
 import { klassRouter } from "./routers/klass";
 import { radioCenterRouter } from "./routers/radioCenter";
 import { transfersRouter } from "./routers/transfers";
@@ -17,7 +16,6 @@ export const appRouter = createTRPCRouter({
   transfers: transfersRouter,
   klass: klassRouter,
   category: categoryRouter,
-  image: imageRouter,
   radioCenter: radioCenterRouter,
 });
 

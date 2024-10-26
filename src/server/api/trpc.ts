@@ -7,7 +7,6 @@
  * need to use are documented accordingly near the end.
  */
 import { TRPCError, initTRPC } from "@trpc/server";
-import { v2 as cloudinary } from "cloudinary";
 import Pusher from "pusher";
 import superjson from "superjson";
 import { ZodError } from "zod";
@@ -32,12 +31,6 @@ import { db } from "~/server/db";
 export const createTRPCContext = async (opts: { headers: Headers }) => {
   const session = await getServerAuthSession();
 
-  cloudinary.config({
-    cloud_name: env.CLOUDINARY_CLOUD_NAME,
-    api_key: env.CLOUDINARY_API_KEY,
-    api_secret: env.CLOUDINARY_API_SECRET,
-  });
-
   return {
     db,
     session,
@@ -49,8 +42,6 @@ export const createTRPCContext = async (opts: { headers: Headers }) => {
       cluster: env.PUSHER_CLUSTER,
       useTLS: true,
     }),
-
-    cloudinary,
 
     ...opts,
   };

@@ -57,15 +57,15 @@ export default function MusicOrderCard({ order, type = "student" }: Props) {
   return (
     <Link
       href={order.musicUrl}
-      className="flex bg-[#121212] border border-[#414040] rounded-lg p-4 max-sm:flex-col-reverse max-sm:items-end max-sm:gap-3 justify-between"
+      className="flex bg-[#121212] border border-[#414040] rounded-lg p-4 justify-between"
     >
-      <div className="flex max-sm:flex-col gap-3 max-sm:w-full">
+      <div className="flex gap-3">
         <Image
           src={order.musicImage}
           width={90}
           height={70}
           alt="music image"
-          className="rounded-lg max-sm:w-full"
+          className="rounded-lg max-w-[90px]"
         />
 
         <div className="flex text-sm flex-col py-1 gap-2">
