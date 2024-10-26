@@ -58,14 +58,14 @@ enum MusicOrderStatus {
 }
 
 model MusicOrder {
-  id        String           @id @default(cuid())
-  status    MusicOrderStatus @default(DELIVERED)
-  buyer     User             @relation(fields: [buyerId], references: [id])
-  buyerId   String
-  musicUrl  String
-  musicImage String
-  musicTitle String
-  createdAt DateTime         @default(now())
+  id           String           @id @default(cuid())
+  status       MusicOrderStatus @default(DELIVERED)
+  buyer        User             @relation(fields: [buyerId], references: [id])
+  buyerId      String
+  musicUrl     String
+  musicImage   String
+  musicTitle   String
+  createdAt    DateTime         @default(now())
 }
 
 model User {

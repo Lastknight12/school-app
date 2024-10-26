@@ -3,9 +3,12 @@ import { google } from "googleapis";
 import { parse } from "node-html-parser";
 import { z } from "zod";
 import { env } from "~/env";
-import { musicOrderStatusSchema } from "~/schemas/zod";
 
-import { createTRPCRouter, protectedProcedure } from "../trpc";
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  radioCenterProcedure,
+} from "../trpc";
 
 export async function getYoutubeVideoInfo(videoId: string) {
   const yt = google.youtube({
@@ -69,27 +72,56 @@ export async function getSoundcloudTrackInfo(trackUrl: string) {
 }
 
 export const radioCenterRouter = createTRPCRouter({
-  getOrders: protectedProcedure
-    .input(z.object({ filter: musicOrderStatusSchema.nullable() }))
-    .query(async ({ ctx, input }) => {
-      return await ctx.db.musicOrder.findMany({
-        where: {
-          status: input.filter ?? undefined,
-        },
-        select: {
-          id: true,
-          status: true,
-          musicUrl: true,
-          musicTitle: true,
-          musicImage: true,
-          buyer: {
-            select: {
-              name: true,
-            },
+  getCurrentTrackAndQueue: protectedProcedure.query(async ({ ctx }) => {
+    const orders = await ctx.db.musicOrder.findMany({
+      where: {
+        status: "ACCEPTED",
+      },
+      // limit orders
+      take: 10,
+      select: {
+        id: true,
+        status: true,
+        musicUrl: true,
+        musicTitle: true,
+        musicImage: true,
+        buyer: {
+          select: {
+            name: true,
           },
         },
-      });
-    }),
+      },
+    });
+
+    const currentTrack = orders.shift();
+
+    return {
+      playerQueue: orders,
+      currentTrack,
+    };
+  }),
+
+  getOrders: radioCenterProcedure.query(async ({ ctx }) => {
+    return await ctx.db.musicOrder.findMany({
+      where: {
+        status: "DELIVERED",
+      },
+      // limit orders
+      take: 10,
+      select: {
+        id: true,
+        status: true,
+        musicUrl: true,
+        musicTitle: true,
+        musicImage: true,
+        buyer: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
+  }),
 
   getVideoInfo: protectedProcedure
     .input(z.string())
@@ -130,15 +162,13 @@ export const radioCenterRouter = createTRPCRouter({
         musicUrl: z.string(),
         musicImage: z.string(),
         musicTitle: z.string(),
-      }),
+      })
     )
     .mutation(async ({ input, ctx }) => {
-      const youtubeVideoId = input.musicUrl.replace(
-        "https://www.youtube.com/watch?v=",
-        "",
-      );
+      const youtubeRegexp =
+        /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
 
-      if (!youtubeVideoId) {
+      if (!youtubeRegexp.test(input.musicUrl)) {
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "Невірний URL",
@@ -159,8 +189,6 @@ export const radioCenterRouter = createTRPCRouter({
           message: "Ви не можете створювати більше 4 замовлень на день",
         });
       }
-
-      // return response.data.items[0]?.snippet?.thumbnails?.default?.url
 
       const order = await ctx.db.musicOrder.create({
         data: {
@@ -190,11 +218,23 @@ export const radioCenterRouter = createTRPCRouter({
       await ctx.pusher.trigger("radioCenter", "order-created", order);
     }),
 
-  acceptOrder: protectedProcedure
+  deleteOrder: radioCenterProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.musicOrder.delete({
+        where: {
+          id: input.id,
+        },
+      });
+
+      await ctx.pusher.trigger("radioCenter", "refresh", null);
+    }),
+
+  acceptOrder: radioCenterProcedure
     .input(
       z.object({
         id: z.string(),
-      }),
+      })
     )
     .mutation(async ({ input, ctx }) => {
       const order = await ctx.db.musicOrder.update({
@@ -204,33 +244,17 @@ export const radioCenterRouter = createTRPCRouter({
         data: {
           status: "ACCEPTED",
         },
-        select: {
-          id: true,
-          musicUrl: true,
-          musicImage: true,
-          buyer: {
-            select: {
-              id: true,
-              name: true,
-            },
-          },
-          status: true,
-        },
       });
 
-      await ctx.pusher.trigger(
-        "radioCenter_client",
-        "add-track",
-        order.musicUrl,
-      );
-      await ctx.pusher.trigger("radioCenter", "refresh", order.buyer.id);
+      await ctx.pusher.trigger("radioCenter_client", "add-track", order);
+      await ctx.pusher.trigger("radioCenter", "refresh", null);
     }),
 
-  cancelOrder: protectedProcedure
+  cancelOrder: radioCenterProcedure
     .input(
       z.object({
         id: z.string(),
-      }),
+      })
     )
     .mutation(async ({ input, ctx }) => {
       const order = await ctx.db.musicOrder.update({

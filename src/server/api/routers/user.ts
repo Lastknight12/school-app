@@ -2,7 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 import {
-  adminProcerure,
+  adminProcedure,
   createTRPCRouter,
   protectedProcedure,
 } from "~/server/api/trpc";
@@ -12,7 +12,7 @@ export const userRouter = createTRPCRouter({
     .input(
       z.object({
         name: z.string(),
-      }),
+      })
     )
     .mutation(async ({ input, ctx }) => {
       if (input.name == "") return [];
@@ -28,7 +28,7 @@ export const userRouter = createTRPCRouter({
       return users;
     }),
 
-  getAllTeachers: adminProcerure.query(async ({ ctx }) => {
+  getAllTeachers: adminProcedure.query(async ({ ctx }) => {
     return await ctx.db.user.findMany({
       where: {
         role: "TEACHER",
@@ -36,7 +36,7 @@ export const userRouter = createTRPCRouter({
     });
   }),
 
-  getAllStudents: adminProcerure.query(async ({ ctx }) => {
+  getAllStudents: adminProcedure.query(async ({ ctx }) => {
     return await ctx.db.user.findMany({
       where: {
         role: "STUDENT",
@@ -79,7 +79,7 @@ export const userRouter = createTRPCRouter({
       z.object({
         newName: z.string().min(1, "Назва користувача не може бути пустою"),
         newImageSrc: z.string().min(1, "Аватарка не може бути пустою"),
-      }),
+      })
     )
     .mutation(async ({ ctx, input }) => {
       await ctx.db.user.update({
@@ -98,7 +98,7 @@ export const userRouter = createTRPCRouter({
       z.object({
         limit: z.number().min(3).max(50).nullish(),
         cursor: z.string().nullish(),
-      }),
+      })
     )
     .query(async ({ ctx, input }) => {
       const limit = input.limit ?? 50;

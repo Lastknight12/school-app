@@ -3,13 +3,13 @@ import { z } from "zod";
 import { addKlassSchema } from "~/schemas/zod";
 
 import {
-  adminProcerure,
+  adminProcedure,
   createTRPCRouter,
   teacherProcedure,
 } from "~/server/api/trpc";
 
 export const klassRouter = createTRPCRouter({
-  getAllKlasses: adminProcerure.query(async ({ ctx }) => {
+  getAllKlasses: adminProcedure.query(async ({ ctx }) => {
     return await ctx.db.klass.findMany({
       select: {
         name: true,
@@ -17,7 +17,7 @@ export const klassRouter = createTRPCRouter({
     });
   }),
 
-  getKlassStudents: adminProcerure
+  getKlassStudents: adminProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
       const klass = await ctx.db.klass.findFirst({
@@ -36,7 +36,7 @@ export const klassRouter = createTRPCRouter({
       return klass.students;
     }),
 
-  getAdminKlassData: adminProcerure
+  getAdminKlassData: adminProcedure
     .input(z.object({ name: z.string() }))
     .query(async ({ input, ctx }) => {
       return await ctx.db.klass.findFirst({
@@ -67,7 +67,7 @@ export const klassRouter = createTRPCRouter({
       });
     }),
 
-  addKlass: adminProcerure
+  addKlass: adminProcedure
     .input(addKlassSchema)
     .mutation(async ({ ctx, input }) => {
       const isExist = await ctx.db.klass.findFirst({
@@ -93,7 +93,7 @@ export const klassRouter = createTRPCRouter({
       });
     }),
 
-  addStudent: adminProcerure
+  addStudent: adminProcedure
     .input(z.object({ klassId: z.string(), studentId: z.string() }))
     .mutation(async ({ ctx, input }) => {
       await ctx.db.klass.update({
@@ -123,7 +123,7 @@ export const klassRouter = createTRPCRouter({
       });
     }),
 
-  getKlassTeachers: adminProcerure
+  getKlassTeachers: adminProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
       const klass = await ctx.db.klass.findUnique({
@@ -138,7 +138,7 @@ export const klassRouter = createTRPCRouter({
       return klass?.teachers;
     }),
 
-  addTeacher: adminProcerure
+  addTeacher: adminProcedure
     .input(z.object({ klassId: z.string(), teacherId: z.string() }))
     .mutation(async ({ ctx, input }) => {
       await ctx.db.klass.update({

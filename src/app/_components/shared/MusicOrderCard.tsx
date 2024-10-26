@@ -1,10 +1,10 @@
 "use client";
 
-import { type MusicOrder, type MusicOrderStatus } from "@prisma/client";
-import { motion } from "framer-motion";
+import { type MusicOrder } from "@prisma/client";
 import { EllipsisVertical } from "lucide-react";
 import Image from "next/image";
 import { toast } from "sonner";
+import Link from "next/link";
 
 import { api } from "~/trpc/react";
 
@@ -16,12 +16,6 @@ import {
   DropdownMenuTrigger,
 } from "~/shadcn/ui/dropdown-menu";
 
-const statusColors = new Map<MusicOrderStatus, string>([
-  ["DELIVERED", "text-yellow-500"],
-  ["ACCEPTED", "text-green-500"],
-  ["CANCELLED", "text-red-500"],
-]);
-
 interface Props {
   order: Pick<
     MusicOrder,
@@ -31,15 +25,10 @@ interface Props {
       name: string;
     };
   };
-  index: number;
   type?: "radioCenter" | "student";
 }
 
-export default function MusicOrderCard({
-  order,
-  index,
-  type = "student",
-}: Props) {
+export default function MusicOrderCard({ order, type = "student" }: Props) {
   const utils = api.useUtils();
   const acceptOrderMutation = api.radioCenter.acceptOrder.useMutation({
     onSuccess: () => {
@@ -55,7 +44,7 @@ export default function MusicOrderCard({
 
   const cancelOrderMutation = api.radioCenter.cancelOrder.useMutation({
     onSuccess: () => {
-      void utils.radioCenter.getOrders.invalidate();
+      void utils.radioCenter.getCurrentTrackAndQueue.invalidate();
       toast.success("Замовлення успішно скасоване");
     },
     onError: (error) => {
@@ -66,34 +55,24 @@ export default function MusicOrderCard({
   });
 
   return (
-    <motion.a
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.3, delay: index * 0.1 }}
+    <Link
       href={order.musicUrl}
-      key={order.id}
       className="flex bg-[#121212] border border-[#414040] rounded-lg p-4 max-sm:flex-col-reverse max-sm:items-end max-sm:gap-3 justify-between"
     >
       <div className="flex max-sm:flex-col gap-3 max-sm:w-full">
         <Image
           src={order.musicImage}
-          width={120}
-          height={100}
+          width={90}
+          height={70}
           alt="music image"
           className="rounded-lg max-sm:w-full"
         />
 
-        <div className="flex text-sm flex-col justify-between py-1 max-sm:gap-3">
+        <div className="flex text-sm flex-col py-1 gap-2">
           <p className="max-w-[485px]">{order.musicTitle}</p>
           <p>
             Замовник:{" "}
             <span className="text-emerald-300 mt-2">{order.buyer.name}</span>
-          </p>
-          <p>
-            Статус:{" "}
-            <span className={statusColors.get(order.status)}>
-              {order.status}
-            </span>
           </p>
         </div>
       </div>
@@ -119,6 +98,6 @@ export default function MusicOrderCard({
           </DropdownMenuContent>
         </DropdownMenu>
       )}
-    </motion.a>
+    </Link>
   );
 }

@@ -30,11 +30,10 @@ export function TransfersTable({ range }: Props) {
     },
     {
       gcTime: 0,
-    },
+    }
   );
 
-  const hasData =
-    getTransfers.data && getTransfers.data.productsWithBalance.length > 0;
+  const hasData = getTransfers.data && getTransfers.data.transfers.length > 0;
 
   useEffect(() => {
     if (getTransfers.error) {
@@ -56,6 +55,7 @@ export function TransfersTable({ range }: Props) {
       </TableCaption>
       <TableHeader>
         <TableRow>
+          <TableHead className="w-[100px]">Date</TableHead>
           <TableHead className="w-[100px]">Name</TableHead>
           <TableHead>Email</TableHead>
           <TableHead>Products bought</TableHead>
@@ -72,8 +72,11 @@ export function TransfersTable({ range }: Props) {
         )}
 
         {hasData &&
-          getTransfers.data.productsWithBalance.map((transfer) => (
+          getTransfers.data.transfers.map((transfer) => (
             <TableRow key={transfer.id}>
+              <TableCell className="font-medium">
+                {transfer.createdAt.toLocaleDateString()}
+              </TableCell>
               <TableCell className="font-medium">
                 {transfer.sender?.name}
               </TableCell>
@@ -85,7 +88,7 @@ export function TransfersTable({ range }: Props) {
                       key={product.id}
                       className={cn(
                         "relative z-10 h-10 w-10 overflow-hidden rounded-full",
-                        i > 0 ? `-ml-5` : "ml-0",
+                        i > 0 ? `-ml-5` : "ml-0"
                       )}
                     >
                       <Image

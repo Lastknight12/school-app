@@ -1,5 +1,5 @@
 import {
-  adminProcerure,
+  adminProcedure,
   createTRPCRouter,
   protectedProcedure,
   sellerProcedure,
@@ -38,7 +38,7 @@ export const transfersRouter = createTRPCRouter({
       z.object({
         receiverId: z.string().min(1, "receiverId не може бути порожнім"),
         amount: z.number().min(1, "amount не може бути менше 1"),
-      }),
+      })
     )
     .mutation(async ({ input, ctx }) => {
       const userBalance = ctx.session.user.balance;
@@ -191,12 +191,12 @@ export const transfersRouter = createTRPCRouter({
     const chartData = months.map((month) => {
       const incoming = transfers?.recieverTransactions
         .filter(
-          (transfer) => transfer.createdAt.toISOString().split("-")[1] == month,
+          (transfer) => transfer.createdAt.toISOString().split("-")[1] == month
         )
         .reduce((acc, curr) => acc + curr.amount, 0);
       const outgoing = transfers?.senderTransactions
         .filter(
-          (transfer) => transfer.createdAt.toISOString().split("-")[1] == month,
+          (transfer) => transfer.createdAt.toISOString().split("-")[1] == month
         )
         .reduce((acc, curr) => acc + curr.amount, 0);
 
@@ -256,9 +256,9 @@ export const transfersRouter = createTRPCRouter({
           z.object({
             id: z.string(),
             count: z.number(),
-          }),
+          })
         ),
-      }),
+      })
     )
     .mutation(async ({ ctx, input }) => {
       const dbProducts = await ctx.db.categoryItem.findMany({
@@ -289,7 +289,7 @@ export const transfersRouter = createTRPCRouter({
       const amount = dbProducts.reduce((total, dbProduct) => {
         // Find the corresponding product from the input array
         const productInput = input.products.find(
-          (product) => product.id === dbProduct.id,
+          (product) => product.id === dbProduct.id
         );
 
         // If the product exists in the input array, calculate the price
@@ -317,7 +317,7 @@ export const transfersRouter = createTRPCRouter({
           transactionId: transaction.id,
           randomChannelId: randomChannelId,
         },
-        env.QR_SECRET,
+        env.QR_SECRET
       );
 
       return {
@@ -330,12 +330,12 @@ export const transfersRouter = createTRPCRouter({
     .input(
       z.object({
         token: z.string().min(2, "відсутній токен"),
-      }),
+      })
     )
     .mutation(async ({ ctx, input }) => {
       const decryptedToken = jwt.verify(
         input.token,
-        env.QR_SECRET,
+        env.QR_SECRET
       ) as TokenData;
 
       const [transaction, products] = await Promise.all([
@@ -432,22 +432,22 @@ export const transfersRouter = createTRPCRouter({
       await Promise.all(promises);
     }),
 
-  getTransfersByPeriod: adminProcerure
+  getTransfersByPeriod: adminProcedure
     .input(
       z.object({
         range: z.object({
           from: z.string(),
           to: z.string().nullish(),
         }),
-      }),
+      })
     )
     .query(async ({ ctx, input }) => {
-      const transfer = await ctx.db.transaction.findMany({
+      const transfers = await ctx.db.transaction.findMany({
         where: {
           createdAt: {
             gte: new Date(input.range.from),
-            // if user dont provide range.to, take transfers in range.from day 
-            lt: new Date(addDays(input.range.to ?? input.range.from, 1))
+            // if user dont provide range.to, take transfers in range.from day
+            lt: new Date(addDays(input.range.to ?? input.range.from, 1)),
           },
           type: "BUY",
           success: true,
@@ -462,22 +462,13 @@ export const transfersRouter = createTRPCRouter({
         },
       });
 
-      const totalAmount = transfer.reduce((total, transfer) => {
+      const totalAmount = transfers.reduce((total, transfer) => {
         return total + transfer.amount;
       }, 0);
 
-      const productsWithBalance = transfer.map((transfer) => {
-        return {
-          ...transfer,
-          balanceAtTransaction: transfer.sender?.balance,
-          balanceAfterTransaction:
-            (transfer.sender?.balance ?? 0) - transfer.amount,
-        };
-      });
-
       return {
         totalAmount,
-        productsWithBalance,
+        transfers,
       };
     }),
 });

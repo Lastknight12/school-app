@@ -37,6 +37,8 @@ export default function DialogDemo() {
     onSuccess: () => {
       void utils.radioCenter.getOrders.invalidate();
       setIsOpen(false);
+      setMusicUrl("");
+      setVideoInfo(undefined);
     },
 
     onError: (error) => {
@@ -75,7 +77,9 @@ export default function DialogDemo() {
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Створити замовлення</DialogTitle>
-          <DialogDescription>Посилання на відео:</DialogDescription>
+          <DialogDescription>
+            Посилання на відео з youtube або soundcloud:
+          </DialogDescription>
         </DialogHeader>
         <div>
           <input

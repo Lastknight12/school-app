@@ -13,7 +13,7 @@ export const categoryRouter = createTRPCRouter({
       z.object({
         categoryName: z.string().min(1, "categoryName не може бути порожнім"),
         searchFilter: z.string().nullish(),
-      }),
+      })
     )
     .query(async ({ ctx, input }) => {
       const data = await ctx.db.category.findUnique({
@@ -27,7 +27,7 @@ export const categoryRouter = createTRPCRouter({
 
       if (input.searchFilter) {
         return data?.items.filter((item) =>
-          item.title.toLowerCase().includes(input.searchFilter!.toLowerCase()),
+          item.title.toLowerCase().includes(input.searchFilter!.toLowerCase())
         );
       } else {
         return data?.items;
@@ -48,8 +48,8 @@ export const categoryRouter = createTRPCRouter({
         z.object({
           id: z.string(),
           count: z.number(),
-        }),
-      ),
+        })
+      )
     )
     .mutation(async ({ ctx, input }) => {
       void input.map(async (product) => {
@@ -67,11 +67,13 @@ export const categoryRouter = createTRPCRouter({
     }),
 
   getItemsByToken: protectedProcedure
-    .input(z.object({ token: z.string().min(1, "token не може бути порожнім") }))
+    .input(
+      z.object({ token: z.string().min(1, "token не може бути порожнім") })
+    )
     .query(async ({ ctx, input }) => {
       const decryptedToken = jwt.verify(
         input.token,
-        env.QR_SECRET,
+        env.QR_SECRET
       ) as TokenData;
 
       const [dbProducts, transaction] = await Promise.all([
@@ -103,7 +105,7 @@ export const categoryRouter = createTRPCRouter({
       return {
         products: dbProducts.map((product) => {
           const productCount = decryptedToken.products.find(
-            (item) => item.id === product.id,
+            (item) => item.id === product.id
           );
 
           if (!productCount)
@@ -129,14 +131,14 @@ export const categoryRouter = createTRPCRouter({
         imageSrc: z.string().url().min(1, "imageSrc не може бути порожнім"),
         count: z.number(),
         price: z.number(),
-      }),
+      })
     )
     .mutation(async ({ ctx, input }) => {
-      if((input.price || input.count) < 0) {
+      if ((input.price || input.count) < 0) {
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "Ціна або кількість не можуть бути відємними",
-        })
+        });
       }
 
       await ctx.db.categoryItem.update({
@@ -156,7 +158,7 @@ export const categoryRouter = createTRPCRouter({
     .input(
       z.object({
         id: z.string().min(1, "id не може бути порожнім"),
-      }),
+      })
     )
     .mutation(async ({ ctx, input }) => {
       await ctx.db.categoryItem.delete({
@@ -188,7 +190,7 @@ export const categoryRouter = createTRPCRouter({
     .input(
       z.object({
         categoryName: z.string().min(1, "Назва категорії не може бути пустою"),
-      }),
+      })
     )
     .mutation(async ({ ctx, input }) => {
       try {
@@ -213,7 +215,7 @@ export const categoryRouter = createTRPCRouter({
     .input(
       z.object({
         categoryName: z.string(),
-      }),
+      })
     )
     .mutation(async ({ ctx, input }) => {
       await ctx.db.categoryItem.deleteMany({
@@ -236,7 +238,7 @@ export const categoryRouter = createTRPCRouter({
       z.object({
         categoryName: z.string().min(1, "categoryName не може бути порожнім"),
         newName: z.string().min(1, "newName не може бути порожнім"),
-      }),
+      })
     )
     .mutation(async ({ ctx, input }) => {
       await ctx.db.category.update({

@@ -23,7 +23,7 @@ interface Order
 }
 
 export default function Page() {
-  const getOrders = api.radioCenter.getOrders.useQuery({ filter: null });
+  const getOrders = api.radioCenter.getOrders.useQuery();
 
   const [orders, setOrders] = useState<Order[]>([]);
   const [play] = useSound("sounds/new-notification-7-210334.mp3", {
@@ -45,10 +45,8 @@ export default function Page() {
   useEffect(() => {
     if (pusherChannel) {
       pusherChannel.bind("order-created", (data: Order) => {
-        setOrders((prev) => {
-          play();
-          return [data, ...prev];
-        });
+        play();
+        setOrders((prev) => [data, ...prev]);
       });
 
       return () => {
@@ -64,13 +62,10 @@ export default function Page() {
           <Loader2 className="h-6 w-6 mx-auto animate-spin text-[#b5b5b5]" />
         )}
 
-        {orders.map((order, index) => (
-          <MusicOrderCard
-            key={order.id}
-            order={order}
-            index={index}
-            type="radioCenter"
-          />
+        {orders.length === 0 && <h1>Немає поточних замовлень</h1>}
+
+        {orders.map((order) => (
+          <MusicOrderCard key={order.id} order={order} type="radioCenter" />
         ))}
       </div>
     </div>

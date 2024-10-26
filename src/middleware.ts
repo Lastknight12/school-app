@@ -18,6 +18,7 @@ export const urls = new Map<string, UserRole[]>([
   ["/leaderboard", ["ADMIN", "SELLER", "TEACHER", "STUDENT"]],
   ["/admin", ["ADMIN"]],
   ["/admin/transfers", ["ADMIN"]],
+  ["/musicOrders", ["RADIO_CENTER"]],
 ]);
 
 const not_found_url = "/404";
@@ -38,7 +39,7 @@ export default async function middleware(request: NextRequest) {
 
   // find url that match regex or equal current url
   const urlMatch = Array.from(urls.entries()).find(([url]) =>
-    RegExp(url).test(currentUrl) ? true : currentUrl === url,
+    RegExp(url).test(currentUrl) ? true : currentUrl === url
   );
 
   if (!urlMatch) {
@@ -59,5 +60,6 @@ export const config = {
     "/buy",
     "/admin",
     "/admin/klass/:klassName",
+    "/musicOrders",
   ],
 };

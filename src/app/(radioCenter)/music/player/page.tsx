@@ -1,14 +1,18 @@
 "use client";
 
+import { type MusicOrder } from "@prisma/client";
 import { type Channel } from "pusher-js";
 import { useEffect, useState } from "react";
 import ReactPlayer from "react-player";
 
 import { pusherClient } from "~/lib/pusher-client";
+import { api } from "~/trpc/react";
+
+type Track = Omit<MusicOrder, "createdAt" | "buyerId">;
 
 export default function Player() {
-  const [tracks, addTracks] = useState<string[]>([]);
-  const [currentTrackSrc, setCurrentTrackSrc] = useState("");
+  const [tracks, addTracks] = useState<Track[] | undefined>([]);
+  const [currentTrack, setCurrentTrack] = useState<Track | undefined>();
   const [channel, setChannel] = useState<Channel | null>(null);
 
   const [userInteraction, setUserInteracted] = useState(false);
@@ -19,18 +23,19 @@ export default function Player() {
   const soundcloudRegexp =
     /^(?:(https?):\/\/)?(?:(?:www|m)\.)?(soundcloud\.com|snd\.sc)\/(.*)$/;
 
-  console.log(currentTrackSrc);
-  function handleAddTrack(data: string) {
-    if (!youtubeRegexp.test(data) && !soundcloudRegexp.test(data)) {
-      return;
-    }
+  const getTracks = api.radioCenter.getCurrentTrackAndQueue.useQuery();
 
-    if (!currentTrackSrc && tracks.length === 0) {
-      setCurrentTrackSrc(data);
-    } else {
-      addTracks((prev) => [...prev, data]);
+  const deleteTrack = api.radioCenter.deleteOrder.useMutation();
+
+  useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
+    if (getTracks.data) {
+      getTracks.data.playerQueue &&
+        addTracks(getTracks.data.playerQueue.map((item) => item));
+      getTracks.data.currentTrack &&
+        setCurrentTrack(getTracks.data.currentTrack);
     }
-  }
+  }, [getTracks.data]);
 
   useEffect(() => {
     const pusherChannel = pusherClient.subscribe("radioCenter_client");
@@ -43,18 +48,51 @@ export default function Player() {
   }, []);
 
   useEffect(() => {
+    const handleBeforeUnload = () => {
+      if (currentTrack) {
+        localStorage.setItem("lastTrack", currentTrack.id);
+      }
+    };
+
+    if (currentTrack) {
+      window.addEventListener("beforeunload", handleBeforeUnload);
+    }
+
     // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
     if (channel && channel.bind) {
-      channel.bind("add-track", function (data: string) {
+      channel.bind("add-track", function (data: MusicOrder) {
         handleAddTrack(data);
       });
 
       return () => {
         channel.unbind_all();
+        window.removeEventListener("beforeunload", handleBeforeUnload);
       };
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [channel, currentTrackSrc, tracks]);
+  }, [channel, currentTrack, tracks]);
+
+  function handleAddTrack(track: Track) {
+    if (
+      !youtubeRegexp.test(track.musicUrl) &&
+      !soundcloudRegexp.test(track.musicUrl)
+    ) {
+      return;
+    }
+
+    if (!currentTrack && tracks?.length === 0) {
+      setCurrentTrack(track);
+    } else {
+      addTracks((prev) => [...prev!.map((item) => item), track]);
+    }
+  }
+
+  function handleTrackEnd() {
+    const nextTrack = tracks ? tracks.shift() : undefined;
+
+    setCurrentTrack(nextTrack);
+    deleteTrack.mutate({ id: currentTrack!.id });
+  }
 
   if (!userInteraction) {
     return (
@@ -72,27 +110,19 @@ export default function Player() {
 
   return (
     <>
-      {!currentTrackSrc && <h1>Немає жодного треку в черзі</h1>}
+      {!currentTrack && <h1>Немає жодного треку в черзі</h1>}
 
-      {currentTrackSrc && (
+      {currentTrack && (
         <ReactPlayer
           playing={true}
           controls={true}
-          onEnded={() => {
-            if (tracks.length > 0) {
-              setCurrentTrackSrc(tracks.shift()!);
-            } else {
-              setCurrentTrackSrc("");
-            }
-          }}
-          url={currentTrackSrc}
+          onEnded={handleTrackEnd}
+          url={currentTrack.musicUrl}
         />
       )}
 
-      <h1>Track queue</h1>
-      {tracks.length === 0 && <h1>Черга пуста</h1>}
-      {tracks.map((track, index) => (
-        <div key={index}>{track}</div>
+      {tracks?.map((track, index) => (
+        <div key={index}>{track.musicTitle}</div>
       ))}
     </>
   );
