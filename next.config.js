@@ -14,6 +14,7 @@ const config = {
       { hostname: "*.gstatic.com" },
       { hostname: "res.cloudinary.com" },
       { hostname: "i.ytimg.com" },
+      { hostname: "*.sndcdn.com" },
     ],
   },
 };
