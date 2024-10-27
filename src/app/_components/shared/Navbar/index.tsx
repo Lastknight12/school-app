@@ -21,6 +21,8 @@ const urls = new Map<string, UserRole[]>([
   ["/stats", ["STUDENT", "RADIO_CENTER"]],
   ["/shop", ["STUDENT", "RADIO_CENTER"]],
   ["/music", ["STUDENT", "RADIO_CENTER"]],
+  ["/music/player", ["RADIO_CENTER"]],
+  ["/musicOrders", ["RADIO_CENTER"]]
 ]);
 
 export default async function Navbar() {

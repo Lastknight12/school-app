@@ -6,14 +6,14 @@ import Link from "next/link";
 import { useRef } from "react";
 import { useState } from "react";
 import { BiHome } from "react-icons/bi";
+import { BsFillMusicPlayerFill } from "react-icons/bs";
 import { FaMoneyBillTransfer } from "react-icons/fa6";
 import { FiShoppingBag } from "react-icons/fi";
 import { GrTransaction } from "react-icons/gr";
 import { IoMdClose, IoMdStats } from "react-icons/io";
 import { MdAdminPanelSettings, MdLeaderboard } from "react-icons/md";
-import { BsFillMusicPlayerFill } from "react-icons/bs";
-import { SiApplemusic } from "react-icons/si";
 import { PiHamburger } from "react-icons/pi";
+import { SiApplemusic } from "react-icons/si";
 
 import { cn } from "~/lib/utils";
 
@@ -54,11 +54,6 @@ export default function BurgerMenu({ allowedUrls }: Props) {
     { name: "Stats", href: "/stats", icon: <IoMdStats size={24} /> },
     { name: "Shop", href: "/shop", icon: <FiShoppingBag size={24} /> },
     {
-      name: "Settings",
-      href: "/settings",
-      icon: <Settings size={24} />,
-    },
-    {
       name: "Leaderboard",
       href: "/leaderboard",
       icon: <MdLeaderboard size={24} />,
@@ -69,9 +64,14 @@ export default function BurgerMenu({ allowedUrls }: Props) {
       icon: <BsFillMusicPlayerFill size={24} />,
     },
     {
-      name: "Music orders",
-      href: "/musicOrders",
+      name: "Order music",
+      href: "/music",
       icon: <SiApplemusic size={24} />,
+    },
+    {
+      name: "Settings",
+      href: "/settings",
+      icon: <Settings size={24} />,
     },
   ];
 
@@ -91,7 +91,7 @@ export default function BurgerMenu({ allowedUrls }: Props) {
         transition={{ duration: 0.2 }}
         className={cn(
           "shadow-4xl fixed left-0 top-0 z-50 flex h-screen w-full flex-col bg-[#15151569] backdrop-blur-lg",
-          !debauncedIsOpen && "pointer-events-none"
+          !debauncedIsOpen && "pointer-events-none",
         )}
       >
         <IoMdClose
@@ -100,7 +100,7 @@ export default function BurgerMenu({ allowedUrls }: Props) {
           onClick={() => setOpen(false)}
         />
 
-        <ul className="my-auto grid gap-2 px-6" ref={ref}>
+        <ul className="my-auto grid gap-2 px-6 overflow-y-auto pb-5" ref={ref}>
           {allowedNavItems.map((item, idx) => {
             const { icon, name, href } = item;
 
