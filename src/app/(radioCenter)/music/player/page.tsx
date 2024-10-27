@@ -5,8 +5,9 @@ import { type Channel } from "pusher-js";
 import { useEffect, useState } from "react";
 import ReactPlayer from "react-player";
 
-import { pusherClient } from "~/lib/pusher-client";
 import { api } from "~/trpc/react";
+
+import { pusherClient } from "~/lib/pusher-client";
 
 type Track = Omit<MusicOrder, "createdAt" | "buyerId">;
 
@@ -97,7 +98,7 @@ export default function Player() {
   if (!userInteraction) {
     return (
       <button
-        className="w-screen h-screen flex items-center justify-center"
+        className="w-screen h-full_page flex items-center justify-center"
         onClick={() => setUserInteracted(true)}
       >
         <p>
@@ -109,21 +110,30 @@ export default function Player() {
   }
 
   return (
-    <>
+    <div className="px-6">
       {!currentTrack && <h1>Немає жодного треку в черзі</h1>}
 
-      {currentTrack && (
-        <ReactPlayer
-          playing={true}
-          controls={true}
-          onEnded={handleTrackEnd}
-          url={currentTrack.musicUrl}
-        />
-      )}
+      <div className="mb-4">
+        {currentTrack && (
+          <ReactPlayer
+            playing={true}
+            controls={true}
+            onEnded={handleTrackEnd}
+            url={currentTrack.musicUrl}
+          />
+        )}
+      </div>
 
-      {tracks?.map((track, index) => (
-        <div key={index}>{track.musicTitle}</div>
-      ))}
-    </>
+      <h1 className="mb-3">Наступні треки:</h1>
+      <div className="flex flex-col gap-w">
+        {!tracks || tracks.length === 0 && <h1 className="font-bold">Немає наступних треків</h1>}
+
+        {tracks?.map((track, index) => (
+          <div key={index} className="font-bold">
+            {track.musicTitle}
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }

@@ -3,10 +3,12 @@
 import { type MusicOrder } from "@prisma/client";
 import { EllipsisVertical } from "lucide-react";
 import Image from "next/image";
-import { toast } from "sonner";
 import Link from "next/link";
+import { toast } from "sonner";
 
 import { api } from "~/trpc/react";
+
+import { cn } from "~/lib/utils";
 
 import {
   DropdownMenu,
@@ -26,9 +28,14 @@ interface Props {
     };
   };
   type?: "radioCenter" | "student";
+  className?: string;
 }
 
-export default function MusicOrderCard({ order, type = "student" }: Props) {
+export default function MusicOrderCard({
+  order,
+  type = "student",
+  className,
+}: Props) {
   const utils = api.useUtils();
   const acceptOrderMutation = api.radioCenter.acceptOrder.useMutation({
     onSuccess: () => {
@@ -55,31 +62,43 @@ export default function MusicOrderCard({ order, type = "student" }: Props) {
   });
 
   return (
-    <Link
-      href={order.musicUrl}
-      className="flex bg-[#121212] border border-[#414040] rounded-lg p-4 justify-between"
-    >
-      <div className="flex gap-3">
+    <div className={"flex bg-[#121212] border items-start border-[#414040] rounded-lg"}>
+      <Link
+        href={order.musicUrl}
+        className={cn(
+          "flex gap-5 w-full",
+          className,
+          type === "radioCenter" ? "pl-6 py-4" : "py-4 px-6",
+        )}
+      >
         <Image
           src={order.musicImage}
           width={90}
           height={70}
           alt="music image"
-          className="rounded-lg max-w-[90px]"
+          className="rounded-lg"
         />
 
-        <div className="flex text-sm flex-col py-1 gap-2">
-          <p className="max-w-[485px]">{order.musicTitle}</p>
-          <p>
+        <div className="flex text-sm flex-col gap-2">
+          <p className="max-w-[285px] text-base font-bold max-sm:text-base">
+            {order.musicTitle.length > 47
+              ? order.musicTitle.slice(0, 44) + "..."
+              : order.musicTitle}
+          </p>
+          <p className="max-sm:text-sm">
             Замовник:{" "}
-            <span className="text-emerald-300 mt-2">{order.buyer.name}</span>
+            <span className="text-emerald-300 mt-2">
+              {order.buyer.name.length > 25
+                ? order.buyer.name.slice(0, 22) + "..."
+                : order.buyer.name}
+            </span>
           </p>
         </div>
-      </div>
+      </Link>
 
       {type === "radioCenter" && (
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
+          <DropdownMenuTrigger className="outline-none pt-4 pr-6">
             <EllipsisVertical size={20} />
           </DropdownMenuTrigger>
           <DropdownMenuContent>
@@ -98,6 +117,6 @@ export default function MusicOrderCard({ order, type = "student" }: Props) {
           </DropdownMenuContent>
         </DropdownMenu>
       )}
-    </Link>
+    </div>
   );
 }

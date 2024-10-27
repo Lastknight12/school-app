@@ -18,6 +18,9 @@ const config = {
       },
     },
     extend: {
+      height: {
+        full_page: "calc(100vh - 72px)"
+      },
       fontFamily: {
         metropolis: ["var(--font-metropolis)"],
         orbitron: ["var(--font-orbitron)"],

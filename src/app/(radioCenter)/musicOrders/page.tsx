@@ -11,6 +11,7 @@ import { api } from "~/trpc/react";
 import { pusherClient } from "~/lib/pusher-client";
 
 import MusicOrderCard from "~/app/_components/shared/MusicOrderCard";
+import { cn } from "~/lib/utils";
 
 interface Order
   extends Pick<
@@ -23,7 +24,9 @@ interface Order
 }
 
 export default function Page() {
-  const getOrders = api.radioCenter.getOrders.useQuery();
+  const getOrders = api.radioCenter.getOrders.useQuery(void 0, {
+    refetchOnWindowFocus: false
+  });
 
   const [orders, setOrders] = useState<Order[]>([]);
   const [play] = useSound("sounds/new-notification-7-210334.mp3", {
@@ -56,12 +59,14 @@ export default function Page() {
   }, [pusherChannel, play]);
 
   return (
-    <div className="px-6">
-      <div className="flex flex-col gap-3">
-        {getOrders.isFetching && (
-          <Loader2 className="h-6 w-6 mx-auto animate-spin text-[#b5b5b5]" />
-        )}
+    <div className={cn("px-6",getOrders.isPending && "h-full_page")}>
+      {getOrders.isFetching && (
+        <div className="h-full flex items-center justify-center mb-6">
+          <Loader2 className="h-6 w-6 animate-spin text-[#b5b5b5]" />
+        </div>
+      )}
 
+      <div className="flex flex-col gap-3">
         {!getOrders.isFetching && orders.length === 0 && (
           <h1>Немає поточних замовлень</h1>
         )}

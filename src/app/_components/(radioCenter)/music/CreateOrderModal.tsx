@@ -105,11 +105,11 @@ export default function DialogDemo() {
             !getVideoInfoMutation.isError && (
               <div className=" mt-6 pt-4 border-t-2 gap-4 border-[#3a3a3a] flex items-center max-[415px]:flex-col">
                 <Image
-                  className="rounded-lg"
-                  width={125}
+                  width={100}
                   height={100}
                   src={videoInfo.musicImage ?? ""}
                   alt="music image"
+                  className="rounded-lg"
                 />
 
                 <span className="max-w-[250px]">

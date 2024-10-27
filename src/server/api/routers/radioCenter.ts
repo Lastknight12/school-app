@@ -10,6 +10,13 @@ import {
   radioCenterProcedure,
 } from "../trpc";
 
+// Used for validate music
+const youtubeRegexp =
+  /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+
+const soundcloudRegexp =
+  /^(?:(https?):\/\/)?(?:(?:www|m)\.)?(soundcloud\.com|snd\.sc)\/(.*)$/;
+
 export async function getYoutubeVideoInfo(videoId: string) {
   const yt = google.youtube({
     auth: env.YOUTUBE_API_KEY,
@@ -126,11 +133,6 @@ export const radioCenterRouter = createTRPCRouter({
   getVideoInfo: protectedProcedure
     .input(z.string())
     .mutation(async ({ input }) => {
-      const youtubeRegexp =
-        /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-
-      const soundcloudRegexp =
-        /^(?:(https?):\/\/)?(?:(?:www|m)\.)?(soundcloud\.com|snd\.sc)\/(.*)$/;
 
       if (!youtubeRegexp.test(input) && !soundcloudRegexp.test(input)) {
         throw new TRPCError({
@@ -165,10 +167,7 @@ export const radioCenterRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
-      const youtubeRegexp =
-        /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-
-      if (!youtubeRegexp.test(input.musicUrl)) {
+      if (!youtubeRegexp.test(input.musicUrl) && !soundcloudRegexp.test(input.musicUrl)) {
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "Невірний URL",
