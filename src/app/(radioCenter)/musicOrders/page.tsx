@@ -9,9 +9,9 @@ import useSound from "use-sound";
 import { api } from "~/trpc/react";
 
 import { pusherClient } from "~/lib/pusher-client";
+import { cn } from "~/lib/utils";
 
 import MusicOrderCard from "~/app/_components/shared/MusicOrderCard";
-import { cn } from "~/lib/utils";
 
 interface Order
   extends Pick<
@@ -25,8 +25,9 @@ interface Order
 
 export default function Page() {
   const getOrders = api.radioCenter.getOrders.useQuery(void 0, {
-    refetchOnWindowFocus: false
+    refetchOnWindowFocus: false,
   });
+  const [userInteraction, setUserInteracted] = useState(false);
 
   const [orders, setOrders] = useState<Order[]>([]);
   const [play] = useSound("sounds/new-notification-7-210334.mp3", {
@@ -58,8 +59,22 @@ export default function Page() {
     }
   }, [pusherChannel, play]);
 
+  if (!userInteraction && !getOrders.isFetching) {
+    return (
+      <button
+        className="w-screen h-full_page flex items-center justify-center"
+        onClick={() => setUserInteracted(true)}
+      >
+        <p>
+          Клацніть щоб продовжити. Це необхідно для відтворення звуку при
+          надходженні нових замовлень
+        </p>
+      </button>
+    );
+  }
+
   return (
-    <div className={cn("px-6",getOrders.isPending && "h-full_page")}>
+    <div className={cn("px-6", getOrders.isPending && "h-full_page")}>
       {getOrders.isFetching && (
         <div className="h-full flex items-center justify-center mb-6">
           <Loader2 className="h-6 w-6 animate-spin text-[#b5b5b5]" />
@@ -68,7 +83,7 @@ export default function Page() {
 
       <div className="flex flex-col gap-3">
         {!getOrders.isFetching && orders.length === 0 && (
-          <h1>Немає поточних замовлень</h1>
+          <h1>Немає нових замовлень</h1>
         )}
 
         {orders.map((order) => (
