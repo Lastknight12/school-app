@@ -1,7 +1,6 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
 
 import { api } from "~/trpc/react";
@@ -65,9 +64,9 @@ export default function Page() {
 
         {/* Loading state */}
         {getOrders.isFetching &&
-          Array.from({ length: 3 }).map(() => {
+          Array.from({ length: 3 }).map((_, index) => {
             return (
-              <div className="flex gap-5 px-5 py-4 bg-[#121212] border-[#414040] rounded-lg max-[380px]:flex-col">
+              <div key={index} className="flex gap-5 px-5 py-4 bg-[#121212] border-[#414040] rounded-lg max-[380px]:flex-col">
                 <Skeleton className="w-[100px] h-[70px]" />
 
                 <div className="flex flex-col gap-2">
@@ -86,6 +85,7 @@ export default function Page() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.3 }}
+                key={index}
               >
                 <MusicOrderCard
                   order={order}
