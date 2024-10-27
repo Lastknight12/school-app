@@ -62,7 +62,11 @@ export default function MusicOrderCard({
   });
 
   return (
-    <div className={"flex bg-[#121212] border items-start border-[#414040] rounded-lg"}>
+    <div
+      className={
+        "flex bg-[#121212] border items-start border-[#414040] rounded-lg"
+      }
+    >
       <Link
         href={order.musicUrl}
         className={cn(

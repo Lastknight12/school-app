@@ -1,3 +1,4 @@
+import { type UserRole } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -9,7 +10,6 @@ import AdminItem from "./AdminItem";
 import ScanQr from "./ScanQr";
 import StudentItem from "./StudentItem";
 import TeacherItem from "./TeacherItem";
-import { type UserRole } from "@prisma/client";
 
 const urls = new Map<string, UserRole[]>([
   ["/", ["TEACHER", "ADMIN", "SELLER", "STUDENT", "RADIO_CENTER"]],
@@ -22,7 +22,7 @@ const urls = new Map<string, UserRole[]>([
   ["/shop", ["STUDENT", "RADIO_CENTER"]],
   ["/music", ["STUDENT", "RADIO_CENTER"]],
   ["/music/player", ["RADIO_CENTER"]],
-  ["/musicOrders", ["RADIO_CENTER"]]
+  ["/musicOrders", ["RADIO_CENTER"]],
 ]);
 
 export default async function Navbar() {

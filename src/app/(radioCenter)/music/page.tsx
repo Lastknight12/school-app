@@ -79,17 +79,21 @@ export default function Page() {
           })}
 
         {/* List of songs */}
-        {!getOrders.isFetching && getOrders.data?.playerQueue.map((order, index) => {
-          return (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.3 }}
-            >
-              <MusicOrderCard order={order} className="max-[380px]:flex-col" />
-            </motion.div>
-          );
-        })}
+        {!getOrders.isFetching &&
+          getOrders.data?.playerQueue.map((order, index) => {
+            return (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.3 }}
+              >
+                <MusicOrderCard
+                  order={order}
+                  className="max-[380px]:flex-col"
+                />
+              </motion.div>
+            );
+          })}
       </div>
     </div>
   );

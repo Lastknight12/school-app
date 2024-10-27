@@ -126,7 +126,10 @@ export default function Player() {
 
       <h1 className="mb-3">Наступні треки:</h1>
       <div className="flex flex-col gap-w">
-        {!tracks || tracks.length === 0 && <h1 className="font-bold">Немає наступних треків</h1>}
+        {!tracks ||
+          (tracks.length === 0 && (
+            <h1 className="font-bold">Немає наступних треків</h1>
+          ))}
 
         {tracks?.map((track, index) => (
           <div key={index} className="font-bold">
