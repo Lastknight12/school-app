@@ -3,7 +3,6 @@
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
 
 import { api } from "~/trpc/react";
 
@@ -22,9 +21,7 @@ export default function SellerHomePage() {
   });
 
   useEffect(() => {
-    if (getCategoryNames.data?.length === 0 && !getCategoryNames.isFetching) {
-      toast.error("Не вдалося завантажити категорії. Спробуйте пізніше");
-    } else if (getCategoryNames.data && getCategoryNames.data.length > 0) {
+    if (getCategoryNames.data && getCategoryNames.data.length > 0) {
       setCurrentCategoryName(getCategoryNames.data[0]!.name);
     }
   }, [getCategoryNames.data, getCategoryNames.isFetching]);
@@ -60,7 +57,7 @@ export default function SellerHomePage() {
         />
 
         {/* if we not fetching and data is not empty show input */}
-        {(getCategoryNames.data?.length ?? 1) > 0 &&
+        {getCategoryNames.data?.length !== 0 &&
           !getCategoryNames.isFetching && (
             <input
               className="w-full rounded-md bg-card px-4 py-2 outline-none"
@@ -71,40 +68,46 @@ export default function SellerHomePage() {
             />
           )}
 
-        {/* if loading show spinner */}
-        {getCategoryItems.isPending ? (
+        {/* Loading state */}
+        {getCategoryItems.isPending && getCategoryNames.isPending && (
           <div className="flex h-full items-center justify-center">
             <Loader2 className="h-6 w-6 animate-spin text-[#b5b5b5]" />
           </div>
-        ) : // if not loading and data is empty show message
-        getCategoryItems.data?.length === 0 ? (
+        )}
+
+        {getCategoryNames.data?.length === 0 && !getCategoryNames.isPending && (
+          <p>
+          Не знайдено жодних категорій. Спробуйте добавити нову
+          </p>
+        )}
+
+        {getCategoryItems.data?.length === 0 && !getCategoryItems.isPending && (
           <p className="text-center">
             Не знайдено жодних продуктів в категорі{" "}
             <span className="text-emerald-300">{currentCategoryName}</span>
           </p>
-        ) : (
-          // else show items
-          getCategoryItems.data?.map((item) => {
-            return (
-              <ProductListItem key={item.id} item={item}>
-                <div className="flex items-center gap-3">
-                  <Image
-                    src={item.image}
-                    width={100}
-                    height={100}
-                    className="rounded-md"
-                    alt="product image"
-                  />
-                  <div className="flex flex-col justify-center gap-2">
-                    <h1>{item.title}</h1>
-                    <p>{item.pricePerOne + " Балів"}</p>
-                    <p>Кількість: {item.count}</p>
-                  </div>
-                </div>
-              </ProductListItem>
-            );
-          })
         )}
+
+        {getCategoryItems.data?.map((item) => {
+          return (
+            <ProductListItem key={item.id} item={item}>
+              <div className="flex items-center gap-3">
+                <Image
+                  src={item.image}
+                  width={100}
+                  height={100}
+                  className="rounded-md"
+                  alt="product image"
+                />
+                <div className="flex flex-col justify-center gap-2">
+                  <h1>{item.title}</h1>
+                  <p>{item.pricePerOne + " Балів"}</p>
+                  <p>Кількість: {item.count}</p>
+                </div>
+              </div>
+            </ProductListItem>
+          );
+        })}
       </div>
     </main>
   );

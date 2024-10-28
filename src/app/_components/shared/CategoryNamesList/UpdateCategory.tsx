@@ -88,18 +88,16 @@ export default function UpdateCategory({
           <DialogTitle>Оновити категорію</DialogTitle>
           <DialogDescription>Змініть назву категорії</DialogDescription>
         </DialogHeader>
-        <div className="grid gap-3 py-4">
-          <div className="grid grid-cols-3 items-center">
-            {/* New name */}
-            <Label className="text-left text-base">Нова назва:</Label>
-            <input
-              className="col-span-2 rounded-md bg-card px-3 py-1 outline-none"
-              value={name}
-              onChange={(e) => {
-                setName(e.target.value);
-              }}
-            />
-          </div>
+        <div className="flex flex-col gap-2 mt-3">
+          {/* New name */}
+          <Label className="text-left text-base">Нова назва:</Label>
+          <input
+            className="col-span-2 rounded-md bg-card px-3 py-1 outline-none"
+            value={name}
+            onChange={(e) => {
+              setName(e.target.value);
+            }}
+          />
         </div>
         <DialogFooter className="justify-end">
           <Button

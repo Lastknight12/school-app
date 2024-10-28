@@ -31,14 +31,6 @@ export default function Leaderboard({ session }: Props) {
   const isScrolledToTrigger = useInView(fetchTriger);
 
   useEffect(() => {
-    console.log(
-      "isScrolledToTrigger",
-      isScrolledToTrigger,
-      "hasNextPage",
-      getLeaderboard.hasNextPage,
-      "isFetchingNextPage",
-      getLeaderboard.isFetchingNextPage,
-    );
     if (
       isScrolledToTrigger &&
       getLeaderboard.hasNextPage &&

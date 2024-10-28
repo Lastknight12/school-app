@@ -83,7 +83,7 @@ export function DeleteCategory({
             Ви впевнені, що хочете видалити категорію та всі продукти в ній?
           </DialogDescription>
         </DialogHeader>
-        <DialogFooter className="justify-center">
+        <DialogFooter className="justify-end">
           <Button
             disabled={deleteCategoryMutation.isPending}
             className="bg-red-500 text-black"
