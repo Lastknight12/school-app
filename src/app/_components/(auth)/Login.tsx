@@ -16,11 +16,14 @@ export default function Login() {
   const error = useSearchParams().get("error");
 
   useEffect(() => {
+    console.log(error)
     switch (error) {
       case "OAuthAccountNotLinked":
-        toast.error("Ви вже увійшли в Discord");
-      case "Callback":
+        toast.error("Аккаунт прікріплено не до цього методу входу");
+        break
+      case "OAuthCallback":
         toast.error("Виникла помилка під час входу");
+        break
     }
   }, [error]);
 
