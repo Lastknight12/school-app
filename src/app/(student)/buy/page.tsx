@@ -14,9 +14,14 @@ export default function BuyProduct() {
   const params = useSearchParams();
 
   const token = params.get("token");
+  const productId = params.get("productId");
 
-  if (!token) {
-    return <h1 className="w-full text-center text-red-400">Відсутній токен</h1>;
+  if (!productId && !token) {
+    return (
+      <h1 className="w-full text-center text-red-400">
+        Відсутній токен або id продукту
+      </h1>
+    );
   }
 
   const payMutation = api.transfers.pay.useMutation({
@@ -27,8 +32,8 @@ export default function BuyProduct() {
     },
   });
 
-  const getItemsFromToken = api.category.getItemsByToken.useQuery(
-    { token },
+  const getItemsFromTokenOrId = api.category.getItemsByTokenOrId.useQuery(
+    { token, productId },
     {
       refetchOnWindowFocus: false,
       refetchOnMount: false,
@@ -36,24 +41,25 @@ export default function BuyProduct() {
     },
   );
 
-  if (getItemsFromToken.error) {
-    getItemsFromToken.error.data?.zodError &&
-      toast.error(getItemsFromToken.error.data.zodError[0]?.message);
+  if (getItemsFromTokenOrId.error) {
+    getItemsFromTokenOrId.error.data?.zodError &&
+      getItemsFromTokenOrId.error.data?.zodError.length > 0 &&
+      toast.error(getItemsFromTokenOrId.error.data.zodError[0]!.message);
 
     return (
       <h1 className="w-full text-center text-red-400">
-        {getItemsFromToken.error.message}
+        {getItemsFromTokenOrId.error.message}
       </h1>
     );
   }
 
-  if (!getItemsFromToken.data && !getItemsFromToken.isFetching) {
-    return <h1>Invalid token</h1>;
+  if (!getItemsFromTokenOrId.data && !getItemsFromTokenOrId.isFetching) {
+    return <h1>Невіриний токен або id продукту</h1>;
   }
 
   return (
-    <main className="flex h-[calc(100vh-72px)] w-full flex-col justify-between pb-2">
-      {getItemsFromToken.isFetching ? (
+    <main className="flex h-[calc(100vh-72px)] w-full flex-col justify-between pb-2 px-6">
+      {getItemsFromTokenOrId.isFetching ? (
         <div className="flex h-[calc(100vh-72px)] w-full items-center justify-center">
           <Loader2 className="h-6 w-6 animate-spin text-[#b5b5b5]" />
         </div>
@@ -62,32 +68,34 @@ export default function BuyProduct() {
           <h1 className="text-2xl text-lime-500">Успішно</h1>
         </div>
       ) : (
-        <>
-          <div className="flex flex-col items-center">
-            <ProductCarousel
-              items={getItemsFromToken.data!.products}
-              className="flex-col text-lg"
-            />
-          </div>
-          <div>
-            <h1 className="mb-3 w-full text-center text-xl">
-              В суммі: {getItemsFromToken.data!.totalAmount}
-            </h1>
-            <Button
-              variant="green"
-              disabled={payMutation.isPending}
-              className="flex w-full items-center"
-              onClick={() => {
-                payMutation.mutate({ token });
-              }}
-            >
-              Оплатити
-              {payMutation.isPending && (
-                <Loader2 className="ml-2 h-4 w-4 animate-spin" />
-              )}
-            </Button>
-          </div>
-        </>
+        getItemsFromTokenOrId.data && (
+          <>
+            <div className="flex flex-col items-center">
+              <ProductCarousel
+                items={getItemsFromTokenOrId.data.products}
+                className="flex-col text-lg"
+              />
+            </div>
+            <div>
+              <h1 className="mb-3 w-full text-center text-xl">
+                В суммі: {getItemsFromTokenOrId.data.totalAmount}
+              </h1>
+              <Button
+                variant="green"
+                disabled={payMutation.isPending}
+                className="flex w-full items-center"
+                onClick={() => {
+                  payMutation.mutate({ token, productId });
+                }}
+              >
+                Оплатити
+                {payMutation.isPending && (
+                  <Loader2 className="ml-2 h-4 w-4 animate-spin" />
+                )}
+              </Button>
+            </div>
+          </>
+        )
       )}
     </main>
   );

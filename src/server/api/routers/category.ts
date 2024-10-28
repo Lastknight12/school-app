@@ -1,11 +1,12 @@
-import { z } from "zod";
-import { createTRPCRouter, protectedProcedure, sellerProcedure } from "../trpc";
-import jwt from "jsonwebtoken";
-import { type TokenData } from "./transfers";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { TRPCError } from "@trpc/server";
+import jwt from "jsonwebtoken";
+import { z } from "zod";
 import { env } from "~/env";
 import { addProductSchema } from "~/schemas/zod";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+
+import { createTRPCRouter, protectedProcedure, sellerProcedure } from "../trpc";
+import { type TokenData } from "./transfers";
 
 export const categoryRouter = createTRPCRouter({
   getCategoryItems: protectedProcedure
@@ -13,7 +14,7 @@ export const categoryRouter = createTRPCRouter({
       z.object({
         categoryName: z.string().min(1, "categoryName не може бути порожнім"),
         searchFilter: z.string().nullish(),
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       const data = await ctx.db.category.findUnique({
@@ -27,7 +28,7 @@ export const categoryRouter = createTRPCRouter({
 
       if (input.searchFilter) {
         return data?.items.filter((item) =>
-          item.title.toLowerCase().includes(input.searchFilter!.toLowerCase())
+          item.title.toLowerCase().includes(input.searchFilter!.toLowerCase()),
         );
       } else {
         return data?.items;
@@ -48,8 +49,8 @@ export const categoryRouter = createTRPCRouter({
         z.object({
           id: z.string(),
           count: z.number(),
-        })
-      )
+        }),
+      ),
     )
     .mutation(async ({ ctx, input }) => {
       void input.map(async (product) => {
@@ -66,61 +67,111 @@ export const categoryRouter = createTRPCRouter({
       });
     }),
 
-  getItemsByToken: protectedProcedure
+  getItemsByTokenOrId: protectedProcedure
     .input(
-      z.object({ token: z.string().min(1, "token не може бути порожнім") })
+      z.object({
+        token: z.string().nullish(),
+        productId: z.string().nullish(),
+      }),
     )
     .query(async ({ ctx, input }) => {
-      const decryptedToken = jwt.verify(
-        input.token,
-        env.QR_SECRET
-      ) as TokenData;
-
-      const [dbProducts, transaction] = await Promise.all([
-        ctx.db.categoryItem.findMany({
-          where: {
-            id: {
-              in: decryptedToken.products.map((product) => product.id),
-            },
-          },
-        }),
-        ctx.db.transaction.findUnique({
-          where: {
-            id: decryptedToken.transactionId,
-          },
-        }),
-      ]);
-
-      if (transaction?.success) {
+      console.log(input)
+      if (!input.token && !input.productId) {
         throw new TRPCError({
           code: "BAD_REQUEST",
-          message: "Транакція завершена",
+          message: "Відутній токен або id продукту",
         });
       }
 
-      if (dbProducts.length === 0) {
-        return null;
+      if (input.productId) {
+        const dbProduct = await ctx.db.categoryItem.findUnique({
+          where: {
+            id: input.productId,
+          },
+        });
+
+        if (!dbProduct) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Невірний id продукту",
+          });
+        }
+
+        //   products: {
+        //     count: number;
+        //     id: string;
+        //     image: string;
+        //     title: string;
+        //     pricePerOne: number;
+        //     categoryId: string;
+        // }[]
+        return {
+          products: [
+            {
+              id: dbProduct.id,
+              count: 1,
+              image: dbProduct.image,
+              title: dbProduct.title,
+              pricePerOne: dbProduct.pricePerOne,
+              categoryId: dbProduct.categoryId,
+            },
+          ],
+          totalAmount: dbProduct.pricePerOne,
+        };
       }
 
-      return {
-        products: dbProducts.map((product) => {
-          const productCount = decryptedToken.products.find(
-            (item) => item.id === product.id
-          );
+      if (input.token) {
+        const decryptedToken = jwt.verify(
+          input.token,
+          env.QR_SECRET,
+        ) as TokenData;
 
-          if (!productCount)
+        const [dbProducts, transaction] = await Promise.all([
+          ctx.db.categoryItem.findMany({
+            where: {
+              id: {
+                in: decryptedToken.products.map((product) => product.id),
+              },
+            },
+          }),
+          ctx.db.transaction.findUnique({
+            where: {
+              id: decryptedToken.transactionId,
+            },
+          }),
+        ]);
+
+        if (transaction?.success) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Транакція завершена",
+          });
+        }
+
+        if (dbProducts.length === 0) {
+          return null;
+        }
+
+        return {
+          products: dbProducts.map((product) => {
+            const productCount = decryptedToken.products.find(
+              (item) => item.id === product.id,
+            );
+
+            if (!productCount)
+              return {
+                ...product,
+                count: 1,
+              };
+
             return {
               ...product,
-              count: 1,
+              count: productCount.count,
             };
-
-          return {
-            ...product,
-            count: productCount.count,
-          };
-        }),
-        totalAmount: decryptedToken.totalAmount,
-      };
+          }),
+          totalAmount: decryptedToken.totalAmount,
+        };
+      }
     }),
 
   updateProduct: sellerProcedure
@@ -131,7 +182,7 @@ export const categoryRouter = createTRPCRouter({
         imageSrc: z.string().url().min(1, "imageSrc не може бути порожнім"),
         count: z.number(),
         price: z.number(),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       if ((input.price || input.count) < 0) {
@@ -158,7 +209,7 @@ export const categoryRouter = createTRPCRouter({
     .input(
       z.object({
         id: z.string().min(1, "id не може бути порожнім"),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       await ctx.db.categoryItem.delete({
@@ -190,7 +241,7 @@ export const categoryRouter = createTRPCRouter({
     .input(
       z.object({
         categoryName: z.string().min(1, "Назва категорії не може бути пустою"),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       try {
@@ -215,7 +266,7 @@ export const categoryRouter = createTRPCRouter({
     .input(
       z.object({
         categoryName: z.string(),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       await ctx.db.categoryItem.deleteMany({
@@ -238,7 +289,7 @@ export const categoryRouter = createTRPCRouter({
       z.object({
         categoryName: z.string().min(1, "categoryName не може бути порожнім"),
         newName: z.string().min(1, "newName не може бути порожнім"),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       await ctx.db.category.update({
