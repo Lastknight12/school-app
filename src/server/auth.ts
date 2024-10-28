@@ -50,7 +50,15 @@ export const authOptions: NextAuthOptions = {
     signIn: "/login",
   },
   callbacks: {
-    jwt: async ({ token }) => {
+    jwt: async ({ token, trigger, session }) => {
+      let tokenName
+      let tokenImageSrc
+      
+      if(trigger === "update" && session) {
+        tokenName = session.newUsername
+        tokenImageSrc = session.newImageSrc
+      }
+
       const dbUser = await db.user.findFirst({
         where: { id: token.sub},
         select: {
@@ -81,9 +89,9 @@ export const authOptions: NextAuthOptions = {
 
       return {
         sub: token.sub,
-        name: dbUser.name,
+        name: tokenName ?? dbUser.name,
         email: dbUser.email,
-        image: dbUser.image,
+        image: tokenImageSrc ?? dbUser.image,
         balance: dbUser.balance,
         role: dbUser.role,
         studentClass: dbUser.studentClass ?? null,

@@ -34,7 +34,8 @@ export default async function Home() {
       return <TeacherHomePage session={session} />;
     case "ADMIN":
       return redirect("/admin");
+    // in case that radio_center is also student
     case "RADIO_CENTER":
-      return redirect("/musicOrders");
+      return <StudentHomePage session={session} />;
   }
 }

@@ -1,15 +1,16 @@
 "use client";
 
+import { useMutation } from "@tanstack/react-query";
+import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import { type ChangeEvent, useRef, useState } from "react";
 import { MdClose, MdFileUpload } from "react-icons/md";
 import { toast } from "sonner";
+import { type uploadImageRes } from "~/app/api/uploadImage/route";
 
 import { cn } from "~/lib/utils";
 
 import { Button } from "~/shadcn/ui/button";
-import { useMutation } from "@tanstack/react-query";
-import { type uploadImageRes } from "~/app/api/uploadImage/route";
 
 interface Props {
   onSuccess?: (imageSrc: string) => void;
@@ -64,13 +65,23 @@ export default function UploadImage({
   };
   return (
     <>
-      {perviewSrc ? (
+      {!perviewSrc && uploadFileMutation.isPending && (
+        <Loader2 className="h-4 w-4 animate-spin text-[#b5b5b5]" />
+      )}
+      
+      {!perviewSrc && !uploadFileMutation.isPending && (
+        <Button onClick={() => fileInputRef.current?.click()}>
+          <MdFileUpload size={25} />
+        </Button>
+      )}
+
+      {perviewSrc && (
         <div>
           <div className="relative w-max">
             <button
               className={cn(
                 "absolute -right-1 -top-1 rounded-full border border-red-500 bg-red-100",
-                closeButtonClassName
+                closeButtonClassName,
               )}
               onClick={() => setPerviewSrc("")}
             >
@@ -89,10 +100,6 @@ export default function UploadImage({
             />
           </div>
         </div>
-      ) : (
-        <Button onClick={() => fileInputRef.current?.click()}>
-          <MdFileUpload size={25} />
-        </Button>
       )}
       <input
         type="file"

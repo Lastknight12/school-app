@@ -2,6 +2,7 @@
 
 import { Loader2 } from "lucide-react";
 import { type Session } from "next-auth";
+import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FaCheck } from "react-icons/fa";
@@ -23,13 +24,20 @@ interface Props {
   showCardDesign: boolean;
 }
 
-export default function Settings({ session, showCardDesign }: Props) {
-  const [newUsername, setNewUsername] = useState(session.user.name);
-  const [newImageSrc, setNewImageSrc] = useState(session.user.image);
+export default function Settings({
+  session: defaultSession,
+  showCardDesign,
+}: Props) {
+  const [newUsername, setNewUsername] = useState(defaultSession.user.name);
+  const [newImageSrc, setNewImageSrc] = useState(defaultSession.user.image);
+  const { update, data: newSession } = useSession();
+  const isValuesChanged =
+    newUsername !== (newSession?.user.name ?? defaultSession.user.name) ||
+    newImageSrc !== (newSession?.user.image ?? defaultSession.user.image);
 
   const currentCardVariant = useCardVariant((state) => state.variant);
   const setCardVariant = useCardVariant((state) => state.setVariant);
-  
+
   const router = useRouter();
 
   function handleCardClick(variant: number) {
@@ -37,8 +45,8 @@ export default function Settings({ session, showCardDesign }: Props) {
   }
 
   const updateUserMutation = api.user.updateUser.useMutation({
-    onSuccess: () => {
-      toast.success("Інформацію користувача оновлено");
+    onSuccess: async () => {
+      await update({ newUsername, newImageSrc });
       router.refresh();
     },
     onError: (error) => {
@@ -54,21 +62,21 @@ export default function Settings({ session, showCardDesign }: Props) {
 
   return (
     <>
-      <div className="mb-5 flex flex-col gap-3 px-6">
-        <div className="flex flex-col gap-5">
-          <div className="grid grid-cols-2 items-center">
+      <div className="mb-5 flex flex-col gap-3 px-6 pb-5">
+        <div className="flex flex-col gap-8">
+          <div className="flex items-center gap-4">
             {/* New name */}
             <Label className="text-left text-base">Аватарка:</Label>
             <UploadImage
               onSuccess={(imageSrc) => setNewImageSrc(imageSrc)}
-              defaultImageSrc={session.user.image}
+              defaultImageSrc={defaultSession.user.image}
               imageSize={50}
               imageClassName=" rounded-full"
               closeButtonClassName="bg-[#4c0000] border-none text-red-700"
             />
           </div>
 
-          <div className="grid grid-cols-2">
+          <div className="flex flex-col gap-2">
             {/* New name */}
             <Label className="text-left text-base">
               Ім&apos;я користувача:
@@ -76,22 +84,22 @@ export default function Settings({ session, showCardDesign }: Props) {
             <input
               className="rounded-md bg-card px-3 py-1 outline-none"
               value={newUsername}
-              placeholder={session.user.name}
+              placeholder={defaultSession.user.name}
               onChange={(e) => setNewUsername(e.target.value)}
             />
           </div>
 
-          <div className="grid grid-cols-2">
+          <div className="flex flex-col gap-2">
             {/* Email */}
             <Label className="text-left text-base">Email:</Label>
             <input
               className="rounded-md bg-card px-3 py-1 outline-none"
               disabled
-              placeholder={session.user.email}
+              placeholder={defaultSession.user.email}
             />
           </div>
 
-          <div className="grid grid-cols-2">
+          <div className="flex gap-3">
             {/* Klass */}
             <Label className="text-left text-base">Клас:</Label>
 
@@ -100,25 +108,31 @@ export default function Settings({ session, showCardDesign }: Props) {
             ) : getUserClass.data ? (
               <div>{getUserClass.data.name}</div>
             ) : (
-              <div>Немає класу</div>
+              <div className="text-red-500">Немає класу</div>
             )}
+          </div>
+
+          <div>
+            <Button
+              className="text-red-500"
+              onClick={async () => await signOut()}
+            >
+              Вийти з аккаунту
+            </Button>
           </div>
         </div>
 
         <Button
-          disabled={
-            updateUserMutation.isPending ||
-            (newUsername === session.user.name &&
-              newImageSrc === session.user.image)
-          }
           onClick={() =>
             updateUserMutation.mutate({
               newName: newUsername,
               newImageSrc: newImageSrc,
             })
           }
+          className="items-center"
+          disabled={!isValuesChanged || updateUserMutation.isPending}
         >
-          Зберегти{" "}
+          <h1 className="text-base">Зберегти зміни</h1>
           {updateUserMutation.isPending && (
             <Loader2 className="ml-2 h-4 w-4 animate-spin" />
           )}
@@ -147,8 +161,8 @@ export default function Settings({ session, showCardDesign }: Props) {
                       index + 1 === currentCardVariant && "opacity-50",
                     )}
                     variant={index + 1}
-                    balance={session.user.balance}
-                    cardHolder={session.user.name}
+                    balance={defaultSession.user.balance}
+                    cardHolder={defaultSession.user.name}
                   />
                 </div>
               ))}

@@ -8,6 +8,11 @@ export const sendAmountSchema = z.object({
     .max(99999999, { message: "Максимальна сума 99 999 999" }),
 });
 
+export const updateUserSchema = z.object({
+  newName: z.string().min(1, "Ім'я не може бути пустим").max(20, "Ім'я не може перевищувати 20 символів"),
+  newImageSrc: z.string().min(1, "Аватарка не може бути пустою").url("Аватарка повинна бути посиланням")
+})
+
 export const addKlassSchema = z.object({
   name: z
     .string()

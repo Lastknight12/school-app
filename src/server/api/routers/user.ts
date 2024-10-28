@@ -1,5 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import { updateUserSchema } from "~/schemas/zod";
 
 import {
   adminProcedure,
@@ -76,10 +77,7 @@ export const userRouter = createTRPCRouter({
 
   updateUser: protectedProcedure
     .input(
-      z.object({
-        newName: z.string().min(1, "Назва користувача не може бути пустою"),
-        newImageSrc: z.string().min(1, "Аватарка не може бути пустою"),
-      })
+      updateUserSchema
     )
     .mutation(async ({ ctx, input }) => {
       await ctx.db.user.update({
