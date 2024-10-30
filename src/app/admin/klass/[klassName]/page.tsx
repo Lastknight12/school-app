@@ -20,7 +20,7 @@ export default async function Page({
   }
 
   return (
-    <main>
+    <main className="px-6">
       <div className="mb-3 flex gap-3 items-center">
         <h1 className="text-lg">{klass.name} Клас</h1>
         <TeachersList klassId={klass.id} />

@@ -5,6 +5,8 @@ import { Loader2 } from "lucide-react";
 import { type Session } from "next-auth";
 import Image from "next/image";
 import { useEffect, useRef } from "react";
+import { toast } from "sonner";
+import Badge from "~/shadcn/ui/badge";
 
 import { api } from "~/trpc/react";
 
@@ -15,16 +17,21 @@ interface Props {
 }
 
 export default function Leaderboard({ session }: Props) {
-  const limit = 3;
+  const limit = 10;
 
   const getLeaderboard = api.user.getLeaderboard.useInfiniteQuery(
     {
       limit,
     },
     {
+      refetchOnWindowFocus: false,
       getNextPageParam: (lastPage) => lastPage.nextCursor,
     },
   );
+
+  if (getLeaderboard.isError) {
+    toast.error("Виникла помилка під час завантаження даних");
+  }
 
   const fetchTriger = useRef(null);
 
@@ -77,7 +84,7 @@ export default function Leaderboard({ session }: Props) {
               alt={user.id}
               width={65}
               height={65}
-              className="rounded-full"
+              className="rounded-full h-[65px]"
             />
 
             <p className="break-all text-center">
@@ -89,6 +96,14 @@ export default function Leaderboard({ session }: Props) {
             <p className="text-center text-lg max-sm:text-sm">
               {user.balance} $
             </p>
+
+            {user.activeBadge && (
+              <Badge
+                name={user.activeBadge.name}
+                textColor={user.activeBadge.textColor}
+                background={user.activeBadge.backgroundColor}
+              />
+            )}
           </motion.div>
         ))}
       </div>
@@ -110,7 +125,9 @@ export default function Leaderboard({ session }: Props) {
               key={user.id}
               className={cn(
                 "flex w-full items-center justify-between rounded-xl px-3 py-2",
-                session.user.id === user.id ? "bg-[#555555] sticky bottom-4" : "bg-[#262626]",
+                session.user.id === user.id
+                  ? "bg-[#555555] sticky bottom-4"
+                  : "bg-[#262626]",
               )}
             >
               <div className="flex items-center gap-4">
@@ -132,6 +149,14 @@ export default function Leaderboard({ session }: Props) {
                 )}
 
                 <div>{user.name}</div>
+
+                {user.activeBadge && (
+                  <Badge
+                    name={user.activeBadge.name}
+                    textColor={user.activeBadge.textColor}
+                    background={user.activeBadge.backgroundColor}
+                  />
+                )}
               </div>
 
               <div className="text-right max-sm:text-sm">{user.balance} $</div>

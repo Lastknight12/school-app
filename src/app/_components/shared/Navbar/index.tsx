@@ -12,10 +12,11 @@ import StudentItem from "./StudentItem";
 import TeacherItem from "./TeacherItem";
 
 const urls = new Map<string, UserRole[]>([
-  ["/", ["TEACHER", "ADMIN", "SELLER", "STUDENT", "RADIO_CENTER"]],
+  ["/", ["TEACHER", "SELLER", "STUDENT", "RADIO_CENTER"]],
   ["/leaderboard", ["ADMIN", "SELLER", "TEACHER", "STUDENT", "RADIO_CENTER"]],
   ["/settings", ["TEACHER", "ADMIN", "SELLER", "STUDENT", "RADIO_CENTER"]],
   ["/admin", ["ADMIN"]],
+  ["/admin/users", ["ADMIN"]],
   ["/admin/transfers", ["ADMIN"]],
   ["/transactions", ["ADMIN"]],
   ["/stats", ["STUDENT", "RADIO_CENTER"]],

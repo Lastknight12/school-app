@@ -7,7 +7,7 @@ import { useRef } from "react";
 import { useState } from "react";
 import { BiHome } from "react-icons/bi";
 import { BsFillMusicPlayerFill } from "react-icons/bs";
-import { FaMoneyBillTransfer } from "react-icons/fa6";
+import { FaUsers } from "react-icons/fa6";
 import { FiShoppingBag } from "react-icons/fi";
 import { GrTransaction } from "react-icons/gr";
 import { IoMdClose, IoMdStats } from "react-icons/io";
@@ -42,9 +42,9 @@ export default function BurgerMenu({ allowedUrls }: Props) {
       icon: <MdAdminPanelSettings size={24} />,
     },
     {
-      name: "Transfers",
-      href: "/admin/transfers",
-      icon: <FaMoneyBillTransfer size={24} />,
+      name: "Db",
+      href: "/admin/db",
+      icon: <FaUsers size={24} />,
     },
     {
       name: "Transactions",

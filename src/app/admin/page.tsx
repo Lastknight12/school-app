@@ -13,7 +13,7 @@ export default function KlassesTable() {
   });
 
   return (
-    <div>
+    <div className="px-6">
       {klassNames.isFetching ? (
         <div className="flex h-[calc(100vh-72px)] items-center w-full justify-center">
           <Loader2 className="h-6 w-6 animate-spin text-[#b5b5b5]" />

@@ -2,6 +2,7 @@ import { cn } from "~/lib/utils";
 
 import { CategoryMenu } from "./CategoryMenu";
 
+import { List, ListContent, ListItem } from "~/shadcn/ui/buttons-list";
 import { Skeleton } from "~/shadcn/ui/skeleton";
 
 interface Props {
@@ -21,13 +22,8 @@ export default function CategoryNamesList({
 }: Props) {
   return (
     // if no categories and not loading, hide list
-    <div
-      className={cn(
-        "overflow-x-auto",
-        categories.length === 0 && !isLoading ? "hidden" : "min-h-min",
-      )}
-    >
-      <div className="inline-flex space-x-2 pb-2">
+    <List>
+      <ListContent className="pb-2">
         {isLoading
           ? Array.from({ length: 10 }).map((_, index) => (
               <Skeleton
@@ -37,10 +33,7 @@ export default function CategoryNamesList({
             ))
           : categories?.map((category) => {
               return (
-                <div
-                  key={category.name}
-                  className="flex flex-shrink-0 select-none items-center gap-2 rounded-md bg-card"
-                >
+                <ListItem key={category.name}>
                   <div
                     className={cn("py-2", !showMenu ? "px-4" : "pl-4")}
                     onClick={() => {
@@ -49,11 +42,12 @@ export default function CategoryNamesList({
                   >
                     {category.name}
                   </div>
+
                   {showMenu && <CategoryMenu categoryName={category.name} />}
-                </div>
+                </ListItem>
               );
             })}
-      </div>
-    </div>
+      </ListContent>
+    </List>
   );
 }

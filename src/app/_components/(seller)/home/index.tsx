@@ -57,28 +57,26 @@ export default function SellerHomePage() {
         />
 
         {/* if we not fetching and data is not empty show input */}
-        {getCategoryNames.data?.length !== 0 &&
-          !getCategoryNames.isFetching && (
-            <input
-              className="w-full rounded-md bg-card px-4 py-2 outline-none"
-              value={searchFilter}
-              disabled={getCategoryNames.isFetching}
-              placeholder="Пошук..."
-              onChange={(e) => setSearchFilter(e.target.value)}
-            />
-          )}
+        <input
+          className="w-full rounded-md bg-card px-4 py-2 outline-none disabled:opacity-50"
+          value={searchFilter}
+          disabled={
+            getCategoryNames.isFetching || getCategoryItems.data?.length === 0
+          }
+          placeholder="Пошук..."
+          onChange={(e) => setSearchFilter(e.target.value)}
+        />
 
         {/* Loading state */}
         {getCategoryItems.isPending && getCategoryNames.isPending && (
-          <div className="flex h-full items-center justify-center">
+          // 40px - Input and TopButtons, 50px - CategoryNamesList, 20px - gap between 3 items
+          <div className="flex h-[calc(100%-40px*2-50px-20px*3)] items-center justify-center">
             <Loader2 className="h-6 w-6 animate-spin text-[#b5b5b5]" />
           </div>
         )}
 
         {getCategoryNames.data?.length === 0 && !getCategoryNames.isPending && (
-          <p>
-          Не знайдено жодних категорій. Спробуйте добавити нову
-          </p>
+          <p>Не знайдено жодних категорій. Спробуйте добавити нову</p>
         )}
 
         {getCategoryItems.data?.length === 0 && !getCategoryItems.isPending && (

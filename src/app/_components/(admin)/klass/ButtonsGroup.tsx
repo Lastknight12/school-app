@@ -15,8 +15,8 @@ export default function ButtonsGroup({ klassId }: Props) {
   const [isAddingStudent, setIsAddingStudent] = React.useState(false);
   const [isAddingTeacher, setIsAddingTeacher] = React.useState(false);
 
-  const getStudents = api.user.getAllStudents.useQuery();
-  const getTeachers = api.user.getAllTeachers.useQuery();
+  const getStudents = api.user.getUsers.useQuery({ role: "STUDENT" });
+  const getTeachers = api.user.getUsers.useQuery({ role: "TEACHER" });
 
   const utils = api.useUtils();
 

@@ -1,15 +1,15 @@
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import {type User } from "@prisma/client";
+import type { Badge, UserRole } from "@prisma/client";
 import {
-  getServerSession,
   type DefaultSession,
   type NextAuthOptions,
+  getServerSession,
 } from "next-auth";
 import { type Adapter } from "next-auth/adapters";
 import DiscordProvider from "next-auth/providers/discord";
 import GoogleProvider from "next-auth/providers/google";
-
 import { env } from "~/env";
+
 import { db } from "~/server/db";
 
 /**
@@ -18,21 +18,29 @@ import { db } from "~/server/db";
  *
  * @see https://next-auth.js.org/getting-started/typescript#module-augmentation
  */
-interface CustomUser extends Omit<User, "emailVerified" | "studentClassId"> {
+interface CustomUser {
+  id: string;
+  name: string;
+  email: string;
+  image: string;
+  balance: number;
+  badges: Badge[];
+  activeBadge: Badge | null;
+  role: UserRole;
   studentClass?: {
     id: string;
     name: string;
-  } | null,
-  teacherClasses: {
+  };
+  teacherClasses?: {
     id: string;
     name: string;
-  }[]
+  }[];
 }
 
 declare module "next-auth" {
   interface Session {
-    user: CustomUser
-    expires: DefaultSession["expires"]
+    user: CustomUser;
+    expires: DefaultSession["expires"];
   }
 }
 
@@ -51,22 +59,25 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     jwt: async ({ token, trigger, session }) => {
-      let tokenName
-      let tokenImageSrc
-      
-      if(trigger === "update" && session) {
-        tokenName = session.newUsername
-        tokenImageSrc = session.newImageSrc
+      let tokenName;
+      let tokenImageSrc;
+
+      if (trigger === "update" && session) {
+        tokenName = session.newUsername;
+        tokenImageSrc = session.newImageSrc;
       }
 
       const dbUser = await db.user.findFirst({
-        where: { id: token.sub},
+        where: { id: token.sub },
         select: {
           id: true,
           name: true,
           email: true,
           image: true,
           balance: true,
+          badges: true,
+          activeBadge: true,
+          badge_for_assignment: true,
           role: true,
           studentClass: {
             select: {
@@ -83,8 +94,29 @@ export const authOptions: NextAuthOptions = {
         },
       });
 
-      if(!dbUser) {
-        return token
+      if (!dbUser) {
+        return token;
+      }
+
+      // i think we dont need to provide some filds that have teacher in STUDENT token but with null type
+      // So we beed to check user role and individually provide fields
+
+      if (dbUser.role === "TEACHER") {
+        return {
+          sub: token.sub,
+          name: tokenName ?? dbUser.name,
+          email: dbUser.email,
+          image: tokenImageSrc ?? dbUser.image,
+          balance: dbUser.balance,
+          role: dbUser.role,
+          badges: dbUser.badges,
+          activeBadge: dbUser.activeBadge,
+          teacherClasses: dbUser.teacherClasses.map((klass) => ({
+            id: klass.id,
+            name: klass.name,
+          })),
+          badgesForAssignment: dbUser.badge_for_assignment,
+        };
       }
 
       return {
@@ -94,21 +126,19 @@ export const authOptions: NextAuthOptions = {
         image: tokenImageSrc ?? dbUser.image,
         balance: dbUser.balance,
         role: dbUser.role,
+        badges: dbUser.badges,
+        activeBadge: dbUser.activeBadge,
         studentClass: dbUser.studentClass ?? null,
-        teacherClasses: dbUser.teacherClasses.map((klass) => ({
-          id: klass.id,
-          name: klass.name,
-        })),
       };
     },
     session: ({ session, token }) => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const {sub, ...formattedToken} = token
+      const { sub, ...formattedToken } = token;
 
       return {
         ...session,
         user: {
-          id: token.sub,
+          id: sub,
           ...formattedToken,
         },
       };

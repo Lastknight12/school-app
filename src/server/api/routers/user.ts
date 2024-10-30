@@ -1,3 +1,4 @@
+import { UserRole } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { updateUserSchema } from "~/schemas/zod";
@@ -13,7 +14,7 @@ export const userRouter = createTRPCRouter({
     .input(
       z.object({
         name: z.string(),
-      })
+      }),
     )
     .mutation(async ({ input, ctx }) => {
       if (input.name == "") return [];
@@ -29,21 +30,92 @@ export const userRouter = createTRPCRouter({
       return users;
     }),
 
-  getAllTeachers: adminProcedure.query(async ({ ctx }) => {
-    return await ctx.db.user.findMany({
-      where: {
-        role: "TEACHER",
-      },
-    });
+  getUsers: adminProcedure
+    .input(
+      z
+        .object({
+          role: z.enum([
+            UserRole.STUDENT,
+            UserRole.TEACHER,
+            UserRole.ADMIN,
+            UserRole.SELLER,
+            UserRole.RADIO_CENTER,
+          ]),
+        })
+        .nullish(),
+    )
+    .query(async ({ input, ctx }) => {
+      return await ctx.db.user.findMany({
+        where: {
+          role: input?.role ?? undefined,
+        },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          balance: true,
+          image: true,
+          badges: true,
+          badge_for_assignment: true,
+          role: true,
+          studentClass: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+          teacherClasses: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      });
+    }),
+
+  getAllBadges: adminProcedure.query(async ({ ctx }) => {
+    return await ctx.db.badge.findMany();
   }),
 
-  getAllStudents: adminProcedure.query(async ({ ctx }) => {
-    return await ctx.db.user.findMany({
-      where: {
-        role: "STUDENT",
-      },
-    });
-  }),
+  addBadge: adminProcedure
+    .input(
+      z.object({
+        name: z.string(),
+        textColor: z.string(),
+        backgroundColor: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.badge.create({
+        data: {
+          name: input.name,
+          textColor: input.textColor,
+          backgroundColor: input.backgroundColor,
+        },
+      });
+    }),
+
+  setActiveBadge: protectedProcedure
+    .input(
+      z.object({
+        badgeName: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.user.update({
+        where: {
+          id: ctx.session.user.id,
+        },
+        data: {
+          activeBadge: {
+            connect: {
+              name: input.badgeName,
+            },
+          },
+        },
+      });
+    }),
 
   getUserClass: protectedProcedure.query(async ({ ctx }) => {
     if (!ctx.session.user.studentClass) return;
@@ -76,9 +148,7 @@ export const userRouter = createTRPCRouter({
   }),
 
   updateUser: protectedProcedure
-    .input(
-      updateUserSchema
-    )
+    .input(updateUserSchema)
     .mutation(async ({ ctx, input }) => {
       await ctx.db.user.update({
         where: {
@@ -91,21 +161,83 @@ export const userRouter = createTRPCRouter({
       });
     }),
 
+  updateUserBadges: adminProcedure
+    .input(
+      z.object({
+        userId: z.string(),
+        badges: z.array(
+          z.object({
+            id: z.string(),
+            name: z.string(),
+            textColor: z.string(),
+            backgroundColor: z.string(),
+          }),
+        ),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.user.update({
+        where: {
+          id: input.userId,
+        },
+        data: {
+          badges: {
+            set: input.badges,
+          },
+        },
+      });
+    }),
+
+  updateUserRole: adminProcedure
+    .input(
+      z.object({
+        userId: z.string(),
+        newRole: z.enum([
+          UserRole.ADMIN,
+          UserRole.TEACHER,
+          UserRole.STUDENT,
+          UserRole.SELLER,
+          UserRole.RADIO_CENTER,
+        ]),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.user.update({
+        where: {
+          id: input.userId,
+        },
+        data: {
+          role: input.newRole,
+        },
+      });
+    }),
+
   getLeaderboard: protectedProcedure
     .input(
       z.object({
         limit: z.number().min(3).max(50).nullish(),
         cursor: z.string().nullish(),
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       const limit = input.limit ?? 50;
 
       const users = await ctx.db.user.findMany({
+        where: {
+          role: "STUDENT"
+        },
         cursor: input.cursor ? { id: input.cursor } : undefined,
         take: input.limit ? input.limit + 1 : undefined,
         orderBy: {
           balance: "desc",
+        },
+        select: {
+          id: true,
+          name: true,
+          image: true,
+          balance: true,
+          badges: true,
+          activeBadge: true,
         },
       });
 

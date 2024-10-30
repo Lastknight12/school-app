@@ -51,23 +51,6 @@ enum UserRole {
   RADIO_CENTER
 }
 
-enum MusicOrderStatus {
-  ACCEPTED
-  CANCELLED
-  DELIVERED
-}
-
-model MusicOrder {
-  id           String           @id @default(cuid())
-  status       MusicOrderStatus @default(DELIVERED)
-  buyer        User             @relation(fields: [buyerId], references: [id])
-  buyerId      String
-  musicUrl     String
-  musicImage   String
-  musicTitle   String
-  createdAt    DateTime         @default(now())
-}
-
 model User {
   id            String    @id @default(cuid())
   name          String
@@ -87,7 +70,13 @@ model User {
   studentClass   Klass?  @relation(name: "studentClass", fields: [studentClassId], references: [id])
   studentClassId String?
 
-  MusicOrders MusicOrder[]
+  musicOrders MusicOrder[]
+
+  badges         Badge[] @relation(name: "owners")
+  activeBadge    Badge?   @relation(fields: [activeBadgeId], references: [id])
+  activeBadgeId        String?
+
+  badge_for_assignment Badge[] @relation(name: "allowedTeachers")
 }
 
 model Category {
@@ -137,4 +126,32 @@ model Klass {
 
   teachers User[] @relation(name: "teacherClasses")
   students User[] @relation(name: "studentClass")
+}
+
+enum MusicOrderStatus {
+  ACCEPTED
+  CANCELLED
+  DELIVERED
+}
+
+model MusicOrder {
+  id         String           @id @default(cuid())
+  status     MusicOrderStatus @default(DELIVERED)
+  buyer      User             @relation(fields: [buyerId], references: [id])
+  buyerId    String
+  musicUrl   String
+  musicImage String
+  musicTitle String
+  createdAt  DateTime         @default(now())
+}
+
+model Badge {
+  id               String @id @default(cuid())
+  name             String @unique
+  users            User[] @relation(name: "owners")
+  allowed_teachers User[] @relation(name: "allowedTeachers")
+  textColor String @default("#fff")
+  backgroundColor String @default("#000")
+
+  activeAt User[]
 }

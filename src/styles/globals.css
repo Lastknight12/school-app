@@ -70,5 +70,12 @@ img {
     @apply bg-background text-foreground;
     background-color: #1e1e1e;
     height: 100%;
+    /* by default dont lock user interactions */
+    pointer-events: all !important;
+  }
+
+  /* lock if open e.g modal, dropdown, dont metter number of locked elements */
+  body[data-scroll-locked] {
+    pointer-events: none;
   }
 }
