@@ -16,8 +16,7 @@ const urls = new Map<string, UserRole[]>([
   ["/leaderboard", ["ADMIN", "SELLER", "TEACHER", "STUDENT", "RADIO_CENTER"]],
   ["/settings", ["TEACHER", "ADMIN", "SELLER", "STUDENT", "RADIO_CENTER"]],
   ["/admin", ["ADMIN"]],
-  ["/admin/users", ["ADMIN"]],
-  ["/admin/transfers", ["ADMIN"]],
+  ["/admin/db", ["ADMIN"]],
   ["/transactions", ["ADMIN"]],
   ["/stats", ["STUDENT", "RADIO_CENTER"]],
   ["/shop", ["STUDENT", "RADIO_CENTER"]],
@@ -40,7 +39,7 @@ export default async function Navbar() {
   });
 
   return (
-    <nav className="flex items-center justify-between px-6 py-4">
+    <nav className="flex items-center justify-between px-6 py-3 border-b border-border bg-muted/40">
       <div className="flex items-center gap-3 text-white">
         <BurgerMenu allowedUrls={allowedUrls} />
 
