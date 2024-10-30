@@ -19,7 +19,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "~/shadcn/ui/popover";
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  users?: User[];
+  users?: Pick<User, "id" | "name" | "image">[];
   isFetching: boolean;
   isPending: boolean;
   emptyMessage: string;
