@@ -5,7 +5,7 @@ import Link from "next/link";
 
 import { api } from "~/trpc/react";
 
-import ButtonsGroup from "../_components/(admin)/home/ButtonsGroup";
+import AddClass from "../_components/(admin)/home/AddClass";
 
 export default function KlassesTable() {
   const klassNames = api.klass.getAllKlasses.useQuery(void 0, {
@@ -20,7 +20,7 @@ export default function KlassesTable() {
         </div>
       ) : (
         <>
-          <ButtonsGroup />
+          <AddClass />
 
           {klassNames.data?.length === 0 && !klassNames.isFetching && (
             <div className="w-full text-center">Жодних класів не знайдено</div>

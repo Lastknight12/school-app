@@ -1,76 +1,79 @@
 "use client";
 
-import * as React from "react";
+import { type User as UserModel } from "@prisma/client";
+import { useState } from "react";
 import { toast } from "sonner";
 
 import { api } from "~/trpc/react";
 
-import AddUser from "./AddUser";
+import UpdateUsers from "../../shared/SelectUsersModal";
+
+import { Button } from "~/shadcn/ui/button";
+
+type CustomUser = Pick<UserModel, "email" | "image" | "id" | "name">;
 
 interface Props {
   klassId: string;
+  klassStudents: CustomUser[];
+  klassTeachers: CustomUser[];
 }
 
-export default function ButtonsGroup({ klassId }: Props) {
-  const [isAddingStudent, setIsAddingStudent] = React.useState(false);
-  const [isAddingTeacher, setIsAddingTeacher] = React.useState(false);
-
-  const getStudents = api.user.getUsers.useQuery({ role: "STUDENT" });
-  const getTeachers = api.user.getUsers.useQuery({ role: "TEACHER" });
+export default function ButtonsGroup({
+  klassId,
+  klassStudents,
+  klassTeachers,
+}: Props) {
+  const [isTeachersModalOpen, setIsTeachersModalOpen] = useState(false);
+  const [isStudentsModalOpen, setIsStudentsModalOpen] = useState(false);
 
   const utils = api.useUtils();
 
-  const addStudentMutation = api.klass.addStudent.useMutation({
+  const updateUsersMutation = api.klass.updateUsers.useMutation({
     onSuccess: () => {
-      setIsAddingStudent(false);
+      toast.success("Користувачів оновлено");
       void utils.klass.getKlassStudents.invalidate();
-      toast.success(`Учня додано до класу`);
-    },
-
-    onError: () => {
-      toast.error(`Виникла помилка під час додавання учня до класу`);
-    },
-  });
-
-  const addTeacherMutation = api.klass.addTeacher.useMutation({
-    onSuccess: () => {
-      setIsAddingTeacher(false);
-      void utils.klass.getKlassTeachers.invalidate();
-      toast.success(`Викладача додано до класу`);
-    },
-
-    onError: () => {
-      toast.error(`Виникла помилка під час додавання викладача до класу`);
+      setIsTeachersModalOpen(false);
+      setIsStudentsModalOpen(false);
     },
   });
 
   return (
-    <div className="flex items-center flex-wrap gap-2">
-      <AddUser
-        users={getStudents.data}
-        open={isAddingStudent}
-        onOpenChange={setIsAddingStudent}
-        onClick={(id) => addStudentMutation.mutate({ klassId, studentId: id })}
-        isFetching={getStudents.isFetching}
-        isPending={addStudentMutation.isPending}
-        emptyMessage="Учнів не знайдено"
-        notFoundMessage="Учнів з такою назвою не знайдено"
+    <div className="flex gap-2 items-center mb-5">
+      <UpdateUsers
+        open={isStudentsModalOpen}
+        onOpenChange={setIsStudentsModalOpen}
+        klassId={klassId}
+        klassUsers={klassStudents}
+        usersType="STUDENT"
+        isPending={updateUsersMutation.isPending}
+        onSubmit={(users) => {
+          updateUsersMutation.mutate({
+            usersIds: users.map((u) => u.id),
+            klassId,
+            usersRole: "STUDENT",
+          });
+        }}
       >
-        Додати учня
-      </AddUser>
+        <Button>Manage students</Button>
+      </UpdateUsers>
 
-      <AddUser
-        users={getTeachers.data}
-        open={isAddingTeacher}
-        onOpenChange={setIsAddingTeacher}
-        onClick={(id) => addTeacherMutation.mutate({ klassId, teacherId: id })}
-        isFetching={getTeachers.isFetching}
-        isPending={addTeacherMutation.isPending}
-        emptyMessage="Викладачів не знайдено"
-        notFoundMessage="Викладачів з такою назвою не знайдено"
+      <UpdateUsers
+        open={isTeachersModalOpen}
+        onOpenChange={setIsTeachersModalOpen}
+        klassId={klassId}
+        klassUsers={klassTeachers}
+        usersType="TEACHER"
+        isPending={updateUsersMutation.isPending}
+        onSubmit={(users) => {
+          updateUsersMutation.mutate({
+            usersIds: users.map((u) => u.id),
+            klassId,
+            usersRole: "TEACHER",
+          });
+        }}
       >
-        Додати викладача
-      </AddUser>
+        <Button>Manage teachers</Button>
+      </UpdateUsers>
     </div>
   );
 }

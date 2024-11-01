@@ -1,5 +1,6 @@
 "use client";
 
+import { type User } from "@prisma/client";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -10,8 +11,9 @@ import { api } from "~/trpc/react";
 
 import { cn } from "~/lib/utils";
 
-import TeachersDropdown from "./TeachersDropdown";
+import SelectUsers from "../../shared/SelectUsersModal";
 
+import { Avatar, AvatarFallback, AvatarImage } from "~/shadcn/ui/avatar";
 import { Button } from "~/shadcn/ui/button";
 import {
   Dialog,
@@ -22,37 +24,47 @@ import {
   DialogTrigger,
 } from "~/shadcn/ui/dialog";
 
-export default function ButtonsGroup() {
+export default function AddClass() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isTeachersModalOpen, setIsTeachersModalOpen] = useState(false);
+
   const utils = api.useUtils();
 
   const [klassName, setKlassName] = useState("");
-  const [teacherIds, setTeacherIds] = useState<string[]>([]);
+  const [teachers, setTeachers] = useState<
+    Pick<User, "id" | "image" | "name">[]
+  >([]);
 
   const addKlassMutation = api.klass.addKlass.useMutation({
     onSuccess: () => {
       void utils.klass.getAllKlasses.invalidate();
       setIsOpen(false);
+      setIsTeachersModalOpen(false);
     },
     onError: (error) => {
       error.data?.zodError
         ? toast.error(error.data.zodError[0]?.message)
         : toast.error(error.message);
-    }
+    },
   });
 
-  async function handleClick() {
+  async function handleSubmit() {
     try {
-      addKlassSchema.parse({ name: klassName, teacherIds: teacherIds });
+      addKlassSchema.parse({
+        name: klassName,
+        teacherIds: teachers.map((t) => t.id),
+      });
     } catch (error) {
       if (error instanceof z.ZodError) {
-        console.log(error);
         toast.error(error.issues[0]!.message);
         return;
       }
     }
 
-    addKlassMutation.mutate({ name: klassName, teacherIds: teacherIds });
+    addKlassMutation.mutate({
+      name: klassName,
+      teacherIds: teachers.map((t) => t.id),
+    });
   }
 
   return (
@@ -79,14 +91,39 @@ export default function ButtonsGroup() {
               placeholder="Назва класу"
             />
 
-            <TeachersDropdown
-              teacherIds={teacherIds}
-              onSelect={(id) =>
-                teacherIds.some((i) => i === id)
-                  ? setTeacherIds(teacherIds.filter((i) => i !== id))
-                  : setTeacherIds((prev) => [...prev, id])
-              }
-            />
+            <SelectUsers
+              usersType="TEACHER"
+              onSubmit={(teachers) => {
+                setTeachers(teachers);
+                setIsTeachersModalOpen(false);
+              }}
+              open={isTeachersModalOpen}
+              onOpenChange={setIsTeachersModalOpen}
+            >
+              <Button
+                disabled={addKlassMutation.isPending}
+                className="max-w-max"
+              >
+                {teachers.length === 0 ? (
+                  <p>Виберіть вчителів</p>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    {teachers.slice(0, 5).map((teacher) => (
+                      <Avatar
+                        className="h-6 w-6 [&:not(:last-child)]:-ml-2"
+                        key={teacher.id}
+                      >
+                        <AvatarImage src={teacher.image} alt={teacher.name} />
+                        <AvatarFallback>{teacher.name}</AvatarFallback>
+                      </Avatar>
+                    ))}
+                    {teachers.slice(0, 5).length > 5 && (
+                      <p>+{teachers.slice(0, 5).length}</p>
+                    )}
+                  </div>
+                )}
+              </Button>
+            </SelectUsers>
           </div>
           <DialogFooter>
             <Button
@@ -95,7 +132,7 @@ export default function ButtonsGroup() {
                 addKlassMutation.isPending && "cursor-not-allowed opacity-40",
               )}
               type="submit"
-              onClick={handleClick}
+              onClick={handleSubmit}
             >
               Добавити{" "}
               {addKlassMutation.isPending && (

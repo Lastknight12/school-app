@@ -4,7 +4,7 @@ import { api } from "~/trpc/server";
 
 import ButtonsGroup from "~/app/_components/(admin)/klass/ButtonsGroup";
 import StudentsTable from "~/app/_components/(admin)/klass/StudentTable";
-import TeachersList from "~/app/_components/(admin)/klass/TeachersList";
+import { StudentTableSearch } from "~/app/_components/(admin)/klass/StudentTableSearch";
 
 export default async function Page({
   params,
@@ -21,16 +21,17 @@ export default async function Page({
 
   return (
     <main className="px-6">
-      <div className="mb-3 flex gap-3 items-center">
-        <h1 className="text-lg">{klass.name} Клас</h1>
-        <TeachersList klassId={klass.id} />
-      </div>
+      <StudentsTable klassId={klass.id}>
+        <div className="flex items-ceter justify-between">
+          <StudentTableSearch />
 
-      <div className="mb-5">
-        <ButtonsGroup klassId={klass.id} />
-      </div>
-
-      <StudentsTable klassId={klass.id} />
+          <ButtonsGroup
+            klassId={klass.id}
+            klassStudents={klass.students}
+            klassTeachers={klass.teachers}
+          />
+        </div>
+      </StudentsTable>
     </main>
   );
 }
