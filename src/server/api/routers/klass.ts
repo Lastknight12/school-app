@@ -93,64 +93,40 @@ export const klassRouter = createTRPCRouter({
       });
     }),
 
-  addStudent: adminProcedure
-    .input(z.object({ klassId: z.string(), studentId: z.string() }))
+  updateUsers: adminProcedure
+    .input(
+      z.object({
+        klassId: z.string(),
+        usersIds: z
+          .array(z.string())
+          .min(1, "Відсутній спискок Id користувачів"),
+        usersRole: z.enum(["STUDENT", "TEACHER"]),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
+      const users = await ctx.db.user.findMany({
+        where: {
+          id: {
+            in: input.usersIds,
+          },
+          role: input.usersRole,
+        },
+      });
+
+      if (users.length === 0) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Не знайдено жодного користувача за наданими Id",
+        });
+      }
+
       await ctx.db.klass.update({
         where: {
           id: input.klassId,
         },
         data: {
-          students: {
-            connect: {
-              id: input.studentId,
-            },
-          },
-        },
-      });
-
-      await ctx.db.user.update({
-        where: {
-          id: input.studentId,
-        },
-        data: {
-          studentClass: {
-            connect: {
-              id: input.klassId,
-            },
-          },
-        },
-      });
-    }),
-
-  getKlassTeachers: adminProcedure
-    .input(z.object({ id: z.string() }))
-    .query(async ({ input, ctx }) => {
-      const klass = await ctx.db.klass.findUnique({
-        where: {
-          id: input.id,
-        },
-        select: {
-          teachers: true,
-        },
-      });
-
-      return klass?.teachers;
-    }),
-
-  addTeacher: adminProcedure
-    .input(z.object({ klassId: z.string(), teacherId: z.string() }))
-    .mutation(async ({ ctx, input }) => {
-      await ctx.db.klass.update({
-        where: {
-          id: input.klassId,
-        },
-        data: {
-          teachers: {
-            connect: {
-              id: input.teacherId,
-            },
-          },
+          teachers: input.usersRole === "TEACHER" ? { set: users } : undefined,
+          students: input.usersRole === "STUDENT" ? { set: users } : undefined,
         },
       });
     }),

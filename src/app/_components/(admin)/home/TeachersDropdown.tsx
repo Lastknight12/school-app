@@ -16,7 +16,7 @@ interface Props {
 export default function TeachersDropdown({ onSelect, teacherIds }: Props) {
   const [showDropdown, setShowDropdown] = useState(false);
 
-  const getAllTeachers = api.user.getUsers.useQuery({ role: "TEACHER" });
+  const getAllTeachers = api.user.getUsersByRole.useQuery({ role: "TEACHER" });
 
   return (
     <div className="relative">
