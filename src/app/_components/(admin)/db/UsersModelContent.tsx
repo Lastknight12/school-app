@@ -75,7 +75,7 @@ export default function UsersModelContent() {
   const utils = api.useUtils();
 
   const { data: users, isFetching: isFetchingUsers } =
-    api.user.getUsers.useQuery();
+    api.user.getUsersByRole.useQuery();
   const { data: allBadges, isFetching: isFetchingBadges } =
     api.user.getAllBadges.useQuery();
   const [selectedUser, setSelectedUser] = useState<UserFromApi | null>(null);
@@ -85,7 +85,7 @@ export default function UsersModelContent() {
 
   const updateUserBadgesMutation = api.user.updateUserBadges.useMutation({
     onSuccess: () => {
-      void utils.user.getUsers.invalidate();
+      void utils.user.getUsersByRole.invalidate();
       setIsBadgeDialogOpen(false);
       toast.success("Успішно оновлено бейджі користувача");
     },
@@ -97,7 +97,7 @@ export default function UsersModelContent() {
 
   const updateUserRoleMutation = api.user.updateUserRole.useMutation({
     onSuccess: () => {
-      void utils.user.getUsers.invalidate();
+      void utils.user.getUsersByRole.invalidate();
       toast.success("Користувача оновлено");
     },
 
@@ -215,7 +215,7 @@ export default function UsersModelContent() {
                         setIsBadgeDialogOpen(true);
                       }}
                     >
-                       Add badges
+                      Add badges
                     </DropdownMenuItem>
                     <DropdownMenuItem>View details</DropdownMenuItem>
                     <DropdownMenuSeparator />

@@ -2,10 +2,9 @@ import { notFound } from "next/navigation";
 
 import { api } from "~/trpc/server";
 
+import ButtonsGroup from "~/app/_components/(admin)/klass/ButtonsGroup";
 import StudentsTable from "~/app/_components/(admin)/klass/StudentTable";
-import UpdateUsers from "~/app/_components/(admin)/klass/UpdateUsers";
-
-import { Button } from "~/shadcn/ui/button";
+import { StudentTableSearch } from "~/app/_components/(admin)/klass/StudentTableSearch";
 
 export default async function Page({
   params,
@@ -22,29 +21,17 @@ export default async function Page({
 
   return (
     <main className="px-6">
-      <div className="mb-3 flex gap-3 items-center">
-        <h1 className="text-lg">{klass.name} Клас</h1>
-      </div>
+      <StudentsTable klassId={klass.id}>
+        <div className="flex items-ceter justify-between">
+          <StudentTableSearch />
 
-      <div className="mb-5 flex items-center justify-end gap-3">
-        <UpdateUsers
-          klassId={klass.id}
-          users={klass.students}
-          usersType="STUDENT"
-        >
-          <Button>Manage students</Button>
-        </UpdateUsers>
-
-        <UpdateUsers
-          klassId={klass.id}
-          users={klass.teachers}
-          usersType="TEACHER"
-        >
-          <Button>Manage teachers</Button>
-        </UpdateUsers>
-      </div>
-
-      <StudentsTable klassId={klass.id} />
+          <ButtonsGroup
+            klassId={klass.id}
+            klassStudents={klass.students}
+            klassTeachers={klass.teachers}
+          />
+        </div>
+      </StudentsTable>
     </main>
   );
 }

@@ -30,7 +30,7 @@ export const userRouter = createTRPCRouter({
       return users;
     }),
 
-  getUsers: adminProcedure
+  getUsersByRole: adminProcedure
     .input(
       z
         .object({

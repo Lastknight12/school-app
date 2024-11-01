@@ -81,9 +81,8 @@ export default function BuyProduct() {
                 В суммі: {getItemsFromTokenOrId.data.totalAmount}
               </h1>
               <Button
-                variant="green"
                 disabled={payMutation.isPending}
-                className="flex w-full items-center"
+                className="flex w-full items-center text-black bg-lime-500 hover:opacity-70"
                 onClick={() => {
                   payMutation.mutate({ token, productId });
                 }}
