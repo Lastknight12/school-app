@@ -61,7 +61,9 @@ export default function RootLayout({
 
             <Navbar />
 
-            <PageTransition>{children}</PageTransition>
+            <PageTransition>
+              <div className="mt-4">{children}</div>
+            </PageTransition>
           </NextAuthProvider>
         </TRPCReactProvider>
       </body>
