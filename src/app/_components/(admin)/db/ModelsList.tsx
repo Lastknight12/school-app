@@ -1,14 +1,16 @@
+import { cn } from "~/lib/utils";
 import { List, ListContent, ListItem } from "~/shadcn/ui/buttons-list";
 
 interface Props {
   onClick?: (name: "users" | "badges" | "transactions") => void;
+  activeItem?: string;
 }
 
-export default function ModelsList({ onClick }: Props) {
+export default function ModelsList({ onClick, activeItem }: Props) {
   return (
     <List>
       <ListContent>
-        <ListItem>
+        <ListItem className={cn(activeItem === "users" ? "bg-[#000]" : "")}>
           <div
             className={"py-2 px-4"}
             onClick={() => {
@@ -19,7 +21,7 @@ export default function ModelsList({ onClick }: Props) {
           </div>
         </ListItem>
 
-        <ListItem>
+        <ListItem className={cn(activeItem === "badges" ? "bg-[#000]" : "")}>
           <div
             className={"py-2 px-4"}
             onClick={() => {
@@ -30,7 +32,7 @@ export default function ModelsList({ onClick }: Props) {
           </div>
         </ListItem>
 
-        <ListItem>
+        <ListItem className={cn(activeItem === "transactions" ? "bg-[#000]" : "")}>
           <div
             className={"py-2 px-4"}
             onClick={() => {

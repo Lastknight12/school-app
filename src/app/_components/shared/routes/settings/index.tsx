@@ -3,7 +3,7 @@
 import { type Badge as BadgeModel } from "@prisma/client";
 import { Loader2 } from "lucide-react";
 import { type Session } from "next-auth";
-import { signOut, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FaCheck } from "react-icons/fa";
@@ -157,15 +157,6 @@ export default function Settings({
                 </div>
               ))}
             </div>
-          </div>
-
-          <div>
-            <Button
-              className="text-red-500"
-              onClick={async () => await signOut()}
-            >
-              Вийти з аккаунту
-            </Button>
           </div>
         </div>
 

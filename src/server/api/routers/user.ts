@@ -23,7 +23,7 @@ export const userRouter = createTRPCRouter({
           name: {
             contains: input.name,
           },
-          role: "TEACHER",
+          role: ctx.session.user.role === "ADMIN" ? undefined : "STUDENT",
         },
       });
 
@@ -224,7 +224,7 @@ export const userRouter = createTRPCRouter({
 
       const users = await ctx.db.user.findMany({
         where: {
-          role: "STUDENT"
+          role: "STUDENT",
         },
         cursor: input.cursor ? { id: input.cursor } : undefined,
         take: input.limit ? input.limit + 1 : undefined,

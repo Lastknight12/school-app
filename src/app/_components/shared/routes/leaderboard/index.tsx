@@ -56,7 +56,7 @@ export default function Leaderboard({ session }: Props) {
       )}
     >
       {/* Top 3 users and their balances */}
-      <div className="mb-4 mt-20 grid w-screen grid-cols-3 items-end gap-3 px-3">
+      <div className="mb-4 mt-20 grid grid-cols-3 items-end gap-3 px-3">
         {getLeaderboard.data?.pages[0]!.users.slice(0, 3).map((user, i) => (
           <motion.div
             initial={{ scale: 0, opacity: 0 }}
@@ -112,7 +112,7 @@ export default function Leaderboard({ session }: Props) {
       <div
         className={cn(
           // 72 px - navbar
-          "flex w-screen grow flex-col items-center justify-center gap-3 rounded-tl-xl rounded-tr-xl bg-[#161616] px-3 py-6",
+          "flex w-full grow flex-col items-center justify-center gap-3 rounded-tl-xl rounded-tr-xl bg-[#161616] px-3 py-6",
         )}
       >
         {getLeaderboard.isLoading && (

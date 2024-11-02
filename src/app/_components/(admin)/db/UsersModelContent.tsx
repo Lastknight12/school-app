@@ -144,14 +144,42 @@ export default function UsersModelContent() {
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
-        <div className="flex items-center gap-3 px-3 py-2 border-[#3d3d3d] border bg-card rounded-full">
-          <Search className="h-4 w-4 text-muted-foreground" />
-          <input
-            placeholder="Search users..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="outline-none placeholder:text-[#8f8f8f] bg-transparent"
-          />
+        <div className="flex justify-between items-center w-full">
+          <div className="flex items-center gap-3 px-3 py-2 border-[#3d3d3d] border bg-card rounded-full">
+            <Search className="h-4 w-4 text-muted-foreground" />
+            <input
+              placeholder="Search users..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="outline-none placeholder:text-[#8f8f8f] bg-transparent"
+            />
+          </div>
+
+          <div className="flex items-center gap-2 space-x-2 w-max">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+            >
+              Prev
+            </Button>
+            <div className="text-sm text-muted-foreground">
+              {totalPages > 0
+                ? `Page ${currentPage} of ${totalPages}`
+                : "Loading..."}
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() =>
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+              }
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </Button>
+          </div>
         </div>
       </div>
       <Table className="mb-4">
@@ -266,31 +294,6 @@ export default function UsersModelContent() {
           ))}
         </TableBody>
       </Table>
-      <div className="flex items-center gap-2 space-x-2 sticky w-max left-[calc(50%-261px/2)] py-3 px-6 rounded-full bg-black bottom-4">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-          disabled={currentPage === 1}
-        >
-          Prev
-        </Button>
-        <div className="text-sm text-muted-foreground">
-          {totalPages > 0
-            ? `Page ${currentPage} of ${totalPages}`
-            : "Loading..."}
-        </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() =>
-            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-          }
-          disabled={currentPage === totalPages}
-        >
-          Next
-        </Button>
-      </div>
 
       <Dialog
         open={isBadgeDialogOpen}
