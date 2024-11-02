@@ -11,7 +11,7 @@ const config = {
   prefix: "",
   theme: {
   	container: {
-  		center: 'true',
+  		center: true,
   		padding: '2rem',
   		screens: {
   			'2xl': '1400px'
@@ -19,7 +19,7 @@ const config = {
   	},
   	extend: {
   		height: {
-  			full_page: 'calc(100vh - 72px)'
+  			full_page: 'calc(100vh - 48px - 12px)'
   		},
   		fontFamily: {
   			metropolis: ["var(--font-metropolis)"],

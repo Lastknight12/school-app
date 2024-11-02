@@ -72,7 +72,8 @@ export default async function RootLayout({
                   </div>
                 }
               >
-                <PageTransition>{children}</PageTransition>
+                <PageTransition>
+                  <div className="mt-3">{children}</div></PageTransition>
               </Suspense>
             </Sidebar>
           </NextAuthProvider>

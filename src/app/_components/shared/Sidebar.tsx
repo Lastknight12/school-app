@@ -1,27 +1,24 @@
 "use client";
 
+import { type UserRole } from "@prisma/client";
 import { type Session } from "next-auth";
 import { usePathname } from "next/navigation";
 import { AppSidebar } from "~/shadcn/app-sidebar";
-import SidebarPath from "~/shadcn/sidebat-inset";
+import SidebarPath from "~/shadcn/sidebar-path";
 
-import { SidebarProvider } from "~/shadcn/ui/sidebar";
+import { SidebarInset, SidebarProvider } from "~/shadcn/ui/sidebar";
 
 interface Props {
   children: React.ReactNode;
   session: Session | null;
 }
 
-const mainUrls = [
-  { url: "/stats", allowedRoles: ["STUDENT", "RADIO_CENTER"] },
-  { url: "/transactions", allowedRoles: ["ADMIN"] },
-  { url: "/shop", allowedRoles: ["STUDENT", "RADIO_CENTER"] },
-  {
-    url: "/leaderboard",
-    allowedRoles: ["STUDENT", "RADIO_CENTER", "ADMIN", "SELLER", "TEACHER"],
-  },
-];
-
+const routesWithAuth = new Map<string, UserRole[]>([
+  ["/stats", ["STUDENT", "RADIO_CENTER"]],
+  ["/transactions", ["ADMIN"]],
+  ["/shop", ["STUDENT", "RADIO_CENTER"]],
+  ["/leaderboard", ["STUDENT", "RADIO_CENTER", "ADMIN", "SELLER", "TEACHER"]],
+]);
 const dontRenderUrls = ["/login"];
 
 export default function Sidebar({ children, session }: Props) {
@@ -29,19 +26,19 @@ export default function Sidebar({ children, session }: Props) {
 
   if (dontRenderUrls.includes(pathname)) return children;
 
-  const allowedMainUrls = mainUrls.filter((url) =>
-    session ? url.allowedRoles.includes(session.user.role) : false,
-  );
-
   return (
     <SidebarProvider>
       <AppSidebar
         session={session}
         showAdmin={session ? session.user.role === "ADMIN" : false}
-        allowedMainUrls={allowedMainUrls.map((url) => url.url)}
+        routesWithAuth={routesWithAuth}
       />
 
-      <SidebarPath>{children}</SidebarPath>
+      <SidebarInset>
+        <SidebarPath />
+
+        {children}
+      </SidebarInset>
     </SidebarProvider>
   );
 }

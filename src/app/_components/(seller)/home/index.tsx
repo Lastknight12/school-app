@@ -6,12 +6,16 @@ import { useEffect, useState } from "react";
 
 import { api } from "~/trpc/react";
 
+import { cn } from "~/lib/utils";
+
 import { useDebounceValue } from "~/hooks/useDebounceValue";
 
 import CategoryNamesList from "../../shared/CategoryNamesList";
 import ProductListItem from "./ProductItem/ProductListItem";
 import AddNewCategory from "./TopButtons/AddNewCategory";
 import AddNewProduct from "./TopButtons/AddNewProduct";
+
+import { useSidebar } from "~/shadcn/ui/sidebar";
 
 export default function SellerHomePage() {
   const [currentCategoryName, setCurrentCategoryName] = useState("");
@@ -39,9 +43,17 @@ export default function SellerHomePage() {
     },
   );
 
+  const { open, isMobile } = useSidebar();
+
   return (
     <main>
-      <div className="flex h-[calc(100vh-72px)] flex-col gap-5 px-6">
+      <div
+        className={cn(
+          "flex flex-col gap-5 px-6 transition-all duration-200 ease-linear",
+          open && !isMobile && "!w-[calc(100vw-16rem)]",
+          isMobile ? "w-screen" : "w-[calc(100vw-24px*2)]",
+        )}
+      >
         <div className="flex flex-wrap gap-3">
           <AddNewCategory />
 
@@ -56,56 +68,58 @@ export default function SellerHomePage() {
           showMenu
         />
 
-        {/* if we not fetching and data is not empty show input */}
-        <input
-          className="w-full rounded-md bg-card px-4 py-2 outline-none disabled:opacity-50"
-          value={searchFilter}
-          disabled={
-            getCategoryNames.isFetching || getCategoryItems.data?.length === 0
-          }
-          placeholder="Пошук..."
-          onChange={(e) => setSearchFilter(e.target.value)}
-        />
+        <div className="flex flex-col gap-2">
+          {/* if we not fetching and data is not empty show input */}
+          <input
+            className="w-full rounded-md bg-card px-4 py-2 mb-3 outline-none disabled:opacity-50"
+            value={searchFilter}
+            placeholder="Пошук..."
+            onChange={(e) => setSearchFilter(e.target.value)}
+          />
 
-        {/* Loading state */}
-        {getCategoryItems.isPending && getCategoryNames.isPending && (
-          // 40px - Input and TopButtons, 50px - CategoryNamesList, 20px - gap between 3 items
-          <div className="flex h-[calc(100%-40px*2-50px-20px*3)] items-center justify-center">
-            <Loader2 className="h-6 w-6 animate-spin text-[#b5b5b5]" />
-          </div>
-        )}
+          {/* Loading state */}
+          {getCategoryItems.isFetching && (
+            <div className="flex h-full items-center justify-center">
+              <Loader2 className="h-6 w-6 animate-spin text-[#b5b5b5]" />
+            </div>
+          )}
 
-        {getCategoryNames.data?.length === 0 && !getCategoryNames.isPending && (
-          <p>Не знайдено жодних категорій. Спробуйте добавити нову</p>
-        )}
+          {getCategoryNames.data?.length === 0 &&
+            !getCategoryNames.isPending && (
+              <p>
+                Не знайдено жодних категорій. Спробуйте добавити нову
+              </p>
+            )}
 
-        {getCategoryItems.data?.length === 0 && !getCategoryItems.isPending && (
-          <p className="text-center">
-            Не знайдено жодних продуктів в категорі{" "}
-            <span className="text-emerald-300">{currentCategoryName}</span>
-          </p>
-        )}
+          {getCategoryItems.data?.length === 0 &&
+            !getCategoryItems.isPending && (
+              <p className="text-center">
+                Не знайдено жодних продуктів в категорі{" "}
+                <span className="text-emerald-300">{currentCategoryName}</span>
+              </p>
+            )}
 
-        {getCategoryItems.data?.map((item) => {
-          return (
-            <ProductListItem key={item.id} item={item}>
-              <div className="flex items-center gap-3">
-                <Image
-                  src={item.image}
-                  width={100}
-                  height={100}
-                  className="rounded-md"
-                  alt="product image"
-                />
-                <div className="flex flex-col justify-center gap-2">
-                  <h1>{item.title}</h1>
-                  <p>{item.pricePerOne + " Балів"}</p>
-                  <p>Кількість: {item.count}</p>
+          {getCategoryItems.data?.map((item) => {
+            return (
+              <ProductListItem key={item.id} item={item}>
+                <div className="flex items-center gap-3">
+                  <Image
+                    src={item.image}
+                    width={100}
+                    height={100}
+                    className="rounded-md"
+                    alt="product image"
+                  />
+                  <div className="flex flex-col justify-center gap-2">
+                    <h1>{item.title}</h1>
+                    <p>{item.pricePerOne + " Балів"}</p>
+                    <p>Кількість: {item.count}</p>
+                  </div>
                 </div>
-              </div>
-            </ProductListItem>
-          );
-        })}
+              </ProductListItem>
+            );
+          })}
+        </div>
       </div>
     </main>
   );

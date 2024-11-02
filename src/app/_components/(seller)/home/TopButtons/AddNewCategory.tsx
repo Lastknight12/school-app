@@ -58,7 +58,7 @@ export default function AddNewCategory() {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button className="flex-grow">Додати категорію</Button>
+        <Button>Додати категорію</Button>
       </DialogTrigger>
       {/* Disable auto focus on open */}
       <DialogContent

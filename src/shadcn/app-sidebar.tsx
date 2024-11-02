@@ -1,8 +1,10 @@
 "use client";
 
+import { type UserRole } from "@prisma/client";
 import {
   ChartColumnBig,
   ChartNoAxesColumn,
+  Home,
   Rocket,
   Shield,
   Store,
@@ -52,6 +54,7 @@ const data = {
     },
   ],
   navMain: [
+    { name: "Home", url: "/", icon: Home },
     {
       name: "Products list",
       url: "/shop",
@@ -73,13 +76,13 @@ const data = {
 interface Props {
   session: Session | null;
   showAdmin: boolean;
-  allowedMainUrls?: string[];
+  routesWithAuth?: Map<string, UserRole[]>;
 }
 
 export function AppSidebar({
   session,
   showAdmin,
-  allowedMainUrls = [],
+  routesWithAuth = new Map([]),
 }: Props & React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon">
@@ -98,8 +101,12 @@ export function AppSidebar({
         {showAdmin && <NavAdmin items={data.admin} />}
 
         <NavMain
-          routes={data.navMain.filter((item) =>
-            allowedMainUrls.includes(item.url),
+          routes={data.navMain.filter(
+            (item) => {
+              const allowedRoles = routesWithAuth.get(item.url) ?? [];
+
+              if(allowedRoles.includes(session!.user.role) || !routesWithAuth.has(item.url)) return true;
+            },
           )}
         />
       </SidebarContent>

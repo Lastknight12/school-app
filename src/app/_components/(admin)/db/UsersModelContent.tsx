@@ -316,7 +316,7 @@ export default function UsersModelContent() {
           <ScrollArea className="h-[300px] w-full">
             <div className="grid grid-cols-2 gap-4">
               {isFetchingBadges && (
-                <div className="mx-auto">
+                <div className="col-span-2 flex justify-center items-center">
                   <Loader2 className="h-4 w-4 animate-spin" />
                 </div>
               )}
@@ -324,7 +324,7 @@ export default function UsersModelContent() {
               {allBadges?.map((badge) => (
                 <div
                   key={badge.name}
-                  className="flex items-center space-x-2"
+                  className="flex items-center space-x-2 justify-center"
                   onClick={() => handleToggleBadge(selectedUser!.id, badge)}
                 >
                   <Checkbox
@@ -332,7 +332,7 @@ export default function UsersModelContent() {
                     checked={allowedBadgesCache.some(
                       (b) => b.name === badge.name,
                     )}
-                    className="rounded border-gray-300 text-primary focus:ring-primary"
+                    className="rounded border-gray-300 outline-none text-primary focus:ring-primary"
                   />
                   <label
                     htmlFor={badge.name}

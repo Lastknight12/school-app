@@ -37,7 +37,6 @@ export default function PageTransition({
   return (
     <AnimatePresence mode="popLayout">
       <motion.div
-        className="h-full w-full"
         key={key}
         initial="hidden"
         animate="enter"

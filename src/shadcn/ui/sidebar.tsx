@@ -74,8 +74,8 @@ const SidebarProvider = React.forwardRef<
 
     // This is the internal state of the sidebar.
     // We use openProp and setOpenProp for control from outside the component.
-
-    const [_open, _setOpen] = React.useState(defaultOpen);
+    
+    const [_open, _setOpen] = React.useState(false);
     const open = openProp ?? _open;
     const setOpen = React.useCallback(
       (value: boolean | ((value: boolean) => boolean)) => {
@@ -562,7 +562,7 @@ const SidebarMenuButton = React.forwardRef<
     ref,
   ) => {
     const Comp = asChild ? Slot : "button";
-    const { isMobile, state } = useSidebar();
+    const { isMobile, state, setOpenMobile } = useSidebar();
 
     const button = (
       <Comp
@@ -570,6 +570,7 @@ const SidebarMenuButton = React.forwardRef<
         data-sidebar="menu-button"
         data-size={size}
         data-active={isActive}
+        onClick={() => setOpenMobile(false)}
         className={cn(sidebarMenuButtonVariants({ variant, size }), className)}
         {...props}
       />
