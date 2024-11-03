@@ -57,9 +57,7 @@ export default function AddClass() {
       });
     } catch (error) {
       if (error instanceof z.ZodError) {
-        toast.error(error.issues[0]!.message, {
-          duration: Infinity,
-        });
+        toast.error(error.issues[0]!.message);
         return;
       }
     }
@@ -127,6 +125,7 @@ export default function AddClass() {
                   </div>
                 )}
               </Button>
+
             </SelectUsersModal>
           </div>
           <DialogFooter>

@@ -23,6 +23,7 @@ export default async function Page({
     <main className="px-6">
       <StudentsTable klassId={klass.id}>
         {/* Table header */}
+
         <div className="flex items-ceter justify-between">
           <StudentTableSearch />
 

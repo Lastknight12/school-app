@@ -82,6 +82,7 @@ export default function UsersModelContent() {
     isFetching: isFetchingUsers,
     refetch: refetchUsers,
   } = api.user.getUsersByRole.useQuery();
+
   const { data: allBadges, isFetching: isFetchingBadges } =
     api.user.getAllBadges.useQuery();
   const [selectedUser, setSelectedUser] = useState<UserFromApi | null>(null);
