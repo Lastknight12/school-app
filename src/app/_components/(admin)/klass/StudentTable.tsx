@@ -119,7 +119,6 @@ export default function StudentsTable({ klassId, children }: Props) {
       <StudentTableContext.Provider value={table}>
         <div>{children}</div>
 
-        <div className="bg-card p-2 rounded border border-border">
           <Table>
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
@@ -177,7 +176,6 @@ export default function StudentsTable({ klassId, children }: Props) {
               )}
             </TableBody>
           </Table>
-        </div>
       </StudentTableContext.Provider>
     </>
   );

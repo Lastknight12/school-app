@@ -19,8 +19,9 @@ import UploadImage from "../../UploadImage";
 
 import Badge from "~/shadcn/ui/badge";
 import { Button } from "~/shadcn/ui/button";
-import { Label } from "~/shadcn/ui/label";
 import { Input } from "~/shadcn/ui/input";
+import { Label } from "~/shadcn/ui/label";
+import { useSidebar } from "~/shadcn/ui/sidebar";
 
 interface Props {
   session: Session;
@@ -36,6 +37,8 @@ export default function Settings({
   const [activeBadge, setActiveBadge] = useState<BadgeModel | null>(
     defaultSession.user.activeBadge,
   );
+
+  const { open, isMobile } = useSidebar();
 
   const updateActivebadgeMutation = api.user.setActiveBadge.useMutation({
     onError: () => {
@@ -86,7 +89,7 @@ export default function Settings({
               defaultImageSrc={defaultSession.user.image}
               imageSize={50}
               imageClassName=" rounded-full"
-              closeButtonClassName="bg-red-700 border-none text-red-900"
+              closeButtonClassName="bg-red-700 border-none text-black"
             />
           </div>
 
@@ -105,10 +108,7 @@ export default function Settings({
           <div className="flex flex-col gap-2">
             {/* Email */}
             <Label className="text-left text-base">Email:</Label>
-            <Input
-              disabled
-              placeholder={defaultSession.user.email}
-            />
+            <Input disabled placeholder={defaultSession.user.email} />
           </div>
 
           <div className="flex gap-3">
@@ -150,7 +150,7 @@ export default function Settings({
 
                   {activeBadge?.id === badge.id && (
                     <div className="absolute -right-1 top-0 z-10 flex h-3 w-3 items-center justify-center rounded-full bg-blue-500">
-                      <FaCheck className="text-blue-900" size={7}/>
+                      <FaCheck className="text-blue-900" size={7} />
                     </div>
                   )}
                 </div>
@@ -166,7 +166,7 @@ export default function Settings({
               newImageSrc: newImageSrc,
             })
           }
-          className="items-center"
+          className="items-center mt-3"
           disabled={!isValuesChanged || updateUserMutation.isPending}
         >
           <h1 className="text-base">Зберегти зміни</h1>
@@ -177,7 +177,13 @@ export default function Settings({
       </div>
 
       {showCardDesign && (
-        <div className="px-6">
+        <div
+          className={cn(
+            "px-6 transition-all duration-200 ease-linear",
+            open && !isMobile && "!w-[calc(100vw-16rem)]",
+            isMobile ? "w-screen" : "w-[calc(100vw-24px*2)]",
+          )}
+        >
           <Label className="text-left text-base">Дизайн карти:</Label>
 
           <div className="mt-4 min-h-min overflow-x-auto">

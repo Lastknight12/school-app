@@ -6,6 +6,8 @@ import { useEffect } from "react";
 import { FaDiscord, FaGoogle } from "react-icons/fa";
 import { toast } from "sonner";
 
+import { Button } from "~/shadcn/ui/button";
+
 interface loginOptions {
   name: string;
   icon: React.ReactNode;
@@ -16,14 +18,13 @@ export default function Login() {
   const error = useSearchParams().get("error");
 
   useEffect(() => {
-    console.log(error)
     switch (error) {
       case "OAuthAccountNotLinked":
         toast.error("Аккаунт прікріплено не до цього методу входу");
-        break
+        break;
       case "OAuthCallback":
         toast.error("Виникла помилка під час входу");
-        break
+        break;
     }
   }, [error]);
 
@@ -47,14 +48,14 @@ export default function Login() {
       <h1>Увійдіть за допомогою:</h1>
       <div className="flex flex-col gap-3">
         {loginOptions.map((option) => (
-          <button
+          <Button
+            variant="secondary"
             key={option.name}
             onClick={option.callbackFn}
-            className="flex items-center gap-5 rounded-md bg-card px-5 py-2"
           >
             {option.icon}
             {option.name}
-          </button>
+          </Button>
         ))}
       </div>
     </main>

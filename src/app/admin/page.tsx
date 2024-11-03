@@ -28,7 +28,7 @@ export default function KlassesTable() {
             <div className="w-full text-center">Жодних класів не знайдено</div>
           )}
 
-          <div className="flex w-full flex-col gap-2">
+          <div className="flex w-full flex-col gap-2 mb-4">
             {klassNames.data?.map((klass) => {
               return (
                 <Link
