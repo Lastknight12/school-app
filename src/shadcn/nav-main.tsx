@@ -12,21 +12,23 @@ import {
 } from "~/shadcn/ui/sidebar";
 
 export function NavMain({
-  routes,
+  items,
+  label
 }: {
-  routes: {
+  items: {
     name: string;
     url: string;
     icon: LucideIcon;
   }[];
+  label?: string;
 }) {
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Main</SidebarGroupLabel>
+      <SidebarGroupLabel>{label ?? "Main"}</SidebarGroupLabel>
       <SidebarMenu>
-        {routes.map((item) => (
+        {items.map((item) => (
           <SidebarMenuItem key={item.name}>
-            <SidebarMenuButton asChild tooltip={item.name}>
+            <SidebarMenuButton asChild tooltip={item.name} mobCloseOnSelect>
               <Link href={item.url}>
                 <item.icon />
                 <span>{item.name}</span>

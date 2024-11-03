@@ -56,9 +56,9 @@ export default async function RootLayout({
             <Toaster
               toastOptions={{
                 classNames: {
-                  toast: "bg-[#333333] border-[#3e3b3b]",
-                  title: "text-white",
-                  icon: "text-white",
+                  toast: "bg-card border-border",
+                  title: "text-card-foreground",
+                  icon: "text-card-foreground",
                 },
               }}
               position="top-center"

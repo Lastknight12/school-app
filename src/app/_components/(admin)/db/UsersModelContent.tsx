@@ -6,6 +6,7 @@ import {
   ChevronUp,
   Loader2,
   MoreHorizontal,
+  RefreshCw,
   Search,
 } from "lucide-react";
 import { useState } from "react";
@@ -31,6 +32,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/shadcn/ui/dropdown-menu";
+import { Input } from "~/shadcn/ui/input";
 import { ScrollArea } from "~/shadcn/ui/scroll-area";
 import {
   Select,
@@ -47,6 +49,7 @@ import {
   TableHeader,
   TableRow,
 } from "~/shadcn/ui/table";
+import { cn } from "~/lib/utils";
 
 interface UserFromApi {
   name: string;
@@ -74,8 +77,11 @@ export default function UsersModelContent() {
   const [isBadgeDialogOpen, setIsBadgeDialogOpen] = useState(false);
   const utils = api.useUtils();
 
-  const { data: users, isFetching: isFetchingUsers } =
-    api.user.getUsersByRole.useQuery();
+  const {
+    data: users,
+    isFetching: isFetchingUsers,
+    refetch: refetchUsers,
+  } = api.user.getUsersByRole.useQuery();
   const { data: allBadges, isFetching: isFetchingBadges } =
     api.user.getAllBadges.useQuery();
   const [selectedUser, setSelectedUser] = useState<UserFromApi | null>(null);
@@ -145,17 +151,20 @@ export default function UsersModelContent() {
     <div>
       <div className="flex justify-between items-center mb-4">
         <div className="flex justify-between items-center w-full">
-          <div className="flex items-center gap-3 px-3 py-2 border-[#3d3d3d] border bg-card rounded-full">
-            <Search className="h-4 w-4 text-muted-foreground" />
-            <input
+          <div className="flex items-center ml-4">
+            <Search className="h-4 w-4 text-muted-foreground z-10" />
+            <Input
               placeholder="Search users..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="outline-none placeholder:text-[#8f8f8f] bg-transparent"
+              className="pl-10 -ml-8 rounded-full"
             />
           </div>
 
           <div className="flex items-center gap-2 space-x-2 w-max">
+            <Button size="sm" variant="outline" onClick={() => refetchUsers()} disabled={isFetchingUsers}>
+              <RefreshCw className={cn(isFetchingUsers && "animate-spin")}/>
+            </Button>
             <Button
               variant="outline"
               size="sm"
@@ -182,11 +191,12 @@ export default function UsersModelContent() {
           </div>
         </div>
       </div>
+
       <Table className="mb-4">
         <TableHeader>
           <TableRow>
             <TableHead className="w-[200px]">Name</TableHead>
-            <TableHead>Email</TableHead>
+            <TableHead className="w-[300px]">Email</TableHead>
             <TableHead>Balance</TableHead>
             <TableHead
               className="w-[150px] cursor-pointer"
@@ -232,7 +242,10 @@ export default function UsersModelContent() {
                   <DropdownMenuContent align="end">
                     <DropdownMenuLabel>Actions:</DropdownMenuLabel>
                     <DropdownMenuItem
-                      onClick={() => navigator.clipboard.writeText(user.email)}
+                      onClick={async () => {
+                        await navigator.clipboard.writeText(user.email)
+                        toast.success("Email copied to clipboard")
+                      }}
                     >
                       Copy email
                     </DropdownMenuItem>
@@ -258,7 +271,7 @@ export default function UsersModelContent() {
                       >
                         <div>
                           <SelectTrigger
-                            className="w-[150px] mx-2 mb-2 disabled:opacity-20"
+                            className="w-[150px] bg-secondary mx-2 mb-2 disabled:opacity-20"
                             disabled={updateUserRoleMutation.isPending}
                           >
                             <SelectValue placeholder="Change role" />

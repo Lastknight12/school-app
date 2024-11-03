@@ -140,7 +140,7 @@ export default function UpdateUsers({
           {selectedUsers.length > 0 && (
             <>
               <div>
-                <ScrollArea className="h-[100px] bg-card rounded-lg px-1">
+                <ScrollArea className="h-[100px] bg-accent rounded-lg px-1">
                   <div className="flex flex-wrap gap-2 p-2">
                     {selectedUsers.map((user) => (
                       <Avatar key={user.email} className="h-8 w-8">

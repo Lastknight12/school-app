@@ -20,6 +20,7 @@ import UploadImage from "../../UploadImage";
 import Badge from "~/shadcn/ui/badge";
 import { Button } from "~/shadcn/ui/button";
 import { Label } from "~/shadcn/ui/label";
+import { Input } from "~/shadcn/ui/input";
 
 interface Props {
   session: Session;
@@ -85,7 +86,7 @@ export default function Settings({
               defaultImageSrc={defaultSession.user.image}
               imageSize={50}
               imageClassName=" rounded-full"
-              closeButtonClassName="bg-[#4c0000] border-none text-red-700"
+              closeButtonClassName="bg-red-700 border-none text-red-900"
             />
           </div>
 
@@ -94,8 +95,7 @@ export default function Settings({
             <Label className="text-left text-base">
               Ім&apos;я користувача:
             </Label>
-            <input
-              className="rounded-md bg-card px-3 py-1 outline-none"
+            <Input
               value={newUsername}
               placeholder={defaultSession.user.name}
               onChange={(e) => setNewUsername(e.target.value)}
@@ -105,8 +105,7 @@ export default function Settings({
           <div className="flex flex-col gap-2">
             {/* Email */}
             <Label className="text-left text-base">Email:</Label>
-            <input
-              className="rounded-md bg-card px-3 py-1 outline-none"
+            <Input
               disabled
               placeholder={defaultSession.user.email}
             />

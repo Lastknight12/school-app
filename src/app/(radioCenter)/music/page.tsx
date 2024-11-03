@@ -38,7 +38,7 @@ export default function Page() {
         <h1 className="text-xl mb-3">Поточний трек:</h1>
 
         {getOrders.isFetching ? (
-          <div className="flex gap-5 px-5 py-4 bg-[#121212] border-[#414040] rounded-lg max-[380px]:flex-col">
+          <div className="flex gap-5 px-5 py-4 bg-card border-border rounded-lg max-[380px]:flex-col">
             <Skeleton className="w-[100px] h-[70px]" />
 
             <div className="flex flex-col gap-2">
@@ -66,7 +66,7 @@ export default function Page() {
         {getOrders.isFetching &&
           Array.from({ length: 3 }).map((_, index) => {
             return (
-              <div key={index} className="flex gap-5 px-5 py-4 bg-[#121212] border-[#414040] rounded-lg max-[380px]:flex-col">
+              <div key={index} className="flex gap-5 px-5 py-4 bg-card border-border rounded-lg max-[380px]:flex-col">
                 <Skeleton className="w-[100px] h-[70px]" />
 
                 <div className="flex flex-col gap-2">

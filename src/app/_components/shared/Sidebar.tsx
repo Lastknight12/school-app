@@ -30,7 +30,6 @@ export default function Sidebar({ children, session }: Props) {
     <SidebarProvider>
       <AppSidebar
         session={session}
-        showAdmin={session ? session.user.role === "ADMIN" : false}
         routesWithAuth={routesWithAuth}
       />
 

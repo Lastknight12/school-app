@@ -30,7 +30,7 @@ export function TransfersTable({ range }: Props) {
     },
     {
       gcTime: 0,
-    }
+    },
   );
 
   const hasData = getTransfers.data && getTransfers.data.transfers.length > 0;
@@ -88,7 +88,7 @@ export function TransfersTable({ range }: Props) {
                       key={product.id}
                       className={cn(
                         "relative z-10 h-10 w-10 overflow-hidden rounded-full",
-                        i > 0 ? `-ml-5` : "ml-0"
+                        i > 0 ? `-ml-5` : "ml-0",
                       )}
                     >
                       <Image
@@ -110,18 +110,18 @@ export function TransfersTable({ range }: Props) {
             </TableRow>
           ))}
       </TableBody>
-      <TableFooter>
-        {getTransfers.isPending && (
-          <TableRow>
-            <TableCell colSpan={5}>
-              <Loader2 className="mx-auto h-5 w-5 animate-spin text-[#b5b5b5]" />
-            </TableCell>
-          </TableRow>
-        )}
+      {true && (
+        <TableRow>
+          <TableCell colSpan={5}>
+            <Loader2 className="h-6 w-6 animate-spin mx-auto text-[#b5b5b5]" />
+          </TableCell>
+        </TableRow>
+      )}
 
+      <TableFooter>
         {!getTransfers.isFetching && hasData && (
           <TableRow>
-            <TableCell colSpan={3}>Усього</TableCell>
+            <TableCell colSpan={5}>Усього</TableCell>
             <TableCell className="text-right">
               {getTransfers.data?.totalAmount} $
             </TableCell>

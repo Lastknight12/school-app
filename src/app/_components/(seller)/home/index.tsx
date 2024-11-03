@@ -15,7 +15,9 @@ import ProductListItem from "./ProductItem/ProductListItem";
 import AddNewCategory from "./TopButtons/AddNewCategory";
 import AddNewProduct from "./TopButtons/AddNewProduct";
 
+import { Input } from "~/shadcn/ui/input";
 import { useSidebar } from "~/shadcn/ui/sidebar";
+import { Button } from "~/shadcn/ui/button";
 
 export default function SellerHomePage() {
   const [currentCategoryName, setCurrentCategoryName] = useState("");
@@ -54,10 +56,14 @@ export default function SellerHomePage() {
           isMobile ? "w-screen" : "w-[calc(100vw-24px*2)]",
         )}
       >
-        <div className="flex flex-wrap gap-3">
-          <AddNewCategory />
+        <div className="flex max-[355px]:flex-col justify-end gap-3 w-full">
+          <AddNewCategory>
+            <Button className="max-[355px]:grow">Додати категорію</Button>
+          </AddNewCategory>
 
-          <AddNewProduct currentCategoryName={currentCategoryName} />
+          <AddNewProduct currentCategoryName={currentCategoryName}>
+            <Button>Додати продукт</Button>
+          </AddNewProduct>
         </div>
 
         {/* Top scrollable categories list */}
@@ -70,8 +76,7 @@ export default function SellerHomePage() {
 
         <div className="flex flex-col gap-2">
           {/* if we not fetching and data is not empty show input */}
-          <input
-            className="w-full rounded-md bg-card px-4 py-2 mb-3 outline-none disabled:opacity-50"
+          <Input
             value={searchFilter}
             placeholder="Пошук..."
             onChange={(e) => setSearchFilter(e.target.value)}
@@ -86,9 +91,7 @@ export default function SellerHomePage() {
 
           {getCategoryNames.data?.length === 0 &&
             !getCategoryNames.isPending && (
-              <p>
-                Не знайдено жодних категорій. Спробуйте добавити нову
-              </p>
+              <p>Не знайдено жодних категорій. Спробуйте добавити нову</p>
             )}
 
           {getCategoryItems.data?.length === 0 &&

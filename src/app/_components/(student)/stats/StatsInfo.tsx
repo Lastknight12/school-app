@@ -46,7 +46,7 @@ export default function StatsInfo({ statsData }: Props) {
             <div className="mb-2 space-y-1 text-2xl">
               -{statsData.outgoing.amount}$
             </div>
-            <div className="space-y-1 rounded-lg border border-[#474646] bg-[#3a3a3a] px-5 py-2">
+            <div className="space-y-1 rounded-lg border border-border bg-secondary px-5 py-2">
               🤝 усього ви зробили {statsData.outgoing.count} транзакцій
             </div>
           </CardContent>
@@ -66,7 +66,7 @@ export default function StatsInfo({ statsData }: Props) {
             <div className="mb-2 space-y-1 text-2xl">
               +{statsData.incoming.amount}$
             </div>
-            <div className="space-y-1 rounded-lg border border-[#474646] bg-[#3a3a3a] px-5 py-2">
+            <div className="space-y-1 rounded-lg border border-border bg-secondary px-5 py-2">
               👍 усього зроблено {statsData.incoming.count} транзакцій
             </div>
           </CardContent>

@@ -13,6 +13,10 @@ import {
 import { Separator } from "~/shadcn/ui/separator";
 import { SidebarTrigger } from "~/shadcn/ui/sidebar";
 
+function capitalizeFirstLetter(val: string) {
+  return String(val).charAt(0).toUpperCase() + String(val).slice(1);
+}
+
 export default function SidebarPath() {
   const pathname = usePathname();
 
@@ -44,7 +48,7 @@ export default function SidebarPath() {
                 >
                   <BreadcrumbItem>
                     <BreadcrumbPage>
-                      <Link href={`/${path}`}>{path}</Link>
+                      <Link href={`/${path}`}>{capitalizeFirstLetter(decodeURIComponent(path))}</Link>
                     </BreadcrumbPage>
                   </BreadcrumbItem>
 

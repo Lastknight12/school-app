@@ -9,7 +9,7 @@ export default function ModelsList({ onClick, activeItem }: Props) {
   return (
     <div className="overflow-x-auto pb-2">
       <div className="flex gap-2 items-center">
-        <div className={cn("bg-card rounded-lg", activeItem === "users" ? "bg-[#000]" : "")}>
+        <div className={cn("bg-accent rounded-lg", activeItem === "users" ? "bg-primary text-primary-foreground" : "")}>
           <div
             className={"py-2 px-4"}
             onClick={() => {
@@ -20,7 +20,7 @@ export default function ModelsList({ onClick, activeItem }: Props) {
           </div>
         </div>
 
-        <div className={cn("bg-card rounded-lg", activeItem === "badges" ? "bg-[#000]" : "")}>
+        <div className={cn("bg-accent rounded-lg", activeItem === "badges" ? "bg-primary text-primary-foreground" : "")}>
           <div
             className={"py-2 px-4"}
             onClick={() => {
@@ -31,7 +31,7 @@ export default function ModelsList({ onClick, activeItem }: Props) {
           </div>
         </div>
 
-        <div className={cn("bg-card rounded-lg", activeItem === "transactions" ? "bg-[#000]" : "")}>
+        <div className={cn("bg-accent rounded-lg", activeItem === "transactions" ? "bg-primary text-primary-foreground" : "")}>
           <div
             className={"py-2 px-4"}
             onClick={() => {

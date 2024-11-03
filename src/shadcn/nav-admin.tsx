@@ -17,6 +17,7 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
+  useSidebar,
 } from "~/shadcn/ui/sidebar";
 
 export function NavAdmin({
@@ -37,6 +38,8 @@ export function NavAdmin({
     }[];
   }[];
 }) {
+  const { isMobile, setOpenMobile } = useSidebar();
+
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Platform</SidebarGroupLabel>
@@ -50,7 +53,7 @@ export function NavAdmin({
           >
             <SidebarMenuItem>
               <CollapsibleTrigger asChild>
-                <SidebarMenuButton tooltip={item.title}>
+                <SidebarMenuButton tooltip={item.title} mobCloseOnSelect>
                   {item.icon && <item.icon />}
                   <span>{item.title}</span>
                   <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
@@ -73,7 +76,12 @@ export function NavAdmin({
                               <SidebarMenuSub>
                                 {subItem.subItems?.map((subSubItem) => (
                                   <SidebarMenuSubItem key={subSubItem.name}>
-                                    <SidebarMenuSubButton asChild>
+                                    <SidebarMenuSubButton
+                                      asChild
+                                      onClick={() =>
+                                        isMobile && setOpenMobile(false)
+                                      }
+                                    >
                                       <Link href={subSubItem.url}>
                                         <span>{subSubItem.name}</span>
                                       </Link>
@@ -87,7 +95,10 @@ export function NavAdmin({
                       ) : (
                         <SidebarMenuSubItem key={subItem.name}>
                           <SidebarMenuSubButton asChild>
-                            <Link href={subItem.url}>
+                            <Link
+                              href={subItem.url}
+                              onClick={() => isMobile && setOpenMobile(false)}
+                            >
                               <span>{subItem.name}</span>
                             </Link>
                           </SidebarMenuSubButton>

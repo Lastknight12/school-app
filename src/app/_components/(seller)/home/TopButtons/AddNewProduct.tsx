@@ -23,9 +23,10 @@ import { Label } from "~/shadcn/ui/label";
 
 interface Props {
   currentCategoryName: string;
+  children: React.ReactNode;
 }
 
-export default function AddNewProduct({ currentCategoryName }: Props) {
+export default function AddNewProduct({ currentCategoryName, children }: Props) {
   const [isOpen, setIsOpen] = useState(false);
 
   const [title, setTitle] = useState("");
@@ -99,7 +100,7 @@ export default function AddNewProduct({ currentCategoryName }: Props) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button>Додати продукт</Button>
+        {children}
       </DialogTrigger>
       <DialogContent
         className="sm:max-w-[425px]"

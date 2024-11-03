@@ -33,7 +33,7 @@ export function NavUser({
     image: string;
   } | null;
 }) {
-  const { isMobile } = useSidebar();
+  const { isMobile, setOpenMobile } = useSidebar();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const router = useRouter();
 
@@ -86,7 +86,10 @@ export function NavUser({
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem
-                onClick={() => router.push("/settings")}
+                onClick={() => {
+                  router.push("/settings");
+                  isMobile && setOpenMobile(false);
+                }}
                 className="flex gap-3 items-center"
               >
                 <Settings />

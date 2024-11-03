@@ -15,6 +15,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/shadcn/ui/dialog";
+import { Input } from "~/shadcn/ui/input";
+import { Separator } from "~/shadcn/ui/separator";
 
 export default function DialogDemo() {
   const [isOpen, setIsOpen] = useState(false);
@@ -82,9 +84,9 @@ export default function DialogDemo() {
           </DialogDescription>
         </DialogHeader>
         <div>
-          <input
+          <Input
+            variant="accent"
             type="text"
-            className="w-full rounded-lg border border-[#3d3d3d] bg-card px-3 py-2 outline-none placeholder:text-[#8f8f8f]"
             placeholder="Посилання на відео"
             value={musicUrl}
             onChange={handleInputChange}
@@ -102,8 +104,12 @@ export default function DialogDemo() {
 
           {videoInfo &&
             !getVideoInfoMutation.isPending &&
+            !getVideoInfoMutation.isError && <Separator className="my-5" />}
+
+          {videoInfo &&
+            !getVideoInfoMutation.isPending &&
             !getVideoInfoMutation.isError && (
-              <div className=" mt-6 pt-4 border-t-2 gap-4 border-[#3a3a3a] flex items-center max-[415px]:flex-col">
+              <div className="gap-4 flex items-center max-[415px]:flex-col">
                 <Image
                   width={100}
                   height={100}

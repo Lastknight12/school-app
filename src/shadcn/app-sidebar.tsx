@@ -2,9 +2,12 @@
 
 import { type UserRole } from "@prisma/client";
 import {
+  Archive,
+  AudioLines,
   ChartColumnBig,
   ChartNoAxesColumn,
   Home,
+  Play,
   Rocket,
   Shield,
   Store,
@@ -21,6 +24,7 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
+  SidebarSeparator,
 } from "~/shadcn/ui/sidebar";
 
 // This is sample data.
@@ -70,18 +74,29 @@ const data = {
       url: "/leaderboard",
       icon: ChartNoAxesColumn,
     },
+    { name: "Order music", url: "/music", icon: AudioLines },
+  ],
+  radioCenter: [
+    {
+      name: "Music Orders",
+      url: "/musicOrders",
+      icon: Archive,
+    },
+    {
+      name: "Music Player",
+      url: "/music/player",
+      icon: Play,
+    },
   ],
 };
 
 interface Props {
   session: Session | null;
-  showAdmin: boolean;
   routesWithAuth?: Map<string, UserRole[]>;
 }
 
 export function AppSidebar({
   session,
-  showAdmin,
   routesWithAuth = new Map([]),
 }: Props & React.ComponentProps<typeof Sidebar>) {
   return (
@@ -98,17 +113,31 @@ export function AppSidebar({
         </div>
       </SidebarHeader>
       <SidebarContent>
-        {showAdmin && <NavAdmin items={data.admin} />}
+        {session?.user.role === "ADMIN" && (
+          <>
+            <NavAdmin items={data.admin} />
+            <SidebarSeparator />
+          </>
+        )}
 
         <NavMain
-          routes={data.navMain.filter(
-            (item) => {
-              const allowedRoles = routesWithAuth.get(item.url) ?? [];
+          items={data.navMain.filter((item) => {
+            const allowedRoles = routesWithAuth.get(item.url) ?? [];
 
-              if(allowedRoles.includes(session!.user.role) || !routesWithAuth.has(item.url)) return true;
-            },
-          )}
+            if (
+              allowedRoles.includes(session!.user.role) ||
+              !routesWithAuth.has(item.url)
+            )
+              return true;
+          })}
         />
+
+        {session?.user.role === "RADIO_CENTER" && (
+          <>
+            <SidebarSeparator />
+            <NavMain items={data.radioCenter} label="Radio Center"/>
+          </>
+        )}
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={session ? session.user : null} />

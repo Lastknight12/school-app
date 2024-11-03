@@ -20,7 +20,9 @@ export default function KlassesTable() {
         </div>
       ) : (
         <>
-          <AddClass />
+          <div className="flex w-full justify-end items-center">
+            <AddClass />
+          </div>
 
           {klassNames.data?.length === 0 && !klassNames.isFetching && (
             <div className="w-full text-center">Жодних класів не знайдено</div>
@@ -32,7 +34,7 @@ export default function KlassesTable() {
                 <Link
                   key={klass.name}
                   href={`/admin/klass/${klass.name}`}
-                  className="flex w-full cursor-pointer justify-center rounded-md bg-card py-6 text-lg"
+                  className="flex w-full cursor-pointer justify-center rounded-md bg-card border border-border py-6 text-lg"
                 >
                   {klass.name}
                 </Link>
