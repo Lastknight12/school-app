@@ -10,18 +10,18 @@ interface Props {
 export default async function StudentHomePage({ session }: Props) {
   return (
     <main className="flex h-full_page flex-col justify-between">
-      <div className="relative flex w-full justify-center px-6">
+      <div className="relative flex w-full justify-center">
         <DebitCard
           balance={session.user.balance}
           cardHolder={session.user.name ?? "Ім'я"}
-          className="max-[353px]:!w-[300px]"
+          className="max-[410px]:!w-[280px]"
         />
 
         {/* blured bg */}
         <DebitCard
           balance={session.user.balance}
           cardHolder={session.user.name ?? "Ім'я"}
-          className="fixed left-1/2 -translate-x-1/2 blur-2xl max-[353px]:!w-[300px]"
+          className="absolute left-1/2 -translate-x-1/2 blur-2xl max-[410px]:!w-[280px]"
         />
       </div>
 

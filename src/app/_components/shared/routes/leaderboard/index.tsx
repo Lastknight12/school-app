@@ -112,7 +112,7 @@ export default function Leaderboard({ session }: Props) {
       <div
         className={cn(
           // 72 px - navbar
-          "flex w-full grow flex-col items-center justify-center gap-3 rounded-tl-xl rounded-tr-xl bg-card px-3 py-6",
+          "flex w-full h-[calc(100vh-64px-165px)] grow flex-col items-center gap-3 rounded-tl-xl rounded-tr-xl bg-card px-3 py-6",
         )}
       >
         {getLeaderboard.isLoading && (
@@ -127,7 +127,7 @@ export default function Leaderboard({ session }: Props) {
                 "flex w-full items-center justify-between rounded-xl px-3 py-2",
                 session.user.id === user.id
                   ? "bg-accent sticky bottom-4"
-                  : "bg-accent/70",
+                  : "bg-accent/50",
               )}
             >
               <div className="flex items-center gap-4">
