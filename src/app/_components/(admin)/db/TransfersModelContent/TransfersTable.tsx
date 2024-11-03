@@ -110,7 +110,7 @@ export function TransfersTable({ range }: Props) {
             </TableRow>
           ))}
       </TableBody>
-      {true && (
+      {getTransfers.isFetching && (
         <TableRow>
           <TableCell colSpan={5}>
             <Loader2 className="h-6 w-6 animate-spin mx-auto text-[#b5b5b5]" />
