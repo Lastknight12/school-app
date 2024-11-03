@@ -120,22 +120,24 @@ export function AppSidebar({
           </>
         )}
 
-        <NavMain
-          items={data.navMain.filter((item) => {
-            const allowedRoles = routesWithAuth.get(item.url) ?? [];
+        {session?.user && (
+          <NavMain
+            items={data.navMain.filter((item) => {
+              const allowedRoles = routesWithAuth.get(item.url) ?? [];
 
-            if (
-              allowedRoles.includes(session!.user.role) ||
-              !routesWithAuth.has(item.url)
-            )
-              return true;
-          })}
-        />
+              if (
+                allowedRoles.includes(session?.user.role) ||
+                !routesWithAuth.has(item.url)
+              )
+                return true;
+            })}
+          />
+        )}
 
         {session?.user.role === "RADIO_CENTER" && (
           <>
             <SidebarSeparator />
-            <NavMain items={data.radioCenter} label="Radio Center"/>
+            <NavMain items={data.radioCenter} label="Radio Center" />
           </>
         )}
       </SidebarContent>
