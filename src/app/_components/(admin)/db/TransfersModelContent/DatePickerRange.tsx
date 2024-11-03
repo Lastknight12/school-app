@@ -37,7 +37,6 @@ export default function DatePickerRange({ onSelect }: Props) {
       <Popover>
         <PopoverTrigger asChild>
           <Button
-            id="date"
             variant={"outline"}
             className={cn(
               "justify-start text-left font-normal",

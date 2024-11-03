@@ -11,7 +11,9 @@ import { cn } from "~/lib/utils";
 
 import CategoryNamesList from "~/app/_components/shared/CategoryNamesList";
 
-export default function SellerHomePage() {
+import { useSidebar } from "~/shadcn/ui/sidebar";
+
+export default function Shop() {
   const [currentCategoryName, setCurrentCategoryName] = useState("");
   const getCategoryNames = api.category.getCategoryNames.useQuery(void 0, {
     refetchOnWindowFocus: false,
@@ -35,9 +37,17 @@ export default function SellerHomePage() {
     },
   );
 
+  const { open, isMobile } = useSidebar();
+
   return (
     <main>
-      <div className="flex h-[calc(100vh-72px)] flex-col gap-5 px-6">
+      <div
+        className={cn(
+          "flex flex-col gap-5 px-6 transition-all duration-200 ease-linear",
+          open && !isMobile && "!w-[calc(100vw-16rem)]",
+          isMobile ? "w-screen" : "w-[calc(100vw-24px*2)]",
+        )}
+      >
         <CategoryNamesList
           categories={getCategoryNames.data ?? []}
           isLoading={getCategoryNames.isPending}

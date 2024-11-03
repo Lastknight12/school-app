@@ -9,7 +9,7 @@ interface Props {
 
 export default async function StudentHomePage({ session }: Props) {
   return (
-    <main className="mt-4 flex h-[calc(100vh-72px-16px)] flex-col justify-between">
+    <main className="flex h-full_page flex-col justify-between">
       <div className="relative flex w-full justify-center px-6">
         <DebitCard
           balance={session.user.balance}

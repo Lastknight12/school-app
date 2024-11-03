@@ -11,7 +11,7 @@ import { api } from "~/trpc/react";
 
 import { cn } from "~/lib/utils";
 
-import SelectUsers from "../../shared/SelectUsersModal";
+import SelectUsersModal from "../../shared/SelectUsersModal";
 
 import { Avatar, AvatarFallback, AvatarImage } from "~/shadcn/ui/avatar";
 import { Button } from "~/shadcn/ui/button";
@@ -23,6 +23,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/shadcn/ui/dialog";
+import { Input } from "~/shadcn/ui/input";
 
 export default function AddClass() {
   const [isOpen, setIsOpen] = useState(false);
@@ -71,27 +72,27 @@ export default function AddClass() {
     <div className="mb-5">
       <Dialog onOpenChange={setIsOpen} open={isOpen}>
         <DialogTrigger asChild>
-          <button
-            className="rounded-lg bg-card px-4 py-2 text-sm"
+          <Button
             disabled={addKlassMutation.isPending}
           >
             Добавити клас
-          </button>
+          </Button>
         </DialogTrigger>
         <DialogContent className="backdrop-blur-md">
           <DialogHeader>
             <DialogTitle>Добавити клас</DialogTitle>
           </DialogHeader>
           <div className="flex flex-col">
-            <input
+            <Input
               type="text"
+              variant="accent"
               value={klassName}
               onChange={(e) => setKlassName(e.target.value)}
-              className="mb-3 border-b border-[#8f8f8f] bg-transparent px-5 py-2 pb-2 pl-0 text-[#dcdcdc] outline-none placeholder:text-[#8f8f8f]"
+              className="mb-3"
               placeholder="Назва класу"
             />
 
-            <SelectUsers
+            <SelectUsersModal
               usersType="TEACHER"
               onSubmit={(teachers) => {
                 setTeachers(teachers);
@@ -101,6 +102,7 @@ export default function AddClass() {
               onOpenChange={setIsTeachersModalOpen}
             >
               <Button
+                variant="secondary"
                 disabled={addKlassMutation.isPending}
                 className="max-w-max"
               >
@@ -123,7 +125,8 @@ export default function AddClass() {
                   </div>
                 )}
               </Button>
-            </SelectUsers>
+
+            </SelectUsersModal>
           </div>
           <DialogFooter>
             <Button

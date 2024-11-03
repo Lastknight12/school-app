@@ -13,7 +13,7 @@ export const urls = new Map<string, UserRole[]>([
   ["/shop", ["STUDENT", "RADIO_CENTER"]],
   ["/buy", ["STUDENT"]],
   ["/admin", ["ADMIN"]],
-  ["/admin/transfers", ["ADMIN"]],
+  ["/admin/db", ["ADMIN"]],
   ["/musicOrders", ["RADIO_CENTER"]],
   ["/music/player", ["RADIO_CENTER"]],
 ]);
@@ -55,6 +55,7 @@ export const config = {
     "/transactions",
     "/shop",
     "/buy",
+    "/admin/db",
     "/admin",
     "/admin/klass/:klassName",
     "/musicOrders",

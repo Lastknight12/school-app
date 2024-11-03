@@ -62,7 +62,7 @@ export default function Page() {
   if (!userInteraction && !getOrders.isFetching) {
     return (
       <button
-        className="w-screen h-full_page flex items-center justify-center"
+        className="w-full h-full flex items-center justify-center"
         onClick={() => setUserInteracted(true)}
       >
         <p>

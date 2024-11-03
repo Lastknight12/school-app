@@ -70,8 +70,8 @@ export default function UploadImage({
       )}
       
       {!perviewSrc && !uploadFileMutation.isPending && (
-        <Button onClick={() => fileInputRef.current?.click()}>
-          <MdFileUpload size={25} />
+        <Button variant="secondary" onClick={() => fileInputRef.current?.click()}>
+          <MdFileUpload size={25} className="text-accent-foreground"/>
         </Button>
       )}
 

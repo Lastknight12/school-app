@@ -22,7 +22,7 @@ export default function TransfersList({ session }: Props) {
   );
 
   return (
-    <div className="mt-12 min-h-[350px] overflow-hidden rounded-tl-[30px] rounded-tr-[30px] border-t border-[#535353] bg-[#323232b3] pb-4">
+    <div className="mt-12 min-h-[350px] overflow-hidden rounded-tl-[30px] rounded-tr-[30px] border-t border-border bg-accent pb-4">
       {/* Top line */}
       <div className="flex items-center justify-center py-5">
         <div className="h-1 w-9 rounded bg-[#ffffff1a]" />

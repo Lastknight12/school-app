@@ -6,6 +6,7 @@ import {
   ChevronUp,
   Loader2,
   MoreHorizontal,
+  RefreshCw,
   Search,
 } from "lucide-react";
 import { useState } from "react";
@@ -31,6 +32,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/shadcn/ui/dropdown-menu";
+import { Input } from "~/shadcn/ui/input";
 import { ScrollArea } from "~/shadcn/ui/scroll-area";
 import {
   Select,
@@ -47,6 +49,7 @@ import {
   TableHeader,
   TableRow,
 } from "~/shadcn/ui/table";
+import { cn } from "~/lib/utils";
 
 interface UserFromApi {
   name: string;
@@ -74,8 +77,12 @@ export default function UsersModelContent() {
   const [isBadgeDialogOpen, setIsBadgeDialogOpen] = useState(false);
   const utils = api.useUtils();
 
-  const { data: users, isFetching: isFetchingUsers } =
-    api.user.getUsersByRole.useQuery();
+  const {
+    data: users,
+    isFetching: isFetchingUsers,
+    refetch: refetchUsers,
+  } = api.user.getUsersByRole.useQuery();
+
   const { data: allBadges, isFetching: isFetchingBadges } =
     api.user.getAllBadges.useQuery();
   const [selectedUser, setSelectedUser] = useState<UserFromApi | null>(null);
@@ -144,21 +151,53 @@ export default function UsersModelContent() {
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
-        <div className="flex items-center gap-3 px-3 py-2 border-[#3d3d3d] border bg-card rounded-full">
-          <Search className="h-4 w-4 text-muted-foreground" />
-          <input
-            placeholder="Search users..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="outline-none placeholder:text-[#8f8f8f] bg-transparent"
-          />
+        <div className="flex justify-between items-center w-full">
+          <div className="flex items-center ml-4">
+            <Search className="h-4 w-4 text-muted-foreground z-10" />
+            <Input
+              placeholder="Search users..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 -ml-8 rounded-full"
+            />
+          </div>
+
+          <div className="flex items-center gap-2 space-x-2 w-max">
+            <Button size="sm" variant="outline" onClick={() => refetchUsers()} disabled={isFetchingUsers}>
+              <RefreshCw className={cn(isFetchingUsers && "animate-spin")}/>
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+            >
+              Prev
+            </Button>
+            <div className="text-sm text-muted-foreground">
+              {totalPages > 0
+                ? `Page ${currentPage} of ${totalPages}`
+                : "Loading..."}
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() =>
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+              }
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </Button>
+          </div>
         </div>
       </div>
+
       <Table className="mb-4">
         <TableHeader>
           <TableRow>
             <TableHead className="w-[200px]">Name</TableHead>
-            <TableHead>Email</TableHead>
+            <TableHead className="w-[300px]">Email</TableHead>
             <TableHead>Balance</TableHead>
             <TableHead
               className="w-[150px] cursor-pointer"
@@ -204,7 +243,10 @@ export default function UsersModelContent() {
                   <DropdownMenuContent align="end">
                     <DropdownMenuLabel>Actions:</DropdownMenuLabel>
                     <DropdownMenuItem
-                      onClick={() => navigator.clipboard.writeText(user.email)}
+                      onClick={async () => {
+                        await navigator.clipboard.writeText(user.email)
+                        toast.success("Email copied to clipboard")
+                      }}
                     >
                       Copy email
                     </DropdownMenuItem>
@@ -230,7 +272,7 @@ export default function UsersModelContent() {
                       >
                         <div>
                           <SelectTrigger
-                            className="w-[150px] mx-2 mb-2 disabled:opacity-20"
+                            className="w-[150px] bg-secondary mx-2 mb-2 disabled:opacity-20"
                             disabled={updateUserRoleMutation.isPending}
                           >
                             <SelectValue placeholder="Change role" />
@@ -266,31 +308,6 @@ export default function UsersModelContent() {
           ))}
         </TableBody>
       </Table>
-      <div className="flex items-center gap-2 space-x-2 sticky w-max left-[calc(50%-261px/2)] py-3 px-6 rounded-full bg-black bottom-4">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-          disabled={currentPage === 1}
-        >
-          Prev
-        </Button>
-        <div className="text-sm text-muted-foreground">
-          {totalPages > 0
-            ? `Page ${currentPage} of ${totalPages}`
-            : "Loading..."}
-        </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() =>
-            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-          }
-          disabled={currentPage === totalPages}
-        >
-          Next
-        </Button>
-      </div>
 
       <Dialog
         open={isBadgeDialogOpen}
@@ -313,7 +330,7 @@ export default function UsersModelContent() {
           <ScrollArea className="h-[300px] w-full">
             <div className="grid grid-cols-2 gap-4">
               {isFetchingBadges && (
-                <div className="mx-auto">
+                <div className="col-span-2 flex justify-center items-center">
                   <Loader2 className="h-4 w-4 animate-spin" />
                 </div>
               )}
@@ -321,7 +338,7 @@ export default function UsersModelContent() {
               {allBadges?.map((badge) => (
                 <div
                   key={badge.name}
-                  className="flex items-center space-x-2"
+                  className="flex items-center space-x-2 justify-center"
                   onClick={() => handleToggleBadge(selectedUser!.id, badge)}
                 >
                   <Checkbox
@@ -329,7 +346,7 @@ export default function UsersModelContent() {
                     checked={allowedBadgesCache.some(
                       (b) => b.name === badge.name,
                     )}
-                    className="rounded border-gray-300 text-primary focus:ring-primary"
+                    className="rounded border-gray-300 outline-none text-primary focus:ring-primary"
                   />
                   <label
                     htmlFor={badge.name}

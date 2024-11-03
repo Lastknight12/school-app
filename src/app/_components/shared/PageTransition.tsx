@@ -21,9 +21,9 @@ function FrozenRouter(props: { children: React.ReactNode }) {
 }
 
 const variants = {
-  hidden: { opacity: 0, y: 20 },
-  enter: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: -20 },
+  hidden: { opacity: 0 },
+  enter: { opacity: 1 },
+  exit: { opacity: 0 },
 };
 
 export default function PageTransition({
@@ -37,7 +37,6 @@ export default function PageTransition({
   return (
     <AnimatePresence mode="popLayout">
       <motion.div
-        className="h-full w-full"
         key={key}
         initial="hidden"
         animate="enter"

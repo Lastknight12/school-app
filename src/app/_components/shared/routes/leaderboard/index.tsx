@@ -56,7 +56,7 @@ export default function Leaderboard({ session }: Props) {
       )}
     >
       {/* Top 3 users and their balances */}
-      <div className="mb-4 mt-20 grid w-screen grid-cols-3 items-end gap-3 px-3">
+      <div className="mb-4 mt-20 grid grid-cols-3 items-end gap-3 px-3">
         {getLeaderboard.data?.pages[0]!.users.slice(0, 3).map((user, i) => (
           <motion.div
             initial={{ scale: 0, opacity: 0 }}
@@ -69,7 +69,7 @@ export default function Leaderboard({ session }: Props) {
             }}
             key={user.id}
             className={cn(
-              "relative row-start-1 flex flex-col items-center justify-start gap-2 rounded-xl bg-[#161616] px-5 py-4",
+              "relative row-start-1 flex flex-col items-center justify-start gap-2 rounded-xl bg-card px-5 py-4",
               i === 0 && "col-start-2 h-[calc(100%+60px)]",
               i === 1 && "col-start-1 h-[calc(100%+30px)]",
               i == 2 && "col-start-3",
@@ -112,7 +112,7 @@ export default function Leaderboard({ session }: Props) {
       <div
         className={cn(
           // 72 px - navbar
-          "flex w-screen grow flex-col items-center justify-center gap-3 rounded-tl-xl rounded-tr-xl bg-[#161616] px-3 py-6",
+          "flex w-full grow flex-col items-center justify-center gap-3 rounded-tl-xl rounded-tr-xl bg-card px-3 py-6",
         )}
       >
         {getLeaderboard.isLoading && (
@@ -126,8 +126,8 @@ export default function Leaderboard({ session }: Props) {
               className={cn(
                 "flex w-full items-center justify-between rounded-xl px-3 py-2",
                 session.user.id === user.id
-                  ? "bg-[#555555] sticky bottom-4"
-                  : "bg-[#262626]",
+                  ? "bg-accent sticky bottom-4"
+                  : "bg-accent/70",
               )}
             >
               <div className="flex items-center gap-4">

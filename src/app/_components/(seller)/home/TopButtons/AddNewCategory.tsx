@@ -16,7 +16,11 @@ import {
 } from "~/shadcn/ui/dialog";
 import { Label } from "~/shadcn/ui/label";
 
-export default function AddNewCategory() {
+interface Props {
+  children: React.ReactNode;
+}
+
+export default function AddNewCategory({ children }: Props) {
   const [isOpen, setIsOpen] = useState(false);
 
   const [name, setName] = useState("");
@@ -58,7 +62,7 @@ export default function AddNewCategory() {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button className="flex-grow">Додати категорію</Button>
+        {children}
       </DialogTrigger>
       {/* Disable auto focus on open */}
       <DialogContent

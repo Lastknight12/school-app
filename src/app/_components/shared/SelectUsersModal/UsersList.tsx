@@ -34,7 +34,7 @@ export default function UsersList({
         filteredUsers?.filter((user) => user.name.includes(value)),
       );
     } else {
-      setFilteredUsers(filteredUsers);
+      setFilteredUsers(users);
     }
   }
 
@@ -42,6 +42,7 @@ export default function UsersList({
     <>
       <Input
         value={searchName}
+        variant="accent"
         placeholder="Search users..."
         onChange={(e) => handleInputChange(e.target.value)}
       />
@@ -55,7 +56,7 @@ export default function UsersList({
 
         {isFetching && (
           <div className="flex items-center justify-center">
-            <Loader2 className="h-6 w-6 animate-spin text-[#b5b5b5]" />
+            <Loader2 className="h-5 w-5 animate-spin text-[#b5b5b5]" />
           </div>
         )}
 
@@ -67,7 +68,7 @@ export default function UsersList({
               key={user.id}
               onClick={() => onSelect?.(user)}
               className={cn(
-                "cursor-pointer flex items-center justify-between p-3 rounded-lg hover:bg-card transition-colors",
+                "cursor-pointer flex items-center justify-between p-3 rounded-lg hover:bg-accent transition-colors",
                 isUserSelected && "opacity-50",
               )}
             >
