@@ -126,7 +126,7 @@ export default function GenerateQRModal({ onSuccess, children }: Props) {
         products.length > 0 && setOpen(isOpen);
       }}
     >
-      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogTrigger disabled={products.length === 0} asChild>{children}</DialogTrigger>
       <DialogContent
         className={cn(
           "sm:max-w-[425px] gap-8",

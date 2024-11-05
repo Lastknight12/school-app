@@ -11,13 +11,14 @@ import { cn } from "~/lib/utils";
 import { useDebounceValue } from "~/hooks/useDebounceValue";
 
 import CategoryNamesList from "../../shared/CategoryNamesList";
+import GenerateQRModal from "./GenerateQRModal";
 import ProductListItem from "./ProductItem/ProductListItem";
 import AddNewCategory from "./TopButtons/AddNewCategory";
 import AddNewProduct from "./TopButtons/AddNewProduct";
 
+import { Button } from "~/shadcn/ui/button";
 import { Input } from "~/shadcn/ui/input";
 import { useSidebar } from "~/shadcn/ui/sidebar";
-import { Button } from "~/shadcn/ui/button";
 
 export default function SellerHomePage() {
   const [currentCategoryName, setCurrentCategoryName] = useState("");
@@ -51,18 +52,22 @@ export default function SellerHomePage() {
     <main>
       <div
         className={cn(
-          "flex flex-col gap-5 px-6 transition-all duration-200 ease-linear",
+          "flex flex-wrap gap-5 px-6 transition-all duration-200 ease-linear",
           open && !isMobile && "!w-[calc(100vw-16rem)]",
           isMobile ? "w-screen" : "w-[calc(100vw-24px*2)]",
         )}
       >
-        <div className="flex max-[355px]:flex-col justify-end gap-3 w-full">
+        <div className="flex flex-wrap justify-end gap-3 w-full">
+          <GenerateQRModal>
+            <Button className="grow">Генерувати QR-код</Button>
+          </GenerateQRModal>
+
           <AddNewCategory>
-            <Button className="max-[355px]:grow">Додати категорію</Button>
+            <Button className="grow">Додати категорію</Button>
           </AddNewCategory>
 
           <AddNewProduct currentCategoryName={currentCategoryName}>
-            <Button>Додати продукт</Button>
+            <Button className="grow">Додати продукт</Button>
           </AddNewProduct>
         </div>
 
