@@ -137,6 +137,7 @@ export default function ProductListItem({ children, item }: Props) {
         <DialogFooter className="justify-end gap-2 flex-wrap">
           {/* Delete Button */}
           <Button
+            variant="secondary"
             disabled={deleteProductMutation.isPending}
             className={cn(deleteProductMutation.isPending && "opacity-30")}
             onClick={() => deleteProductMutation.mutate({ id: item.id })}
@@ -150,6 +151,7 @@ export default function ProductListItem({ children, item }: Props) {
 
           {/* Update Button */}
           <Button
+            variant="secondary"
             onClick={() => {
               if (!updating) initUpdate(item);
               if (updating) resetUpdate();
@@ -166,6 +168,7 @@ export default function ProductListItem({ children, item }: Props) {
           {/* Add Button and Update */}
           {!updating ? (
             <Button
+              variant="secondary"
               onClick={handleButtonClick}
               className={cn(item.count === 0 && "opacity-30")}
               disabled={item.count === 0}
@@ -178,6 +181,7 @@ export default function ProductListItem({ children, item }: Props) {
             </Button>
           ) : (
             <Button
+              variant="secondary"
               disabled={updateProductMutation.isPending || !updatedProduct}
               className={cn(updateProductMutation.isPending && "opacity-30")}
               onClick={() =>

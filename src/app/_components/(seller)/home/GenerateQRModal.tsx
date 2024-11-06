@@ -126,20 +126,12 @@ export default function GenerateQRModal({ onSuccess, children }: Props) {
         products.length > 0 && setOpen(isOpen);
       }}
     >
-      <DialogTrigger disabled={products.length === 0} asChild>{children}</DialogTrigger>
-      <DialogContent
-        className={cn(
-          "sm:max-w-[425px] gap-8",
-          genQRToken.data && !isSuccess && !paymentError && "bg-white",
-        )}
-      >
+      <DialogTrigger disabled={products.length === 0} asChild>
+        {children}
+      </DialogTrigger>
+      <DialogContent className="gap-8">
         <DialogHeader>
-          <DialogTitle
-            className={cn(
-              "text-center",
-              genQRToken.data && !isSuccess && !paymentError && "text-black",
-            )}
-          >
+          <DialogTitle className={cn("text-center")}>
             {genQRToken.data ? "Відскануй QR код" : "Список доданих продуктів"}
           </DialogTitle>
         </DialogHeader>
@@ -147,7 +139,9 @@ export default function GenerateQRModal({ onSuccess, children }: Props) {
           {genQRToken.data ? (
             <>
               {!isSuccess && !paymentError && (
-                <QRCode value={genQRToken.data.buyUrl} />
+                <div className="bg-white">
+                  <QRCode value={genQRToken.data.buyUrl} />
+                </div>
               )}
               {paymentError && <p className="text-red-500">{paymentError}</p>}
               {isSuccess && <p className="text-green-500">Успішно</p>}
@@ -167,7 +161,7 @@ export default function GenerateQRModal({ onSuccess, children }: Props) {
                 <SelectTrigger className="w-[180px]">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent >
+                <SelectContent>
                   <SelectGroup>
                     <SelectItem value="infinity">Нескінченний</SelectItem>
                     <SelectItem value="expires">З певним треміном</SelectItem>
@@ -192,8 +186,8 @@ export default function GenerateQRModal({ onSuccess, children }: Props) {
               </Button>
             </>
           ) : (
-            <DialogClose className="text-black">
-              <Button className=" bg-black">Закрити</Button>
+            <DialogClose>
+              <Button>Закрити</Button>
             </DialogClose>
           )}
         </DialogFooter>

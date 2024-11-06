@@ -101,6 +101,7 @@ export function NavUser({
                 e.preventDefault();
                 setIsLoggingOut(true);
                 await signOut();
+                router.push("/login");
               }}
               className="flex gap-3 items-center"
               disabled={isLoggingOut}

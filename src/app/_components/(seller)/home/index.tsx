@@ -52,7 +52,7 @@ export default function SellerHomePage() {
     <main>
       <div
         className={cn(
-          "flex flex-wrap gap-5 px-6 transition-all duration-200 ease-linear",
+          "flex flex-col gap-5 px-6 transition-all duration-200 ease-linear",
           open && !isMobile && "!w-[calc(100vw-16rem)]",
           isMobile ? "w-screen" : "w-[calc(100vw-24px*2)]",
         )}
