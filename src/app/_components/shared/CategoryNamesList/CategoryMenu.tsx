@@ -21,7 +21,7 @@ export function CategoryMenu({ categoryName }: Props) {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="outline-none py-2 pr-4">
+      <DropdownMenuTrigger className="outline-none py-2 pr-4 ml-2">
         <HiDotsVertical />
       </DropdownMenuTrigger>
       <DropdownMenuContent

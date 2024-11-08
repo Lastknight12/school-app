@@ -1,10 +1,9 @@
 "use client";
 
-import { ScanQrCode } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import QrReader from "~/app/_components/shared/QrReader";
+import SidebarQrScanner from "./sidebar-qrScanner";
 
 import {
   Breadcrumb,
@@ -21,10 +20,10 @@ function capitalizeFirstLetter(val: string) {
 }
 
 interface Props {
-  showQrReader?: boolean;
+  showQrScanner?: boolean;
 }
 
-export default function SidebarPath({ showQrReader }: Props) {
+export default function SidebarPath({ showQrScanner }: Props) {
   const pathname = usePathname();
 
   const paths = pathname
@@ -73,11 +72,7 @@ export default function SidebarPath({ showQrReader }: Props) {
         </Breadcrumb>
       </div>
 
-      {showQrReader && (
-        <QrReader>
-          <ScanQrCode />
-        </QrReader>
-      )}
+      {showQrScanner && <SidebarQrScanner />}
     </header>
   );
 }

@@ -1,7 +1,9 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
+import Image from "next/image";
 import React, { useEffect, useState } from "react";
+import { IoMdClose } from "react-icons/io";
 import QRCode from "react-qr-code";
 import { toast } from "sonner";
 
@@ -11,9 +13,14 @@ import { pusherClient } from "~/lib/pusher-client";
 import { useProducts } from "~/lib/state";
 import { cn } from "~/lib/utils";
 
-import { ProductCarousel } from "../../shared/Product/ProductsCarousel";
-
 import { Button } from "~/shadcn/ui/button";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "~/shadcn/ui/carousel";
 import {
   Dialog,
   DialogClose,
@@ -45,12 +52,18 @@ export default function GenerateQRModal({ onSuccess, children }: Props) {
 
   const utils = api.useUtils();
 
-  const resetProductList = useProducts((state) => state.reset);
-
   const products = useProducts((state) => state.products);
+  const resetProducts = useProducts((state) => state.reset);
+  const removeProduct = useProducts((state) => state.removeProduct);
+
+  useEffect(() => {
+    if (products.length === 0) {
+      resetStates();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [products]);
 
   const resetStates = () => {
-    resetProductList();
     genQRToken.reset();
     setIsSuccess(false);
     setOpen(false);
@@ -72,6 +85,7 @@ export default function GenerateQRModal({ onSuccess, children }: Props) {
       },
     });
 
+  // maybe wrap it into onSuccess callback in mutation
   useEffect(() => {
     if (genQRToken.data) {
       const channel = pusherClient.subscribe(genQRToken.data.channel);
@@ -82,10 +96,10 @@ export default function GenerateQRModal({ onSuccess, children }: Props) {
           setTimeout(() => {
             resetStates();
           }, 1500);
-
+          
           return;
         }
-
+        
         setPaymentError("");
         setIsSuccess(true);
 
@@ -101,6 +115,7 @@ export default function GenerateQRModal({ onSuccess, children }: Props) {
         onSuccess?.();
 
         setTimeout(() => {
+          resetProducts();
           resetStates();
         }, 1500);
       });
@@ -139,7 +154,7 @@ export default function GenerateQRModal({ onSuccess, children }: Props) {
           {genQRToken.data ? (
             <>
               {!isSuccess && !paymentError && (
-                <div className="bg-white">
+                <div className="bg-white p-2">
                   <QRCode value={genQRToken.data.buyUrl} />
                 </div>
               )}
@@ -147,14 +162,50 @@ export default function GenerateQRModal({ onSuccess, children }: Props) {
               {isSuccess && <p className="text-green-500">Успішно</p>}
             </>
           ) : (
-            <ProductCarousel
-              items={products}
-              imageSize={100}
-              className="max-[410px]:flex-col"
-            />
+            // Products list
+            <Carousel className="w-full max-w-[377px] gap-8">
+              <CarouselContent>
+                {products.map((item) => (
+                  <CarouselItem key={item.title} className="relative">
+                    <Button
+                      className="absolute top-0 right-0 z-10 h-auto p-2"
+                      onClick={() => removeProduct(item.id)}
+                    >
+                      <IoMdClose />
+                    </Button>
+
+                    <div>
+                      <div className="flex gap-3 justify-center select-none items-center max-mobile:flex-col max-[410px]:flex-col">
+                        <Image
+                          src={item.image}
+                          width={100}
+                          height={100}
+                          className="rounded-lg h-[100px]"
+                          alt={`${item.title} image`}
+                        />
+
+                        <div className="flex flex-col justify-center gap-2">
+                          <h1>
+                            {item.title.length > 15
+                              ? item.title.slice(0, 15) + "..."
+                              : item.title}
+                          </h1>
+                          <p>Ціна: {item.pricePerOne + " Балів"}</p>
+                          <p>Кількість: {item.count}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <div className="flex items-center justify-end gap-4 mt-3">
+                <CarouselPrevious className="static translate-y-0" />
+                <CarouselNext className="static translate-y-0" />
+              </div>
+            </Carousel>
           )}
         </div>
-        <DialogFooter className="justify-end items-center gap-3 flex-wrap-reverse">
+        <DialogFooter className="justify-end items-center gap-3 flex-wrap flex-row">
           {!genQRToken.isSuccess ? (
             <>
               <Select defaultValue={qrType} onValueChange={setQrType}>

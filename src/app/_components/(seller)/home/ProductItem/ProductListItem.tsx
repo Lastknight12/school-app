@@ -111,7 +111,7 @@ export default function ProductListItem({ children, item }: Props) {
       >
         <DialogHeader>
           <DialogTitle>
-            Додати <span className="text-emerald-300">{item.title}</span> до
+            Додати <span className="text-emerald-300">{item.title.length > 30 ? item.title.slice(0, 30) + "..." : item.title}</span> до
             списку
           </DialogTitle>
 
@@ -177,7 +177,7 @@ export default function ProductListItem({ children, item }: Props) {
                 ? "Немає в наявності ❌"
                 : !itemExist
                   ? "Додати до списку ✅"
-                  : `Видалити з списку ❌`}
+                  : `Видалити зі списку ❌`}
             </Button>
           ) : (
             <Button

@@ -6,9 +6,16 @@ import { toast } from "sonner";
 
 import { api } from "~/trpc/react";
 
-import { ProductCarousel } from "~/app/_components/shared/Product/ProductsCarousel";
-
 import { Button } from "~/shadcn/ui/button";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "~/shadcn/ui/carousel";
+
+import Image from "next/image";
 
 export default function BuyProduct() {
   const params = useSearchParams();
@@ -65,23 +72,61 @@ export default function BuyProduct() {
         </div>
       ) : payMutation.isSuccess ? (
         <div className="flex h-[calc(100vh-72px)] w-full items-center justify-center">
-          <h1 className="text-2xl text-lime-500">Успішно</h1>
+          <h1 className="text-2xl text-lime-500">
+            Успішно куплено продукти:{" "}
+            {getItemsFromTokenOrId.data?.products
+              .map((item) =>
+                item.title.length > 15
+                  ? item.title.slice(0, 15) + "..."
+                  : item.title,
+              )
+              .join(", ")}
+              <br />
+              <br />
+              Дата покупки: {new Date().toLocaleString()}
+          </h1>
         </div>
       ) : (
         getItemsFromTokenOrId.data && (
           <>
             <div className="flex flex-col items-center">
-              <ProductCarousel
-                items={getItemsFromTokenOrId.data.products}
-                className="flex-col text-lg"
-              />
+              <Carousel className="w-full max-w-[377px] gap-8">
+                <CarouselPrevious className="z-10 left-0" />
+                <CarouselContent>
+                  {getItemsFromTokenOrId.data.products.map((item) => (
+                    <CarouselItem key={item.title}>
+                      <div>
+                        <div className="flex gap-3 justify-center select-none items-center max-mobile:flex-col max-[410px]:flex-col">
+                          <Image
+                            src={item.image}
+                            width={100}
+                            height={100}
+                            className="rounded-lg h-[100px]"
+                            alt={`${item.title} image`}
+                          />
+                          <div className="flex flex-col justify-center gap-2">
+                            <h1>
+                              {item.title.length > 15
+                                ? item.title.slice(0, 15) + "..."
+                                : item.title}
+                            </h1>
+                            <p>Ціна: {item.pricePerOne + " Балів"}</p>
+                            <p>Кількість: {item.count}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselNext className="z-10 right-0" />
+              </Carousel>
             </div>
             <div>
               <h1 className="mb-3 w-full text-center text-xl">
                 В суммі: {getItemsFromTokenOrId.data.totalAmount}
               </h1>
               <Button
-                disabled={payMutation.isPending}
+                disabled={payMutation.isPending || payMutation.isError}
                 className="flex w-full items-center text-black bg-lime-500 hover:opacity-70"
                 onClick={() => {
                   payMutation.mutate({ token, productId });

@@ -75,7 +75,6 @@ export const categoryRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx, input }) => {
-      console.log(input)
       if (!input.token && !input.productId) {
         throw new TRPCError({
           code: "BAD_REQUEST",
@@ -97,14 +96,6 @@ export const categoryRouter = createTRPCRouter({
           });
         }
 
-        //   products: {
-        //     count: number;
-        //     id: string;
-        //     image: string;
-        //     title: string;
-        //     pricePerOne: number;
-        //     categoryId: string;
-        // }[]
         return {
           products: [
             {
@@ -144,12 +135,15 @@ export const categoryRouter = createTRPCRouter({
         if (transaction?.success) {
           throw new TRPCError({
             code: "BAD_REQUEST",
-            message: "Транакція завершена",
+            message: "Покупка завершена",
           });
         }
 
         if (dbProducts.length === 0) {
-          return null;
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Невірний токен",
+          });
         }
 
         return {

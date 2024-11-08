@@ -82,6 +82,7 @@ export default function SellerHomePage() {
         <div className="flex flex-col gap-2">
           {/* if we not fetching and data is not empty show input */}
           <Input
+          className="mb-2"
             value={searchFilter}
             placeholder="Пошук..."
             onChange={(e) => setSearchFilter(e.target.value)}
@@ -115,11 +116,11 @@ export default function SellerHomePage() {
                     src={item.image}
                     width={100}
                     height={100}
-                    className="rounded-md"
+                    className="rounded-md h-[100px]"
                     alt="product image"
                   />
                   <div className="flex flex-col justify-center gap-2">
-                    <h1>{item.title}</h1>
+                    <h1>{item.title.length > 30 ? item.title.slice(0, 30) + "..." : item.title}</h1>
                     <p>{item.pricePerOne + " Балів"}</p>
                     <p>Кількість: {item.count}</p>
                   </div>

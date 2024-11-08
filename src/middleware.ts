@@ -11,7 +11,7 @@ export const urls = new Map<string, UserRole[]>([
   ["/stats", ["STUDENT", "RADIO_CENTER"]],
   ["/transactions", ["ADMIN"]],
   ["/shop", ["STUDENT", "RADIO_CENTER"]],
-  ["/buy", ["STUDENT"]],
+  ["/buy", ["STUDENT", "SELLER"]],
   ["/admin", ["ADMIN"]],
   ["/admin/db", ["ADMIN"]],
   ["/musicOrders", ["RADIO_CENTER"]],

@@ -19,6 +19,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/shadcn/ui/dialog";
+import { Input } from "~/shadcn/ui/input";
 import { Label } from "~/shadcn/ui/label";
 
 interface Props {
@@ -26,7 +27,10 @@ interface Props {
   children: React.ReactNode;
 }
 
-export default function AddNewProduct({ currentCategoryName, children }: Props) {
+export default function AddNewProduct({
+  currentCategoryName,
+  children,
+}: Props) {
   const [isOpen, setIsOpen] = useState(false);
 
   const [title, setTitle] = useState("");
@@ -99,9 +103,7 @@ export default function AddNewProduct({ currentCategoryName, children }: Props) 
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        {children}
-      </DialogTrigger>
+      <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent
         className="sm:max-w-[425px]"
         onOpenAutoFocus={(e) => e.preventDefault()}
@@ -117,8 +119,9 @@ export default function AddNewProduct({ currentCategoryName, children }: Props) 
           <div className="grid grid-cols-3 items-center">
             {/* NAME */}
             <Label className="text-left text-base">Назва:</Label>
-            <input
-              className="col-span-2 rounded-md border-card bg-card px-3 py-1 outline-none"
+            <Input
+              variant="accent"
+              className="col-span-2"
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}

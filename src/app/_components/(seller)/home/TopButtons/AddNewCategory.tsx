@@ -14,6 +14,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/shadcn/ui/dialog";
+import { Input } from "~/shadcn/ui/input";
 import { Label } from "~/shadcn/ui/label";
 
 interface Props {
@@ -61,9 +62,7 @@ export default function AddNewCategory({ children }: Props) {
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        {children}
-      </DialogTrigger>
+      <DialogTrigger asChild>{children}</DialogTrigger>
       {/* Disable auto focus on open */}
       <DialogContent
         className="sm:max-w-[425px]"
@@ -79,8 +78,9 @@ export default function AddNewCategory({ children }: Props) {
           <div className="grid grid-cols-3 items-center">
             {/* NAME */}
             <Label className="text-left text-base">Назва:</Label>
-            <input
-              className="col-span-2 rounded-md border-card bg-card px-3 py-1 outline-none"
+            <Input
+              variant="accent"
+              className="col-span-2"
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}

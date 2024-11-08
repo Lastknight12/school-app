@@ -263,7 +263,10 @@ export const transfersRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       // validator
-      if (input.products.length > 1 && input.type === "infinity") {
+      if (
+        (input.products.length > 1 || input.products[0]!.count > 1) &&
+        input.type === "infinity"
+      ) {
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "Виберіть лише 1 продукт для створення нескінечного QR коду",

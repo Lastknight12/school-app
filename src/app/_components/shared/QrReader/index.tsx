@@ -1,14 +1,11 @@
 "use client";
 
-import Image from "next/image";
 import QrScanner from "qr-scanner";
 import { useEffect, useRef, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { toast } from "sonner";
 
 import useClickOutside from "~/hooks/useClickOutside";
-
-import QrFrame from "images/qr-frame.svg";
 
 import "./index.css";
 
@@ -26,8 +23,7 @@ interface Props {
  * @param {React.ReactNode} children - React Node to show open or close scanner
  * @param {boolean} isOpen - Custom state for scanner
  * @param {(data: string) => void} onDataScanned - Callback when qr code is scanned
- * @param {(open: boolean) => void} handleOpenChange - Callback when scanner is opened or closed
- * @param {() => void} onCloseButtonClick - Callback when close button is clicked
+ * @param {(open: boolean) => void} onOpenChange - Callback when open state is changed
  *
  * @example
  * <QrReader isOpen={isOpen} onDataScanned={onDataScanned} handleOpenChange={handleOpenChange}>
@@ -40,12 +36,10 @@ export default function QrReader({
   isOpen,
   onDataScanned,
   onOpenChange,
-  onCloseButtonClick,
 }: Props) {
   // QR States
   const scanner = useRef<QrScanner>();
   const videoEl = useRef<HTMLVideoElement>(null);
-  const qrBoxEl = useRef<HTMLDivElement>(null);
   const rootEl = useRef<HTMLDivElement>(null);
 
   const [qrOn, setQrOn] = useState<boolean>(true);
@@ -83,11 +77,9 @@ export default function QrReader({
         onDecodeError: onScanFail,
         // 📷 This is the camera facing mode. In mobile devices, "environment" means back camera and "user" means front camera.
         preferredCamera: "environment",
-        // 🖼 This will help us position our "QrFrame.svg" so that user can only scan when qr code is put in between our QrFrame.svg.
         // 🔥 This will produce a yellow (default color) outline around the qr code that we scan, showing a proof that our qr-scanner is scanning that qr code.
         highlightCodeOutline: true,
         // 📦 A custom div which will pair with "highlightScanRegion" option above 👆. This gives us full control over our scan region.
-        overlay: qrBoxEl?.current ?? undefined,
       });
     }
 
@@ -140,6 +132,8 @@ export default function QrReader({
   const onScanSuccess = (result: QrScanner.ScanResult) => {
     onDataScanned?.(result.data);
     scanner.current?.stop();
+    setOpen(false);
+    onOpenChange?.(false);
   };
 
   // Fail
@@ -165,24 +159,13 @@ export default function QrReader({
               className="absolute right-3 top-3 z-20"
               onClick={() => {
                 setOpen(false);
-                onCloseButtonClick?.();
+                onOpenChange?.(false);
               }}
             >
               <IoMdClose size={30} />
             </div>
 
             <video ref={videoEl} />
-
-            <div ref={qrBoxEl} className="relative">
-              <Image
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-                src={QrFrame}
-                alt="QR Frame"
-                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-                width={150}
-                height={150}
-              />
-            </div>
           </div>
         )}
       </div>

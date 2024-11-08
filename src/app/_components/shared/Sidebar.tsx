@@ -25,7 +25,7 @@ export default function Sidebar({ children, session }: Props) {
       <SidebarInset>
         {session && (
           <SidebarPath
-            showQrReader={
+            showQrScanner={
               session.user.role === "STUDENT" ||
               session.user.role === "RADIO_CENTER"
             }
