@@ -92,13 +92,20 @@ const data = {
 
 interface Props {
   session: Session | null;
-  routesWithAuth?: Map<string, UserRole[]>;
 }
+
+const routesWithAuth = new Map<string, UserRole[]>([
+  ["/stats", ["STUDENT", "RADIO_CENTER"]],
+  ["/transactions", ["ADMIN"]],
+  ["/shop", ["STUDENT", "RADIO_CENTER"]],
+  ["/leaderboard", ["STUDENT", "RADIO_CENTER", "ADMIN", "SELLER", "TEACHER"]],
+]);
 
 export function AppSidebar({
   session,
-  routesWithAuth = new Map([]),
 }: Props & React.ComponentProps<typeof Sidebar>) {
+  if (!session) return null;
+
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
@@ -113,14 +120,14 @@ export function AppSidebar({
         </div>
       </SidebarHeader>
       <SidebarContent>
-        {session?.user.role === "ADMIN" && (
+        {session.user.role === "ADMIN" && (
           <>
             <NavAdmin items={data.admin} />
             <SidebarSeparator />
           </>
         )}
 
-        {session?.user && (
+        {session.user && (
           <NavMain
             items={data.navMain.filter((item) => {
               const allowedRoles = routesWithAuth.get(item.url) ?? [];
@@ -134,7 +141,7 @@ export function AppSidebar({
           />
         )}
 
-        {session?.user.role === "RADIO_CENTER" && (
+        {session.user.role === "RADIO_CENTER" && (
           <>
             <SidebarSeparator />
             <NavMain items={data.radioCenter} label="Radio Center" />
@@ -142,7 +149,7 @@ export function AppSidebar({
         )}
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={session ? session.user : null} />
+        <NavUser user={session.user} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

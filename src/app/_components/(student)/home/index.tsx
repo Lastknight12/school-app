@@ -2,8 +2,6 @@ import { type Session } from "next-auth";
 
 import DebitCard from "../../shared/DebitCard";
 import TransfersList from "./TransfersList";
-import QrReader from "../../shared/QrReader";
-import { ScanQrCode } from "lucide-react";
 
 interface Props {
   session: Session;
@@ -12,9 +10,6 @@ interface Props {
 export default async function StudentHomePage({ session }: Props) {
   return (
     <main className="flex h-full_page flex-col justify-between">
-      <QrReader>
-        <ScanQrCode />
-      </QrReader>
       <div className="relative flex w-full justify-center">
         <DebitCard
           balance={session.user.balance}

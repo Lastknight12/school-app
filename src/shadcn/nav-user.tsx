@@ -5,8 +5,6 @@ import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import { Button } from "./ui/button";
-
 import { Avatar, AvatarFallback, AvatarImage } from "~/shadcn/ui/avatar";
 import {
   DropdownMenu,
@@ -31,15 +29,11 @@ export function NavUser({
     name: string;
     email: string;
     image: string;
-  } | null;
+  };
 }) {
   const { isMobile, setOpenMobile } = useSidebar();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const router = useRouter();
-
-  if (!user) {
-    return <Button onClick={() => router.push("/login")}>Login</Button>;
-  }
 
   return (
     <SidebarMenu>

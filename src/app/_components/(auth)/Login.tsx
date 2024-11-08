@@ -20,7 +20,7 @@ export default function Login() {
   useEffect(() => {
     switch (error) {
       case "OAuthAccountNotLinked":
-        toast.error("Аккаунт прікріплено не до цього методу входу");
+        toast.error("Аккаунт прікріплено до іншого методу входу");
         break;
       case "OAuthCallback":
         toast.error("Виникла помилка під час входу");

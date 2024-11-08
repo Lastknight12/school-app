@@ -9,7 +9,7 @@ import TeacherHomePage from "./_components/(teacher)/home/HomePage";
 export default async function Home() {
   const session = await getServerAuthSession();
 
-  if (!session?.user) {
+  if (!session) {
     return redirect("/login");
   }
 

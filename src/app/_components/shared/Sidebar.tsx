@@ -1,6 +1,5 @@
 "use client";
 
-import { type UserRole } from "@prisma/client";
 import { type Session } from "next-auth";
 import { usePathname } from "next/navigation";
 import { AppSidebar } from "~/shadcn/app-sidebar";
@@ -12,13 +11,6 @@ interface Props {
   children: React.ReactNode;
   session: Session | null;
 }
-
-const routesWithAuth = new Map<string, UserRole[]>([
-  ["/stats", ["STUDENT", "RADIO_CENTER"]],
-  ["/transactions", ["ADMIN"]],
-  ["/shop", ["STUDENT", "RADIO_CENTER"]],
-  ["/leaderboard", ["STUDENT", "RADIO_CENTER", "ADMIN", "SELLER", "TEACHER"]],
-]);
 const dontRenderUrls = ["/login"];
 
 export default function Sidebar({ children, session }: Props) {
@@ -28,13 +20,17 @@ export default function Sidebar({ children, session }: Props) {
 
   return (
     <SidebarProvider>
-      <AppSidebar
-        session={session}
-        routesWithAuth={routesWithAuth}
-      />
+      <AppSidebar session={session} />
 
       <SidebarInset>
-        <SidebarPath />
+        {session && (
+          <SidebarPath
+            showQrReader={
+              session.user.role === "STUDENT" ||
+              session.user.role === "RADIO_CENTER"
+            }
+          />
+        )}
 
         {children}
       </SidebarInset>
