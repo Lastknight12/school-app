@@ -3,6 +3,7 @@ import { useUpdateProduct } from "~/lib/state";
 import UploadImage from "../../../shared/UploadImage";
 
 import Counter from "~/shadcn/ui/counter";
+import { Input } from "~/shadcn/ui/input";
 import { Label } from "~/shadcn/ui/label";
 
 interface Props {
@@ -25,8 +26,9 @@ export function UpdateProduct({ defaultImageSrc }: Props) {
       <div className="grid grid-cols-3 items-center">
         {/* NAME */}
         <Label className="text-left text-base">Назва:</Label>
-        <input
-          className="col-span-2 rounded-md border-card bg-card px-3 py-1 outline-none"
+        <Input
+          variant="accent"
+          className="col-span-2"
           type="text"
           value={name}
           onChange={(e) => updateTitle(e.target.value)}
