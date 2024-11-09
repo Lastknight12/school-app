@@ -42,7 +42,7 @@ export default function PageTransition({
         animate="enter"
         exit="exit"
         variants={variants}
-        transition={{ ease: "easeInOut", duration: 0.7 }}
+        transition={{ ease: "easeInOut", duration: 0.4 }}
       >
         <FrozenRouter>{children}</FrozenRouter>
       </motion.div>
