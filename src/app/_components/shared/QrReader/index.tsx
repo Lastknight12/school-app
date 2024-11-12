@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { toast } from "sonner";
 
-import useClickOutside from "~/hooks/useClickOutside";
+import useClickOutside from "~/hooks/use-click-outside";
 
 import "./index.css";
 

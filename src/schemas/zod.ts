@@ -34,7 +34,7 @@ export const addProductSchema = z.object({
   price: z
     .number()
     .min(1, { message: "Мінімальна ціна 1" })
-    .max(99999999, { message: "Максимальна ціна 999" }),
+    .max(999, { message: "Максимальна ціна 999" }),
   imageSrc: z
     .string()
     .min(1, { message: "Завантажте зображення" })
