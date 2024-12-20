@@ -3,6 +3,7 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { TRPCError } from "@trpc/server";
 import { randomUUID } from "crypto";
 import { addDays } from "date-fns";
+import { url } from "inspector";
 import jwt from "jsonwebtoken";
 import { z } from "zod";
 import { env } from "~/env";
@@ -352,15 +353,30 @@ export const transfersRouter = createTRPCRouter({
   pay: protectedProcedure
     .input(
       z.object({
-        token: z.string().nullish(),
-        productId: z.string().nullish(),
+        url: z.string().url({message: "Невірний URL"})
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      if (input.productId) {
+      const targetUrl = env.NEXTAUTH_URL
+      const formatedUrl = targetUrl.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+      const isValidUrl = new RegExp(`^${formatedUrl}`).test(input.url);
+
+      if(!isValidUrl) {
+        throw new TRPCError({
+          message: "Невірний URL",
+          code: "BAD_REQUEST"
+        })
+      }
+
+      const parsedUrl = new URL(input.url);
+      const params = parsedUrl.searchParams;
+
+      if (params.has("productId")) {
+        const productId = params.get("productId") ?? ""
+
         const dbProduct = await ctx.db.categoryItem.findUnique({
           where: {
-            id: input.productId,
+            id: productId,
           },
         });
 
@@ -414,9 +430,11 @@ export const transfersRouter = createTRPCRouter({
         await Promise.all(promises);
         return;
       }
-      if (input.token) {
+      if (params.has("token")) {
+        const token = params.get("token") ?? ""
+
         const decryptedToken = jwt.verify(
-          input.token,
+          token,
           env.QR_SECRET,
         ) as TokenData;
 

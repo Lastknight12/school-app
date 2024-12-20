@@ -23,25 +23,8 @@ export default function SidebarQrScanner() {
     },
   });
 
-  function handleDataScanned(data: string) {
-    console.log(data)
-    // format url for regExp
-    const formatedUrl = env.NEXT_PUBLIC_BUY_URL.replace(/[/.?]/g, (match) => {
-      if (match === "/") return "\\/";
-      if (match === ".") return "\\.";
-      return match;
-    });
-    // regExp match only urls that includes token query and url from .env
-    const urlRegExp = new RegExp(`${formatedUrl}\\?token=[a-zA-Z0-9]*`);
-
-    if (!urlRegExp.test(data)) {
-      toast.error("Невірний QR-код");
-      return;
-    }
-
-    const tokenFromUrl = data.split("?token=")[1]!;
-
-    payment.mutate({ token: tokenFromUrl });
+  function handleDataScanned(url: string) {
+    payment.mutate({ url });
   }
 
   return (

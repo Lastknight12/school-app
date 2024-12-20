@@ -16,12 +16,15 @@ import {
 } from "~/shadcn/ui/carousel";
 
 import Image from "next/image";
+import { env } from "~/env";
 
 export default function BuyProduct() {
   const params = useSearchParams();
 
   const token = params.get("token");
   const productId = params.get("productId");
+
+  const url = `${env.NEXT_PUBLIC_BUY_URL}?${token ?? productId}`
 
   if (!productId && !token) {
     return (
@@ -127,9 +130,9 @@ export default function BuyProduct() {
               </h1>
               <Button
                 disabled={payMutation.isPending || payMutation.isError}
-                className="flex w-full items-center text-black bg-lime-500 hover:opacity-70"
+                className="flex w-full items-center text-black bg-lime-500 hover:bg-lime-500 hover:opacity-70 transition-opacity"
                 onClick={() => {
-                  payMutation.mutate({ token, productId });
+                  payMutation.mutate({ url });
                 }}
               >
                 Оплатити
