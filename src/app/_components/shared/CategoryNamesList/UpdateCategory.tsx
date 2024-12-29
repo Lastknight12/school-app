@@ -14,6 +14,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/shadcn/ui/dialog";
+import { Input } from "~/shadcn/ui/input";
 import { Label } from "~/shadcn/ui/label";
 
 interface Props {
@@ -91,8 +92,8 @@ export default function UpdateCategory({
         <div className="flex flex-col gap-2 mt-3">
           {/* New name */}
           <Label className="text-left text-base">Нова назва:</Label>
-          <input
-            className="col-span-2 rounded-md bg-card px-3 py-1 outline-none"
+          <Input
+            variant="accent"
             value={name}
             onChange={(e) => {
               setName(e.target.value);
