@@ -17,6 +17,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/shadcn/ui/dialog";
+import { Input } from "~/shadcn/ui/input";
 import { Label } from "~/shadcn/ui/label";
 
 type Badge = {
@@ -72,10 +73,10 @@ export default function AddBadgeModal() {
           <div className="grid gap-4 py-4">
             <div className="flex flex-col items-start gap-2">
               <Label htmlFor="badgeName">Badge Name:</Label>
-              <input
+              <Input
                 id="badgeName"
                 value={badgeName}
-                className="col-span-2 rounded-md border-card bg-card px-3 py-1 outline-none"
+                variant="accent"
                 onChange={(e) => setBadgeName(e.target.value)}
                 placeholder="Enter badge name"
               />
