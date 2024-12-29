@@ -6,6 +6,7 @@ import {
   AudioLines,
   ChartColumnBig,
   ChartNoAxesColumn,
+  CircleDollarSign,
   Home,
   Play,
   Rocket,
@@ -27,7 +28,6 @@ import {
   SidebarSeparator,
 } from "~/shadcn/ui/sidebar";
 
-// This is sample data.
 const data = {
   admin: [
     {
@@ -57,6 +57,20 @@ const data = {
       ],
     },
   ],
+
+  radioCenter: [
+    {
+      name: "Music Orders",
+      url: "/musicOrders",
+      icon: Archive,
+    },
+    {
+      name: "Music Player",
+      url: "/music/player",
+      icon: Play,
+    },
+  ],
+
   navMain: [
     { name: "Home", url: "/", icon: Home },
     {
@@ -74,19 +88,12 @@ const data = {
       url: "/leaderboard",
       icon: ChartNoAxesColumn,
     },
+    {
+      name: "Transaction",
+      url: "/transactions",
+      icon: CircleDollarSign,
+    },
     { name: "Order music", url: "/music", icon: AudioLines },
-  ],
-  radioCenter: [
-    {
-      name: "Music Orders",
-      url: "/musicOrders",
-      icon: Archive,
-    },
-    {
-      name: "Music Player",
-      url: "/music/player",
-      icon: Play,
-    },
   ],
 };
 
@@ -127,6 +134,13 @@ export function AppSidebar({
           </>
         )}
 
+        {session.user.role === "RADIO_CENTER" && (
+          <>
+            <SidebarSeparator />
+            <NavMain items={data.radioCenter} label="Radio Center" />
+          </>
+        )}
+
         {session.user && (
           <NavMain
             items={data.navMain.filter((item) => {
@@ -139,13 +153,6 @@ export function AppSidebar({
                 return true;
             })}
           />
-        )}
-
-        {session.user.role === "RADIO_CENTER" && (
-          <>
-            <SidebarSeparator />
-            <NavMain items={data.radioCenter} label="Radio Center" />
-          </>
         )}
       </SidebarContent>
       <SidebarFooter>

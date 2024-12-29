@@ -11,6 +11,7 @@ import { sendAmountSchema } from "~/schemas/zod";
 
 import { api } from "~/trpc/react";
 
+import { Button } from "~/shadcn/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "~/shadcn/ui/dialog";
 
 interface Props {
@@ -30,6 +31,7 @@ export default function TransactionDialog({
   onOpenChange,
   onMutationSuccess,
 }: Props) {
+  console.log(session.user);
   const [amount, setAmount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -38,7 +40,7 @@ export default function TransactionDialog({
 
   const sendMoneyMutation = api.transfers.sendMoney.useMutation({
     onSuccess: () => {
-      toast.success("Платіж успішно відправлений");
+      toast.success("Кожшти були надіслані");
       onMutationSuccess?.();
       setIsOpen(false);
     },
@@ -91,7 +93,9 @@ export default function TransactionDialog({
 
   return (
     <Dialog open={customIsOpen ?? isOpen} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogTrigger asChild className="cursor-pointer">
+        {children}
+      </DialogTrigger>
       <DialogContent
         className="max-md:max-w-full h-full !rounded-none backdrop-blur-md"
         onEscapeKeyDown={() => setIsOpen(false)}
@@ -110,7 +114,8 @@ export default function TransactionDialog({
           </div>
 
           <div className="flex w-full flex-col items-center">
-            {session.user.role === "STUDENT" || "TEACHER" ? (
+            {session.user.role === "STUDENT" ||
+            session.user.role === "TEACHER" ? (
               <p className="text-[#6f6f6f]">
                 Бланс: {session.user.balance ?? 0}
               </p>
@@ -125,16 +130,16 @@ export default function TransactionDialog({
             />
           </div>
 
-          <button
+          <Button
             disabled={!isAmountPositive || sendMoneyMutation.isPending}
             onClick={handleSubmit}
-            className={`flex items-center justify-center gap-3 rounded-lg bg-card px-4 py-2 transition-opacity ${(!isAmountPositive || sendMoneyMutation.isPending) && "cursor-not-allowed opacity-40"}`}
+            variant="secondary"
           >
             Відправити{" "}
             {sendMoneyMutation.isPending && (
               <Loader2 className="h-4 w-4 animate-spin text-[#b5b5b5]" />
             )}
-          </button>
+          </Button>
         </div>
       </DialogContent>
     </Dialog>

@@ -6,10 +6,9 @@ import type { NextRequest } from "next/server";
 
 import { env } from "./env";
 
-// IMPORTANT: add url in matcher without regex if url used in burger menu
 export const urls = new Map<string, UserRole[]>([
   ["/stats", ["STUDENT", "RADIO_CENTER"]],
-  ["/transactions", ["ADMIN"]],
+  ["/transactions", ["ADMIN", "STUDENT"]],
   ["/shop", ["STUDENT", "RADIO_CENTER"]],
   ["/buy", ["STUDENT", "SELLER"]],
   ["/admin", ["ADMIN"]],
