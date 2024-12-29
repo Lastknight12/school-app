@@ -67,7 +67,7 @@ export default function TransactionDialog({
   }
 
   function handleSubmit() {
-    if (session.user.role === "STUDENT" || "TEACHER") {
+    if (session.user.role === "STUDENT" || session.user.role === "TEACHER") {
       try {
         sendAmountSchema.parse({ amount });
 
