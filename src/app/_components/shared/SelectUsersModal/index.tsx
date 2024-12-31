@@ -101,7 +101,7 @@ export default function UpdateUsers({
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Select users</DialogTitle>
+          <DialogTitle>Виберіть користувачів</DialogTitle>
         </DialogHeader>
         <div className="p-0">
           <div>
@@ -154,13 +154,13 @@ export default function UpdateUsers({
           )}
         </div>
         <DialogFooter className="flex items-center justify-between">
-          <div>{selectedUsers.length} users selected</div>
+          <div>Обрано користувачів: {selectedUsers.length}</div>
           <Button
             type="button"
             onClick={handleSubmit}
             disabled={selectedUsers.length === 0 || isPending}
           >
-            Confirm
+            Підтвердити
             {isPending && (
               <Loader2 className="h-4 w-4 animate-spin ml-2 text-[#b2b2b2]" />
             )}

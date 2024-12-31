@@ -71,12 +71,6 @@ model User {
   studentClassId String?
 
   musicOrders MusicOrder[]
-
-  badges         Badge[] @relation(name: "owners")
-  activeBadge    Badge?   @relation(fields: [activeBadgeId], references: [id])
-  activeBadgeId        String?
-
-  badge_for_assignment Badge[] @relation(name: "allowedTeachers")
 }
 
 model Category {
@@ -111,10 +105,10 @@ model Transaction {
   randomGradient Json
   productsBought CategoryItem[]
 
-  reciever   User?   @relation(fields: [recieverId], references: [id], name: "recieverTransactions")
+  reciever   User?   @relation(fields: [recieverId], references: [id], name: "recieverTransactions", onDelete: Cascade)
   recieverId String?
 
-  sender   User?   @relation(fields: [senderId], references: [id], name: "senderTransactions")
+  sender   User?   @relation(fields: [senderId], references: [id], name: "senderTransactions", onDelete: Cascade)
   senderId String?
 
   createdAt DateTime @default(now())
@@ -137,21 +131,10 @@ enum MusicOrderStatus {
 model MusicOrder {
   id         String           @id @default(cuid())
   status     MusicOrderStatus @default(DELIVERED)
-  buyer      User             @relation(fields: [buyerId], references: [id])
+  buyer      User             @relation(fields: [buyerId], references: [id], onDelete: Cascade)
   buyerId    String
   musicUrl   String
   musicImage String
   musicTitle String
   createdAt  DateTime         @default(now())
-}
-
-model Badge {
-  id               String @id @default(cuid())
-  name             String @unique
-  users            User[] @relation(name: "owners")
-  allowed_teachers User[] @relation(name: "allowedTeachers")
-  textColor String @default("#fff")
-  backgroundColor String @default("#000")
-
-  activeAt User[]
 }

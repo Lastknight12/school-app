@@ -191,3 +191,16 @@ export const radioCenterProcedure = t.procedure.use(({ ctx, next }) => {
     },
   });
 });
+
+export const studentProcedure = t.procedure.use(({ ctx, next }) => {
+  if (!ctx.session || ctx.session.user.role !== "STUDENT") {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+
+  return next({
+    ctx: {
+      // infers the `session` as non-nullable
+      session: { ...ctx.session, user: ctx.session.user },
+    },
+  });
+});

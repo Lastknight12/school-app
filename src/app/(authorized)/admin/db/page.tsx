@@ -3,7 +3,6 @@
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import BadgesModelContent from "~/app/_components/authorizedPages/admin/db/BadgesModelContent";
 import ModelsList from "~/app/_components/authorizedPages/admin/db/ModelsList";
 import TransfersModelContent from "~/app/_components/authorizedPages/admin/db/TransfersModelContent";
 import UsersModelContent from "~/app/_components/authorizedPages/admin/db/UsersModelContent";
@@ -34,8 +33,6 @@ export default function Page() {
       {currentModel === "users" && <UsersModelContent />}
 
       {currentModel === "transactions" && <TransfersModelContent />}
-
-      {currentModel === "badges" && <BadgesModelContent />}
     </div>
   );
 }

@@ -39,7 +39,7 @@ export default function SidebarPath({ showQrScanner }: Props) {
           <BreadcrumbList>
             <BreadcrumbItem>
               <BreadcrumbPage>
-                <Link href="/">Home</Link>
+                <Link href="/">Головна</Link>
               </BreadcrumbPage>
             </BreadcrumbItem>
 

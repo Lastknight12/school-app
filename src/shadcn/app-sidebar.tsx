@@ -41,15 +41,11 @@ const data = {
           url: "/admin/db?tab=users",
           subItems: [
             {
-              name: "Users",
+              name: "Користувачі",
               url: "/admin/db?tab=users",
             },
             {
-              name: "Badges",
-              url: "/admin/db?tab=badges",
-            },
-            {
-              name: "Transactions",
+              name: "Перекази",
               url: "/admin/db?tab=transactions",
             },
           ],
@@ -72,28 +68,28 @@ const data = {
   ],
 
   navMain: [
-    { name: "Home", url: "/", icon: Home },
+    { name: "Головна", url: "/", icon: Home },
     {
-      name: "Products list",
+      name: "Магазин",
       url: "/shop",
       icon: Store,
     },
     {
-      name: "Stats",
+      name: "Статистика",
       url: "/stats",
       icon: ChartColumnBig,
     },
     {
-      name: "Leaderboard",
+      name: "Таблиця лідерів",
       url: "/leaderboard",
       icon: ChartNoAxesColumn,
     },
     {
-      name: "Transaction",
+      name: "Переказ коштів",
       url: "/transactions",
       icon: CircleDollarSign,
     },
-    { name: "Order music", url: "/music", icon: AudioLines },
+    { name: "Замовити музику", url: "/music", icon: AudioLines },
   ],
 };
 

@@ -1,5 +1,5 @@
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import type { Badge, UserRole } from "@prisma/client";
+import type { UserRole } from "@prisma/client";
 import {
   type DefaultSession,
   type NextAuthOptions,
@@ -24,8 +24,6 @@ interface CustomUser {
   email: string;
   image: string;
   balance: number;
-  badges: Badge[];
-  activeBadge: Badge | null;
   role: UserRole;
   studentClass?: {
     id: string;
@@ -75,9 +73,6 @@ export const authOptions: NextAuthOptions = {
           email: true,
           image: true,
           balance: true,
-          badges: true,
-          activeBadge: true,
-          badge_for_assignment: true,
           role: true,
           studentClass: {
             select: {
@@ -109,13 +104,10 @@ export const authOptions: NextAuthOptions = {
           image: tokenImageSrc ?? dbUser.image,
           balance: dbUser.balance,
           role: dbUser.role,
-          badges: dbUser.badges,
-          activeBadge: dbUser.activeBadge,
           teacherClasses: dbUser.teacherClasses.map((klass) => ({
             id: klass.id,
             name: klass.name,
           })),
-          badgesForAssignment: dbUser.badge_for_assignment,
         };
       }
 
@@ -126,8 +118,6 @@ export const authOptions: NextAuthOptions = {
         image: tokenImageSrc ?? dbUser.image,
         balance: dbUser.balance,
         role: dbUser.role,
-        badges: dbUser.badges,
-        activeBadge: dbUser.activeBadge,
         studentClass: dbUser.studentClass ?? null,
       };
     },

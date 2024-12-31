@@ -3,16 +3,16 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { TRPCError } from "@trpc/server";
 import { randomUUID } from "crypto";
 import { addDays } from "date-fns";
-import { url } from "inspector";
 import jwt from "jsonwebtoken";
 import { z } from "zod";
 import { env } from "~/env";
 
 import {
-  adminProcedure,
   createTRPCRouter,
   protectedProcedure,
+  adminProcedure,
   sellerProcedure,
+  studentProcedure
 } from "~/server/api/trpc";
 
 export interface TokenData {
@@ -350,7 +350,7 @@ export const transfersRouter = createTRPCRouter({
       }
     }),
 
-  pay: protectedProcedure
+  pay: studentProcedure
     .input(
       z.object({
         url: z.string().url({message: "Невірний URL"})
@@ -574,3 +574,4 @@ export const transfersRouter = createTRPCRouter({
       };
     }),
 });
+
