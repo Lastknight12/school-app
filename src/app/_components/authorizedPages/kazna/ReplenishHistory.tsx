@@ -12,7 +12,7 @@ export default function ReplenishHistory() {
 
   return (
     <div className="w-full">
-      {true && (
+      {replenishHistory.isFetching && (
         <Loader2 className="h-6 w-6 mx-auto animate-spin text-[#b5b5b5]" />
       )}
 
