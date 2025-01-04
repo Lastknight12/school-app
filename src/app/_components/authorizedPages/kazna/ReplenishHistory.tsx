@@ -28,7 +28,7 @@ export default function ReplenishHistory() {
                   width={32}
                   height={32}
                   alt="avatar"
-                  className="rounded-full h-8"
+                  className="rounded-full w-8"
                 />
 
                 <h1>
