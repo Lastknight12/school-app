@@ -1,5 +1,4 @@
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import type { UserRole } from "@prisma/client";
 import {
   type DefaultSession,
   type NextAuthOptions,
@@ -52,6 +51,14 @@ type CustomUser =
       image: string;
       balance: number;
       role: "RADIO_CENTER";
+    }
+  | {
+      id: string;
+      name: string;
+      email: string;
+      image: string;
+      balance: number;
+      role: "SELLER";
     };
 
 declare module "next-auth" {

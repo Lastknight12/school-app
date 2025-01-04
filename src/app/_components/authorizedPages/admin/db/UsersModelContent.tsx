@@ -211,7 +211,7 @@ export default function UsersModelContent() {
                       Копіювати email
                     </DropdownMenuItem>
                     <DropdownMenuItem
-                      onClick={(e) => {
+                      onClick={() => {
                         deleteUserMutation.mutate({ id: user.id });
                       }}
                     >
