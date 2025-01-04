@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import TransactionDialog from "../../shared/TransactionDialog";
 
 interface Props {
-  users?: User[];
+  users: User[];
   session: Session;
   isLoading: boolean;
 }
@@ -26,7 +26,7 @@ export default function SearchResult({ users, session, isLoading }: Props) {
   return (
     // 72px - navbar, 41px - SearchInput, 3px - bottomPadding, 24px - gap between serachInput and results
     <div className="flex max-h-[calc(100vh-72px-41px-3px-24px)] flex-col gap-6 overflow-x-hidden overflow-y-auto">
-      {!users?.length ? (
+      {users.length === 0 ? (
         <div className="w-full text-center">Таких користувачів немає</div>
       ) : (
         users.map((user) => {

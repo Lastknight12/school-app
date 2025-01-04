@@ -20,7 +20,7 @@ export default function ReplenishHistory() {
         replenishHistory.data?.map((replenish, i) => (
           <div
             className={cn(
-              "flex justify-between items-center bg-accent py-2 px-4 rounded-md mx-auto max-w-[500px]",
+              "flex justify-between items-center bg-accent py-3 px-4 rounded-md mx-auto max-w-[500px]",
               i !== 0 && "mt-6",
             )}
             key={replenish.id}

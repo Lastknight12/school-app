@@ -50,6 +50,13 @@ export const transfersRouter = createTRPCRouter({
         });
       }
 
+      if(recieverId === ctx.session.user.id) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Неможливо перевести гроші самому собі",
+        });
+      }
+
       const reciever = await ctx.db.user.findUnique({
         where: {
           id: input.receiverId,
@@ -86,11 +93,12 @@ export const transfersRouter = createTRPCRouter({
               id: ctx.session.user.id,
             },
           },
+          success: true,
           amount: input.amount,
           randomGradient: randomColor,
         },
       });
-
+      
       if (ctx.session.user.role === "ADMIN") {
         const kazna = await ctx.db.kazna.findFirst();
 
@@ -99,6 +107,13 @@ export const transfersRouter = createTRPCRouter({
             code: "NOT_FOUND",
             message: "Казна не знайдена",
           });
+        }
+
+        if(kazna.amount < input.amount) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Недостатньо коштів в казні"
+          })
         }
 
         const promises = [
@@ -131,7 +146,7 @@ export const transfersRouter = createTRPCRouter({
           }),
         ];
 
-        await Promise.all([promises]);
+        await Promise.all(promises);
 
       } else {
         await ctx.db.user.update({
@@ -166,6 +181,7 @@ export const transfersRouter = createTRPCRouter({
           },
         },
       });
+
     }),
 
   getTransfers: protectedProcedure.query(async ({ ctx }) => {

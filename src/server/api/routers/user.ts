@@ -24,7 +24,12 @@ export const userRouter = createTRPCRouter({
           name: {
             contains: input.name,
           },
-          role: ctx.session.user.role === "ADMIN" ? undefined : "STUDENT",
+          role:
+            ctx.session.user.role === "ADMIN"
+              ? {
+                  in: ["STUDENT", "TEACHER"],
+                }
+              : "STUDENT",
         },
       });
 
@@ -182,7 +187,7 @@ export const userRouter = createTRPCRouter({
 
   deleteUser: protectedProcedure
     .input(z.object({ id: z.string() }))
-    .mutation(async ({input, ctx}) => {
+    .mutation(async ({ input, ctx }) => {
       const userExist = await ctx.db.user.findUnique({
         where: {
           id: input.id,
