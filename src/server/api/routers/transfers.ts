@@ -50,7 +50,7 @@ export const transfersRouter = createTRPCRouter({
         });
       }
 
-      if(recieverId === ctx.session.user.id) {
+      if(input.recieverId === ctx.session.user.id) {
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "Неможливо перевести гроші самому собі",
