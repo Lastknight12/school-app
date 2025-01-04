@@ -18,22 +18,41 @@ import { db } from "~/server/db";
  *
  * @see https://next-auth.js.org/getting-started/typescript#module-augmentation
  */
-interface CustomUser {
-  id: string;
-  name: string;
-  email: string;
-  image: string;
-  balance: number;
-  role: UserRole;
-  studentClass?: {
-    id: string;
-    name: string;
-  };
-  teacherClasses?: {
-    id: string;
-    name: string;
-  }[];
-}
+type CustomUser =
+  | {
+      id: string;
+      name: string;
+      email: string;
+      image: string;
+      balance: number;
+      role: "STUDENT";
+      studentClass: { id: string; name: string } | null;
+    }
+  | {
+      id: string;
+      name: string;
+      email: string;
+      image: string;
+      balance: number;
+      role: "TEACHER";
+      teacherClasses: { id: string; name: string }[];
+    }
+  | {
+      id: string;
+      name: string;
+      email: string;
+      image: string;
+      balance: number;
+      role: "ADMIN";
+    }
+  | {
+      id: string;
+      name: string;
+      email: string;
+      image: string;
+      balance: number;
+      role: "RADIO_CENTER";
+    };
 
 declare module "next-auth" {
   interface Session {
@@ -96,30 +115,62 @@ export const authOptions: NextAuthOptions = {
       // i think we dont need to provide some filds that have teacher in STUDENT token but with null type
       // So we beed to check user role and individually provide fields
 
-      if (dbUser.role === "TEACHER") {
-        return {
-          sub: token.sub,
-          name: tokenName ?? dbUser.name,
-          email: dbUser.email,
-          image: tokenImageSrc ?? dbUser.image,
-          balance: dbUser.balance,
-          role: dbUser.role,
-          teacherClasses: dbUser.teacherClasses.map((klass) => ({
-            id: klass.id,
-            name: klass.name,
-          })),
-        };
-      }
+      switch (dbUser.role) {
+        case "TEACHER":
+          return {
+            sub: token.sub,
+            name: tokenName ?? dbUser.name,
+            email: dbUser.email,
+            image: tokenImageSrc ?? dbUser.image,
+            balance: dbUser.balance,
+            role: dbUser.role,
+            teacherClasses: dbUser.teacherClasses.map((klass) => ({
+              id: klass.id,
+              name: klass.name,
+            })),
+          };
 
-      return {
-        sub: token.sub,
-        name: tokenName ?? dbUser.name,
-        email: dbUser.email,
-        image: tokenImageSrc ?? dbUser.image,
-        balance: dbUser.balance,
-        role: dbUser.role,
-        studentClass: dbUser.studentClass ?? null,
-      };
+        case "ADMIN":
+          let kazna = await db.kazna.findFirst();
+
+          if (!kazna) {
+            kazna = await db.kazna.create({
+              data: {
+                amount: 0,
+              },
+            });
+          }
+
+          return {
+            sub: token.sub,
+            name: tokenName ?? dbUser.name,
+            email: dbUser.email,
+            image: tokenImageSrc ?? dbUser.image,
+            balance: kazna.amount,
+            role: dbUser.role,
+          };
+
+        case "STUDENT":
+          return {
+            sub: token.sub,
+            name: tokenName ?? dbUser.name,
+            email: dbUser.email,
+            image: tokenImageSrc ?? dbUser.image,
+            balance: dbUser.balance,
+            role: dbUser.role,
+            studentClass: dbUser.studentClass,
+          };
+
+        default:
+          return {
+            sub: token.sub,
+            name: tokenName ?? dbUser.name,
+            email: dbUser.email,
+            image: tokenImageSrc ?? dbUser.image,
+            balance: dbUser.balance,
+            role: dbUser.role,
+          };
+      }
     },
     session: ({ session, token }) => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars

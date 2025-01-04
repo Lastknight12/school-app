@@ -40,7 +40,7 @@ export default function TransactionDialog({
 
   const sendMoneyMutation = api.transfers.sendMoney.useMutation({
     onSuccess: () => {
-      toast.success("Кожшти були надіслані");
+      toast.success("Кошти були надіслані");
       onMutationSuccess?.();
       setIsOpen(false);
     },
@@ -114,14 +114,7 @@ export default function TransactionDialog({
           </div>
 
           <div className="flex w-full flex-col items-center">
-            {session.user.role === "STUDENT" ||
-            session.user.role === "TEACHER" ? (
-              <p className="text-[#6f6f6f]">
-                Бланс: {session.user.balance ?? 0}
-              </p>
-            ) : (
-              <p className="mb-1">Кількість баллів:</p>
-            )}
+            <p className="text-[#6f6f6f]">Бланс: {session.user.balance}</p>
             <input
               className="w-[inherit] bg-transparent text-center text-4xl outline-none"
               value={amount}

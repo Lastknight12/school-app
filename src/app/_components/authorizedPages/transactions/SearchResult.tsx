@@ -4,7 +4,7 @@ import { type Session } from "next-auth";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
-import TransactionDialog from "../shared/TransactionDialog";
+import TransactionDialog from "../../shared/TransactionDialog";
 
 interface Props {
   users?: User[];

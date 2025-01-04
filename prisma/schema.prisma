@@ -70,7 +70,8 @@ model User {
   studentClass   Klass?  @relation(name: "studentClass", fields: [studentClassId], references: [id])
   studentClassId String?
 
-  musicOrders MusicOrder[]
+  musicOrders    MusicOrder[]
+  KaznaTransfers KaznaTransfer[]
 }
 
 model Category {
@@ -89,7 +90,7 @@ model CategoryItem {
   Category   Category @relation(fields: [categoryId], references: [id])
   categoryId String
 
-  Transaction Transaction[]
+  Transactions Transaction[]
 }
 
 enum TransactionType {
@@ -137,4 +138,22 @@ model MusicOrder {
   musicImage String
   musicTitle String
   createdAt  DateTime         @default(now())
+}
+
+model Kazna {
+  id         String     @id @default(cuid())
+  amount     Float      @default(0)
+  Transfers  KaznaTransfer[]
+  transferId String?
+}
+
+model KaznaTransfer {
+  id      String @id @default(cuid())
+  sender  User   @relation(fields: [senderId], references: [id])
+  amount  Float
+  message String
+  Kazna   Kazna  @relation(fields: [kaznaId], references: [id])
+  createdAt DateTime @default(now())
+  senderId  String
+  kaznaId String
 }

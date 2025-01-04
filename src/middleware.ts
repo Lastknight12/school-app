@@ -8,7 +8,7 @@ import { env } from "./env";
 
 export const urls = new Map<string, UserRole[]>([
   ["/stats", ["STUDENT", "RADIO_CENTER"]],
-  ["/transactions", ["ADMIN", "STUDENT"]],
+  ["/transactions", ["ADMIN"]],
   ["/shop", ["STUDENT", "RADIO_CENTER"]],
   ["/buy", ["STUDENT", "SELLER"]],
   ["/admin", ["ADMIN"]],
@@ -27,7 +27,7 @@ export default async function middleware(request: NextRequest) {
 
   // find url that match regex or equal current url
   const urlMatch = Array.from(urls.entries()).find(([url]) =>
-    RegExp(url).test(currentUrl) ? true : currentUrl === url
+    RegExp(url).test(currentUrl) ? true : currentUrl === url,
   );
 
   if (!urlMatch) {

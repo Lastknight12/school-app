@@ -12,6 +12,7 @@ import {
   Rocket,
   Shield,
   Store,
+  Wallet,
 } from "lucide-react";
 import { type Session } from "next-auth";
 import * as React from "react";
@@ -35,6 +36,7 @@ const data = {
       url: "/admin",
       icon: Shield,
       isActive: true,
+      isCollapsible: true,
       items: [
         {
           name: "Database",
@@ -51,6 +53,18 @@ const data = {
           ],
         },
       ],
+    },
+    {
+      title: "Казна",
+      url: "/kazna",
+      icon: Wallet,
+      isCollapsible: false,
+    },
+    {
+      title: "Переказ коштів",
+      url: "/transactions",
+      icon: CircleDollarSign,
+      isCollapsible: false,
     },
   ],
 
@@ -84,11 +98,6 @@ const data = {
       url: "/leaderboard",
       icon: ChartNoAxesColumn,
     },
-    {
-      name: "Переказ коштів",
-      url: "/transactions",
-      icon: CircleDollarSign,
-    },
     { name: "Замовити музику", url: "/music", icon: AudioLines },
   ],
 };
@@ -99,7 +108,6 @@ interface Props {
 
 const routesWithAuth = new Map<string, UserRole[]>([
   ["/stats", ["STUDENT", "RADIO_CENTER"]],
-  ["/transactions", ["ADMIN"]],
   ["/shop", ["STUDENT", "RADIO_CENTER"]],
   ["/leaderboard", ["STUDENT", "RADIO_CENTER", "ADMIN", "SELLER", "TEACHER"]],
 ]);
