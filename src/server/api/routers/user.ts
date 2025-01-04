@@ -7,6 +7,7 @@ import {
   adminProcedure,
   createTRPCRouter,
   protectedProcedure,
+  studentProcedure,
 } from "~/server/api/trpc";
 
 export const userRouter = createTRPCRouter({
@@ -72,7 +73,7 @@ export const userRouter = createTRPCRouter({
       });
     }),
 
-  getUserClass: protectedProcedure.query(async ({ ctx }) => {
+  getUserClass: studentProcedure.query(async ({ ctx }) => {
     if (!ctx.session.user.studentClass) return;
 
     const klass = await ctx.db.klass.findUnique({
