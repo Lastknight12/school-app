@@ -137,6 +137,27 @@ export const authOptions: NextAuthOptions = {
             })),
           };
 
+        case "ADMIN": {
+          let kazna = await db.kazna.findFirst();
+
+          if(!kazna) {
+            kazna = await db.kazna.create({
+              data: {
+                amount: 0
+              }
+            })
+          }
+
+          return {
+            sub: token.sub,
+            name: tokenName ?? dbUser.name,
+            email: dbUser.email,
+            image: tokenImageSrc ?? dbUser.image,
+            balance: kazna.amount,
+            role: dbUser.role
+          }
+        }
+
         case "STUDENT":
           return {
             sub: token.sub,
