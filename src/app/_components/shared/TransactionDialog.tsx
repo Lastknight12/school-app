@@ -57,13 +57,11 @@ export default function TransactionDialog({
   }
 
   function handleAmountChange(e: ChangeEvent<HTMLInputElement>) {
-    const onlyNumbers = e.target.value
-      .replace(/[^\d.]/g, "")
-      .replace(/(\..*)\./g, "$1");
+    const value = e.target.value ? parseInt(e.target.value) : 0;
 
-    if (+onlyNumbers > maxValue) return;
-
-    setAmount(+onlyNumbers);
+    if (value < maxValue) {
+      setAmount(value);
+    }
   }
 
   function handleSubmit() {

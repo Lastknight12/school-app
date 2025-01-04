@@ -65,7 +65,7 @@ export function NavAdmin({
                   <CollapsibleContent>
                     <SidebarMenuSub>
                       {item.items?.map((subItem) => (
-                        <div key={subItem.name}>
+                        <div key={subItem.url}>
                           {subItem.subItems ? (
                             <Collapsible
                               asChild

@@ -51,10 +51,10 @@ export default function ReplenishDialog() {
             variant="accent"
             value={amount}
             className="w-min"
+            defaultValue={0}
             placeholder="Сумма"
-            onChange={(e) =>
-              !Number.isNaN(e.target.value) &&
-              setAmount(Number.parseInt(e.target.value))
+            onChange={({ target: { value } }) =>
+              setAmount(value ? parseInt(value) : 0)
             }
           />
 

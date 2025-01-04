@@ -27,7 +27,7 @@ export function NavMain({
       <SidebarGroupLabel>{label ?? "Main"}</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (
-          <SidebarMenuItem key={item.name}>
+          <SidebarMenuItem key={item.url}>
             <SidebarMenuButton asChild tooltip={item.name} mobCloseOnSelect>
               <Link href={item.url}>
                 <item.icon />
