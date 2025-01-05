@@ -50,7 +50,7 @@ export const transfersRouter = createTRPCRouter({
         });
       }
 
-      if(input.receiverId === ctx.session.user.id) {
+      if (input.receiverId === ctx.session.user.id) {
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "Неможливо перевести гроші самому собі",
@@ -98,7 +98,7 @@ export const transfersRouter = createTRPCRouter({
           randomGradient: randomColor,
         },
       });
-      
+
       if (ctx.session.user.role === "ADMIN") {
         const kazna = await ctx.db.kazna.findFirst();
 
@@ -109,11 +109,11 @@ export const transfersRouter = createTRPCRouter({
           });
         }
 
-        if(kazna.amount < input.amount) {
+        if (kazna.amount < input.amount) {
           throw new TRPCError({
             code: "BAD_REQUEST",
-            message: "Недостатньо коштів в казні"
-          })
+            message: "Недостатньо коштів в казні",
+          });
         }
 
         const promises = [
@@ -147,7 +147,6 @@ export const transfersRouter = createTRPCRouter({
         ];
 
         await Promise.all(promises);
-
       } else {
         await ctx.db.user.update({
           where: {
@@ -181,7 +180,6 @@ export const transfersRouter = createTRPCRouter({
           },
         },
       });
-
     }),
 
   getTransfers: protectedProcedure.query(async ({ ctx }) => {
@@ -417,166 +415,99 @@ export const transfersRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      const validDomain = new URL(env.NEXT_PUBLIC_BUY_URL).host;
       const parsedUrl = new URL(input.url);
       const params = parsedUrl.searchParams;
 
-      if (params.has("productId")) {
-        const productId = params.get("productId") ?? "";
-
-        const dbProduct = await ctx.db.categoryItem.findUnique({
-          where: {
-            id: productId,
-          },
-        });
-
-        if (!dbProduct) {
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: "Невіриний Id продукту",
-          });
-        }
-
-        if (dbProduct.pricePerOne > ctx.session.user.balance) {
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: "Недостатній баланс",
-          });
-        }
-
-        const colors = [
-          { from: "#D99CFF", to: "#FFD0F2" },
-          { from: "#FF9C9C", to: "#FF83CD" },
-          { from: "#FFFB9C", to: "#FFB69F" },
-          { from: "#C79CFF", to: "#9FBFFF" },
-          { from: "#9CFFC3", to: "#9FDCFF" },
-        ];
-
-        const randomGradient =
-          colors[Math.floor(Math.random() * colors.length)]!;
-
-        const promises = [
-          ctx.db.transaction.create({
-            data: {
-              amount: dbProduct.pricePerOne,
-              type: "BUY",
-              randomGradient,
-              success: true,
-              senderId: ctx.session.user.id,
-            },
-          }),
-          ctx.db.user.update({
-            where: {
-              id: ctx.session.user.id,
-            },
-            data: {
-              balance: {
-                decrement: dbProduct.pricePerOne,
-              },
-            },
-          }),
-        ];
-
-        await Promise.all(promises);
-        return;
+      if (
+        parsedUrl.host !== validDomain ||
+        (!params.has("productId") && !params.has("token"))
+      ) {
+        throw new TRPCError({ message: "Невірний URL", code: "BAD_REQUEST" });
       }
-      if (params.has("token")) {
-        const token = params.get("token") ?? "";
 
-        const decryptedToken = jwt.verify(token, env.QR_SECRET) as TokenData;
-
-        const [transaction, products] = await Promise.all([
-          ctx.db.transaction.findUnique({
-            where: {
-              id: decryptedToken.transactionId,
-            },
-          }),
-
-          ctx.db.categoryItem.findMany({
-            where: {
-              id: {
-                in: decryptedToken.products.map((product) => product.id),
-              },
-            },
-            select: {
-              id: true,
-              count: true,
-            },
-          }),
-        ]);
-
-        if (!transaction || products.length === 0) {
-          throw new TRPCError({
-            code: "NOT_FOUND",
-            message: "Транзакція або товари не були знайдені",
-          });
-        }
-
-        if (transaction.success) {
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: "Транзакція завершена",
-          });
-        }
-
-        if (ctx.session.user.balance < transaction.amount) {
-          await ctx.pusher.trigger(decryptedToken.randomChannelId, "pay", {
-            error: "Недостатньо коштів",
-          });
-
+      const processTransaction = async (
+        amount: number,
+        productIds: string[],
+      ) => {
+        if (ctx.session.user.balance < amount) {
           throw new TRPCError({
             code: "BAD_REQUEST",
             message: "Недостатньо коштів",
           });
         }
 
-        await ctx.pusher.trigger(decryptedToken.randomChannelId, "pay", {});
+        const randomGradient = [
+          { from: "#D99CFF", to: "#FFD0F2" },
+          { from: "#FF9C9C", to: "#FF83CD" },
+          { from: "#FFFB9C", to: "#FFB69F" },
+          { from: "#C79CFF", to: "#9FBFFF" },
+          { from: "#9CFFC3", to: "#9FDCFF" },
+        ][Math.floor(Math.random() * 5)]!;
 
-        const promises = [
-          ctx.db.transaction.update({
-            where: {
-              id: transaction.id,
+        await ctx.db.transaction.create({
+          data: {
+            amount,
+            type: "BUY",
+            randomGradient,
+            success: true,
+            senderId: ctx.session.user.id,
+            productsBought: {
+              connect: productIds.map((id) => ({ id })),
             },
-            data: {
-              sender: {
-                connect: {
-                  id: ctx.session.user.id,
-                },
-              },
-              productsBought: {
-                connect: products.map((product) => ({
-                  id: product.id,
-                })),
-              },
-              success: true,
-            },
-          }),
+          },
+        });
 
-          ctx.db.user.update({
-            where: {
-              id: ctx.session.user.id,
-            },
-            data: {
-              balance: {
-                decrement: transaction.amount,
-              },
-            },
-          }),
+        await ctx.db.user.update({
+          where: { id: ctx.session.user.id },
+          data: { balance: { decrement: amount } },
+        });
 
-          products.map((product) => {
-            return ctx.db.categoryItem.update({
-              where: {
-                id: product.id,
-              },
-              data: {
-                count: {
-                  decrement: product.count,
-                },
-              },
-            });
-          }),
-        ];
+        await Promise.all(
+          productIds.map((id) =>
+            ctx.db.categoryItem.update({
+              where: { id },
+              data: { count: { decrement: 1 } },
+            }),
+          ),
+        );
+      };
 
-        await Promise.all(promises);
+      if (params.has("productId")) {
+        const productId = params.get("productId")!;
+        const product = await ctx.db.categoryItem.findUnique({
+          where: { id: productId },
+        });
+
+        if (!product)
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Невіриний Id продукту",
+          });
+
+        await processTransaction(product.pricePerOne, [productId]);
+      }
+
+      if (params.has("token")) {
+        const token = params.get("token")!;
+        const { transactionId, products } = jwt.verify(
+          token,
+          env.QR_SECRET,
+        ) as TokenData;
+
+        const transaction = await ctx.db.transaction.findUnique({
+          where: { id: transactionId },
+        });
+        const productIds = products.map((p) => p.id);
+
+        if (!transaction || transaction.success || productIds.length === 0) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Транзакція завершена або не знайдена",
+          });
+        }
+
+        await processTransaction(transaction.amount, productIds);
       }
     }),
 

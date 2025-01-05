@@ -23,9 +23,7 @@ export default function BuyProduct() {
 
   const token = params.get("token");
   const productId = params.get("productId");
-
-  const url = `${env.NEXT_PUBLIC_BUY_URL}?${token ?? productId}`
-
+  
   if (!productId && !token) {
     return (
       <h1 className="w-full text-center text-red-400">
@@ -33,6 +31,8 @@ export default function BuyProduct() {
       </h1>
     );
   }
+
+  const url = `${env.NEXT_PUBLIC_BUY_URL}?${token ? `token=${token}` : `productId=${productId}`}`
 
   const payMutation = api.transfers.pay.useMutation({
     onError: (error) => {
@@ -129,7 +129,7 @@ export default function BuyProduct() {
                 В суммі: {getItemsFromTokenOrId.data.totalAmount}
               </h1>
               <Button
-                disabled={payMutation.isPending || payMutation.isError}
+                disabled={payMutation.isPending}
                 className="flex w-full items-center text-black bg-lime-500 hover:bg-lime-500 hover:opacity-70 transition-opacity"
                 onClick={() => {
                   payMutation.mutate({ url });
