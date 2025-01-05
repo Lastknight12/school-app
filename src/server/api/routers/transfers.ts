@@ -512,7 +512,7 @@ export const transfersRouter = createTRPCRouter({
           });
         }
 
-        await processTransaction(transaction.amount, productIds);
+        await processTransaction(transaction.amount, productIds, transactionId);
       }
     }),
 
