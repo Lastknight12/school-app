@@ -356,16 +356,13 @@ export const transfersRouter = createTRPCRouter({
           });
         }
 
-        const colors = [
+        const randomGradient = [
           { from: "#D99CFF", to: "#FFD0F2" },
           { from: "#FF9C9C", to: "#FF83CD" },
           { from: "#FFFB9C", to: "#FFB69F" },
           { from: "#C79CFF", to: "#9FBFFF" },
           { from: "#9CFFC3", to: "#9FDCFF" },
-        ];
-
-        const randomGradient =
-          colors[Math.floor(Math.random() * colors.length)]!;
+        ][Math.floor(Math.random() * 5)]!;
 
         const amount = dbProducts.reduce((total, dbProduct) => {
           // Find the corresponding product from the input array
@@ -429,6 +426,7 @@ export const transfersRouter = createTRPCRouter({
       const processTransaction = async (
         amount: number,
         productIds: string[],
+        transactionId?: string,
       ) => {
         if (ctx.session.user.balance < amount) {
           throw new TRPCError({
@@ -445,18 +443,25 @@ export const transfersRouter = createTRPCRouter({
           { from: "#9CFFC3", to: "#9FDCFF" },
         ][Math.floor(Math.random() * 5)]!;
 
-        await ctx.db.transaction.create({
-          data: {
-            amount,
-            type: "BUY",
-            randomGradient,
-            success: true,
-            senderId: ctx.session.user.id,
-            productsBought: {
-              connect: productIds.map((id) => ({ id })),
+        if (transactionId) {
+          await ctx.db.transaction.update({
+            where: { id: transactionId },
+            data: { success: true },
+          });
+        } else {
+          await ctx.db.transaction.create({
+            data: {
+              amount,
+              type: "BUY",
+              randomGradient,
+              success: true,
+              senderId: ctx.session.user.id,
+              productsBought: {
+                connect: productIds.map((id) => ({ id })),
+              },
             },
-          },
-        });
+          });
+        }
 
         await ctx.db.user.update({
           where: { id: ctx.session.user.id },
