@@ -1,6 +1,6 @@
 "use client";
 
-import { type Badge, UserRole } from "@prisma/client";
+import { UserRole } from "@prisma/client";
 import {
   ChevronDown,
   ChevronUp,
@@ -14,16 +14,9 @@ import { toast } from "sonner";
 
 import { api } from "~/trpc/react";
 
+import { cn } from "~/lib/utils";
+
 import { Button } from "~/shadcn/ui/button";
-import { Checkbox } from "~/shadcn/ui/checkbox";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "~/shadcn/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -33,7 +26,6 @@ import {
   DropdownMenuTrigger,
 } from "~/shadcn/ui/dropdown-menu";
 import { Input } from "~/shadcn/ui/input";
-import { ScrollArea } from "~/shadcn/ui/scroll-area";
 import {
   Select,
   SelectContent,
@@ -49,32 +41,12 @@ import {
   TableHeader,
   TableRow,
 } from "~/shadcn/ui/table";
-import { cn } from "~/lib/utils";
-
-interface UserFromApi {
-  name: string;
-  role: UserRole;
-  id: string;
-  email: string;
-  image: string;
-  balance: number;
-  teacherClasses: {
-    name: string;
-    id: string;
-  }[];
-  studentClass: {
-    name: string;
-    id: string;
-  } | null;
-  badge_for_assignment: Badge[];
-}
 
 export default function UsersModelContent() {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOrder, setSortOrder] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [usersPerPage] = useState(10);
-  const [isBadgeDialogOpen, setIsBadgeDialogOpen] = useState(false);
   const utils = api.useUtils();
 
   const {
@@ -82,25 +54,6 @@ export default function UsersModelContent() {
     isFetching: isFetchingUsers,
     refetch: refetchUsers,
   } = api.user.getUsersByRole.useQuery();
-
-  const { data: allBadges, isFetching: isFetchingBadges } =
-    api.user.getAllBadges.useQuery();
-  const [selectedUser, setSelectedUser] = useState<UserFromApi | null>(null);
-  const [allowedBadgesCache, setAllowedBadgesCache] = useState<Badge[]>(
-    selectedUser?.badge_for_assignment ?? [],
-  );
-
-  const updateUserBadgesMutation = api.user.updateUserBadges.useMutation({
-    onSuccess: () => {
-      void utils.user.getUsersByRole.invalidate();
-      setIsBadgeDialogOpen(false);
-      toast.success("Успішно оновлено бейджі користувача");
-    },
-
-    onError: () => {
-      toast.error("Виникла помилка під час оновлення користувача");
-    },
-  });
 
   const updateUserRoleMutation = api.user.updateUserRole.useMutation({
     onSuccess: () => {
@@ -110,6 +63,17 @@ export default function UsersModelContent() {
 
     onError: () => {
       toast.error("Виникла помилка під час оновлення користувача");
+    },
+  });
+
+  const deleteUserMutation = api.user.deleteUser.useMutation({
+    onSuccess: () => {
+      void utils.user.getUsersByRole.invalidate();
+      toast.success("Користувача видалено");
+    },
+
+    onError: () => {
+      toast.error("Виникла помилка під час видалення користувача");
     },
   });
 
@@ -139,15 +103,6 @@ export default function UsersModelContent() {
     updateUserRoleMutation.mutate({ userId, newRole: newRole as UserRole });
   };
 
-  const handleToggleBadge = (userId: string, badge: Badge) => {
-    // In a real application, you would update the user's badges in the database here
-    setAllowedBadgesCache((prevBadges) =>
-      prevBadges.includes(badge)
-        ? prevBadges.filter((b) => b.name !== badge.name)
-        : [...prevBadges, badge],
-    );
-  };
-
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
@@ -163,8 +118,13 @@ export default function UsersModelContent() {
           </div>
 
           <div className="flex items-center gap-2 space-x-2 w-max">
-            <Button size="sm" variant="outline" onClick={() => refetchUsers()} disabled={isFetchingUsers}>
-              <RefreshCw className={cn(isFetchingUsers && "animate-spin")}/>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => refetchUsers()}
+              disabled={isFetchingUsers}
+            >
+              <RefreshCw className={cn(isFetchingUsers && "animate-spin")} />
             </Button>
             <Button
               variant="outline"
@@ -244,22 +204,23 @@ export default function UsersModelContent() {
                     <DropdownMenuLabel>Actions:</DropdownMenuLabel>
                     <DropdownMenuItem
                       onClick={async () => {
-                        await navigator.clipboard.writeText(user.email)
-                        toast.success("Email copied to clipboard")
+                        await navigator.clipboard.writeText(user.email);
+                        toast.success("Email copied to clipboard");
                       }}
                     >
-                      Copy email
+                      Копіювати email
                     </DropdownMenuItem>
                     <DropdownMenuItem
-                      onSelect={() => {
-                        setSelectedUser(user);
-                        setAllowedBadgesCache(user.badge_for_assignment);
-                        setIsBadgeDialogOpen(true);
+                      onClick={() => {
+                        deleteUserMutation.mutate({ id: user.id });
                       }}
                     >
-                      Add badges
+                      {deleteUserMutation.isPending ? (
+                        <Loader2 className="mx-auto h-3 w-3 animate-spin text-[#b5b5b5]" />
+                      ) : (
+                        <p>Видалити</p>
+                      )}
                     </DropdownMenuItem>
-                    <DropdownMenuItem>View details</DropdownMenuItem>
                     <DropdownMenuSeparator />
 
                     <DropdownMenuLabel>Role:</DropdownMenuLabel>
@@ -308,74 +269,6 @@ export default function UsersModelContent() {
           ))}
         </TableBody>
       </Table>
-
-      <Dialog
-        open={isBadgeDialogOpen}
-        onOpenChange={(open) => {
-          if (!open) {
-            setSelectedUser(null);
-            setAllowedBadgesCache([]);
-          }
-          setIsBadgeDialogOpen(open);
-        }}
-      >
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Manage Badges for {selectedUser?.name}</DialogTitle>
-            <DialogDescription>
-              Select or deselect badges for this user. Click save when
-              you&apos;re done.
-            </DialogDescription>
-          </DialogHeader>
-          <ScrollArea className="h-[300px] w-full">
-            <div className="grid grid-cols-2 gap-4">
-              {isFetchingBadges && (
-                <div className="col-span-2 flex justify-center items-center">
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                </div>
-              )}
-
-              {allBadges?.map((badge) => (
-                <div
-                  key={badge.name}
-                  className="flex items-center space-x-2 justify-center"
-                  onClick={() => handleToggleBadge(selectedUser!.id, badge)}
-                >
-                  <Checkbox
-                    id={badge.name}
-                    checked={allowedBadgesCache.some(
-                      (b) => b.name === badge.name,
-                    )}
-                    className="rounded border-gray-300 outline-none text-primary focus:ring-primary"
-                  />
-                  <label
-                    htmlFor={badge.name}
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    {badge.name}
-                  </label>
-                </div>
-              ))}
-            </div>
-          </ScrollArea>
-          <DialogFooter className="justify-end">
-            <Button
-              disabled={updateUserBadgesMutation.isPending}
-              onClick={() =>
-                updateUserBadgesMutation.mutate({
-                  userId: selectedUser!.id,
-                  badges: allowedBadgesCache,
-                })
-              }
-            >
-              Save
-              {updateUserBadgesMutation.isPending && (
-                <Loader2 className="ml-2 h-4 w-4 animate-spin" />
-              )}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

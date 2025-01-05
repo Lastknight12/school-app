@@ -54,7 +54,7 @@ export default function ButtonsGroup({
           });
         }}
       >
-        <Button>Manage students</Button>
+        <Button>Редагувати учнів</Button>
       </UpdateUsers>
 
       <UpdateUsers
@@ -72,7 +72,7 @@ export default function ButtonsGroup({
           });
         }}
       >
-        <Button>Manage teachers</Button>
+        <Button>Редагувати вчителів</Button>
       </UpdateUsers>
     </div>
   );

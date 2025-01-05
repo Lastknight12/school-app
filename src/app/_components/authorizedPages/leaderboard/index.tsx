@@ -6,7 +6,6 @@ import { type Session } from "next-auth";
 import Image from "next/image";
 import { useEffect, useRef } from "react";
 import { toast } from "sonner";
-import Badge from "~/shadcn/ui/badge";
 
 import { api } from "~/trpc/react";
 
@@ -96,14 +95,6 @@ export default function Leaderboard({ session }: Props) {
             <p className="text-center text-lg max-sm:text-sm">
               {user.balance} $
             </p>
-
-            {user.activeBadge && (
-              <Badge
-                name={user.activeBadge.name}
-                textColor={user.activeBadge.textColor}
-                background={user.activeBadge.backgroundColor}
-              />
-            )}
           </motion.div>
         ))}
       </div>
@@ -149,14 +140,6 @@ export default function Leaderboard({ session }: Props) {
                 )}
 
                 <div>{user.name}</div>
-
-                {user.activeBadge && (
-                  <Badge
-                    name={user.activeBadge.name}
-                    textColor={user.activeBadge.textColor}
-                    background={user.activeBadge.backgroundColor}
-                  />
-                )}
               </div>
 
               <div className="text-right max-sm:text-sm">{user.balance} $</div>

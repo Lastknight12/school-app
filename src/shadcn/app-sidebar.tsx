@@ -12,6 +12,7 @@ import {
   Rocket,
   Shield,
   Store,
+  Wallet,
 } from "lucide-react";
 import { type Session } from "next-auth";
 import * as React from "react";
@@ -35,26 +36,35 @@ const data = {
       url: "/admin",
       icon: Shield,
       isActive: true,
+      isCollapsible: true,
       items: [
         {
           name: "Database",
           url: "/admin/db?tab=users",
           subItems: [
             {
-              name: "Users",
+              name: "Користувачі",
               url: "/admin/db?tab=users",
             },
             {
-              name: "Badges",
-              url: "/admin/db?tab=badges",
-            },
-            {
-              name: "Transactions",
+              name: "Перекази",
               url: "/admin/db?tab=transactions",
             },
           ],
         },
       ],
+    },
+    {
+      title: "Казна",
+      url: "/kazna",
+      icon: Wallet,
+      isCollapsible: false,
+    },
+    {
+      title: "Переказ коштів",
+      url: "/transactions",
+      icon: CircleDollarSign,
+      isCollapsible: false,
     },
   ],
 
@@ -72,28 +82,23 @@ const data = {
   ],
 
   navMain: [
-    { name: "Home", url: "/", icon: Home },
+    { name: "Головна", url: "/", icon: Home },
     {
-      name: "Products list",
+      name: "Магазин",
       url: "/shop",
       icon: Store,
     },
     {
-      name: "Stats",
+      name: "Статистика",
       url: "/stats",
       icon: ChartColumnBig,
     },
     {
-      name: "Leaderboard",
+      name: "Таблиця лідерів",
       url: "/leaderboard",
       icon: ChartNoAxesColumn,
     },
-    {
-      name: "Transaction",
-      url: "/transactions",
-      icon: CircleDollarSign,
-    },
-    { name: "Order music", url: "/music", icon: AudioLines },
+    { name: "Замовити музику", url: "/music", icon: AudioLines },
   ],
 };
 
@@ -103,7 +108,6 @@ interface Props {
 
 const routesWithAuth = new Map<string, UserRole[]>([
   ["/stats", ["STUDENT", "RADIO_CENTER"]],
-  ["/transactions", ["ADMIN"]],
   ["/shop", ["STUDENT", "RADIO_CENTER"]],
   ["/leaderboard", ["STUDENT", "RADIO_CENTER", "ADMIN", "SELLER", "TEACHER"]],
 ]);

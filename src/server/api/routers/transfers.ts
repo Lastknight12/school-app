@@ -1,9 +1,7 @@
 import type { Transaction } from "@prisma/client";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { TRPCError } from "@trpc/server";
 import { randomUUID } from "crypto";
 import { addDays } from "date-fns";
-import { url } from "inspector";
 import jwt from "jsonwebtoken";
 import { z } from "zod";
 import { env } from "~/env";
@@ -13,6 +11,7 @@ import {
   createTRPCRouter,
   protectedProcedure,
   sellerProcedure,
+  studentProcedure,
 } from "~/server/api/trpc";
 
 export interface TokenData {
@@ -34,7 +33,7 @@ export interface formatedTransfer extends Transaction {
 }
 
 export const transfersRouter = createTRPCRouter({
-  sendMoney: protectedProcedure
+  sendMoney: adminProcedure
     .input(
       z.object({
         receiverId: z.string().min(1, "receiverId не може бути порожнім"),
@@ -44,10 +43,30 @@ export const transfersRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       const userBalance = ctx.session.user.balance;
 
-      if (ctx.session.user.role === "STUDENT" && userBalance < input.amount) {
+      if (userBalance < input.amount) {
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "Недостатній баланс",
+        });
+      }
+
+      if(input.receiverId === ctx.session.user.id) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Неможливо перевести гроші самому собі",
+        });
+      }
+
+      const reciever = await ctx.db.user.findUnique({
+        where: {
+          id: input.receiverId,
+        },
+      });
+
+      if (!reciever) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Користувача не знайдено",
         });
       }
 
@@ -74,54 +93,95 @@ export const transfersRouter = createTRPCRouter({
               id: ctx.session.user.id,
             },
           },
+          success: true,
           amount: input.amount,
           randomGradient: randomColor,
         },
       });
+      
+      if (ctx.session.user.role === "ADMIN") {
+        const kazna = await ctx.db.kazna.findFirst();
 
-      {
-        ctx.session.user.role === "STUDENT" &&
-          (await ctx.db.user.update({
-            where: {
-              id: ctx.session.user.id,
-            },
+        if (!kazna) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Казна не знайдена",
+          });
+        }
+
+        if(kazna.amount < input.amount) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Недостатньо коштів в казні"
+          })
+        }
+
+        const promises = [
+          ctx.db.kaznaTransfer.create({
             data: {
-              balance: {
-                decrement: input.amount,
-              },
-              senderTransactions: {
+              amount: input.amount * -1,
+              message: `Переказ коштів користувачу ${reciever.name}`,
+              Kazna: {
                 connect: {
-                  id: transaction.id,
+                  id: kazna.id,
+                },
+              },
+              sender: {
+                connect: {
+                  id: ctx.session.user.id,
                 },
               },
             },
-          }));
-      }
+          }),
 
-      ctx.db.user
-        .update({
+          ctx.db.kazna.update({
+            where: {
+              id: kazna.id,
+            },
+            data: {
+              amount: {
+                decrement: input.amount,
+              },
+            },
+          }),
+        ];
+
+        await Promise.all(promises);
+
+      } else {
+        await ctx.db.user.update({
           where: {
-            id: input.receiverId,
+            id: ctx.session.user.id,
           },
           data: {
             balance: {
-              increment: input.amount,
+              decrement: input.amount,
             },
-            recieverTransactions: {
+            senderTransactions: {
               connect: {
                 id: transaction.id,
               },
             },
           },
-        })
-        .catch((err) => {
-          if (err instanceof PrismaClientKnownRequestError) {
-            throw new TRPCError({
-              code: "INTERNAL_SERVER_ERROR",
-              message: `Надішліть повідомлення адміністратору, ${err.message}`,
-            });
-          }
         });
+      }
+
+      await ctx.db.user.update({
+        where: {
+          id: input.receiverId,
+        },
+        data: {
+          balance: {
+            increment: input.amount,
+          },
+          recieverTransactions: {
+            connect: {
+              id: transaction.id,
+            },
+          },
+        },
+      });
+
     }),
 
   getTransfers: protectedProcedure.query(async ({ ctx }) => {
@@ -350,10 +410,10 @@ export const transfersRouter = createTRPCRouter({
       }
     }),
 
-  pay: protectedProcedure
+  pay: studentProcedure
     .input(
       z.object({
-        url: z.string().url({message: "Невірний URL"})
+        url: z.string().url({ message: "Невірний URL" }),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -361,7 +421,7 @@ export const transfersRouter = createTRPCRouter({
       const params = parsedUrl.searchParams;
 
       if (params.has("productId")) {
-        const productId = params.get("productId") ?? ""
+        const productId = params.get("productId") ?? "";
 
         const dbProduct = await ctx.db.categoryItem.findUnique({
           where: {
@@ -420,12 +480,9 @@ export const transfersRouter = createTRPCRouter({
         return;
       }
       if (params.has("token")) {
-        const token = params.get("token") ?? ""
+        const token = params.get("token") ?? "";
 
-        const decryptedToken = jwt.verify(
-          token,
-          env.QR_SECRET,
-        ) as TokenData;
+        const decryptedToken = jwt.verify(token, env.QR_SECRET) as TokenData;
 
         const [transaction, products] = await Promise.all([
           ctx.db.transaction.findUnique({

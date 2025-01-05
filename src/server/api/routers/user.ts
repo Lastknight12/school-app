@@ -7,6 +7,7 @@ import {
   adminProcedure,
   createTRPCRouter,
   protectedProcedure,
+  studentProcedure,
 } from "~/server/api/trpc";
 
 export const userRouter = createTRPCRouter({
@@ -23,7 +24,12 @@ export const userRouter = createTRPCRouter({
           name: {
             contains: input.name,
           },
-          role: ctx.session.user.role === "ADMIN" ? undefined : "STUDENT",
+          role:
+            ctx.session.user.role === "ADMIN"
+              ? {
+                  in: ["STUDENT", "TEACHER"],
+                }
+              : "STUDENT",
         },
       });
 
@@ -55,8 +61,6 @@ export const userRouter = createTRPCRouter({
           email: true,
           balance: true,
           image: true,
-          badges: true,
-          badge_for_assignment: true,
           role: true,
           studentClass: {
             select: {
@@ -74,50 +78,7 @@ export const userRouter = createTRPCRouter({
       });
     }),
 
-  getAllBadges: adminProcedure.query(async ({ ctx }) => {
-    return await ctx.db.badge.findMany();
-  }),
-
-  addBadge: adminProcedure
-    .input(
-      z.object({
-        name: z.string(),
-        textColor: z.string(),
-        backgroundColor: z.string(),
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      await ctx.db.badge.create({
-        data: {
-          name: input.name,
-          textColor: input.textColor,
-          backgroundColor: input.backgroundColor,
-        },
-      });
-    }),
-
-  setActiveBadge: protectedProcedure
-    .input(
-      z.object({
-        badgeName: z.string(),
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      await ctx.db.user.update({
-        where: {
-          id: ctx.session.user.id,
-        },
-        data: {
-          activeBadge: {
-            connect: {
-              name: input.badgeName,
-            },
-          },
-        },
-      });
-    }),
-
-  getUserClass: protectedProcedure.query(async ({ ctx }) => {
+  getUserClass: studentProcedure.query(async ({ ctx }) => {
     if (!ctx.session.user.studentClass) return;
 
     const klass = await ctx.db.klass.findUnique({
@@ -157,33 +118,6 @@ export const userRouter = createTRPCRouter({
         data: {
           name: input.newName,
           image: input.newImageSrc,
-        },
-      });
-    }),
-
-  updateUserBadges: adminProcedure
-    .input(
-      z.object({
-        userId: z.string(),
-        badges: z.array(
-          z.object({
-            id: z.string(),
-            name: z.string(),
-            textColor: z.string(),
-            backgroundColor: z.string(),
-          }),
-        ),
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      await ctx.db.user.update({
-        where: {
-          id: input.userId,
-        },
-        data: {
-          badges: {
-            set: input.badges,
-          },
         },
       });
     }),
@@ -236,8 +170,6 @@ export const userRouter = createTRPCRouter({
           name: true,
           image: true,
           balance: true,
-          badges: true,
-          activeBadge: true,
         },
       });
 
@@ -251,5 +183,28 @@ export const userRouter = createTRPCRouter({
         users,
         nextCursor,
       };
+    }),
+
+  deleteUser: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      const userExist = await ctx.db.user.findUnique({
+        where: {
+          id: input.id,
+        },
+      });
+
+      if (!userExist) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Користувача не існує",
+        });
+      }
+
+      await ctx.db.user.delete({
+        where: {
+          id: input.id,
+        },
+      });
     }),
 });

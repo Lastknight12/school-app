@@ -2,7 +2,6 @@
 
 import { ScanQrCode } from "lucide-react";
 import { toast } from "sonner";
-import { env } from "~/env";
 
 import { api } from "~/trpc/react";
 

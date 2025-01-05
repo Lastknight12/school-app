@@ -1,6 +1,5 @@
 "use client";
 
-import { type Badge as BadgeModel } from "@prisma/client";
 import { Loader2 } from "lucide-react";
 import { type Session } from "next-auth";
 import { useSession } from "next-auth/react";
@@ -17,7 +16,6 @@ import { cn } from "~/lib/utils";
 import DebitCard from "../../shared/DebitCard";
 import UploadImage from "../../shared/UploadImage";
 
-import Badge from "~/shadcn/ui/badge";
 import { Button } from "~/shadcn/ui/button";
 import { Input } from "~/shadcn/ui/input";
 import { Label } from "~/shadcn/ui/label";
@@ -34,18 +32,8 @@ export default function Settings({
 }: Props) {
   const [newUsername, setNewUsername] = useState(defaultSession.user.name);
   const [newImageSrc, setNewImageSrc] = useState(defaultSession.user.image);
-  const [activeBadge, setActiveBadge] = useState<BadgeModel | null>(
-    defaultSession.user.activeBadge,
-  );
 
   const { open, isMobile } = useSidebar();
-
-  const updateActivebadgeMutation = api.user.setActiveBadge.useMutation({
-    onError: () => {
-      setActiveBadge(defaultSession.user.activeBadge);
-      toast.error("Помилка при оновленні активного бейджу");
-    },
-  });
 
   const { update, data: newSession } = useSession();
   const isValuesChanged =
@@ -122,40 +110,6 @@ export default function Settings({
             ) : (
               <div className="text-red-500">Немає класу</div>
             )}
-          </div>
-
-          <div className="flex gap-3">
-            {/* Klass */}
-            <Label className="text-left text-base"> Бейджі:</Label>
-
-            <div className="flex items-center gap-2 flex-wrap">
-              {defaultSession.user.badges.map((badge) => (
-                <div key={badge.id} className="relative">
-                  <Badge
-                    className={cn(activeBadge?.id === badge.id && "opacity-50")}
-                    name={badge.name}
-                    textColor={badge.textColor}
-                    background={badge.backgroundColor}
-                    onClick={() => {
-                      if (activeBadge?.id === badge.id) {
-                        setActiveBadge(null);
-                      } else {
-                        setActiveBadge(badge);
-                        updateActivebadgeMutation.mutate({
-                          badgeName: badge.name,
-                        });
-                      }
-                    }}
-                  />
-
-                  {activeBadge?.id === badge.id && (
-                    <div className="absolute -right-1 top-0 z-10 flex h-3 w-3 items-center justify-center rounded-full bg-blue-500">
-                      <FaCheck className="text-blue-900" size={7} />
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
           </div>
         </div>
 

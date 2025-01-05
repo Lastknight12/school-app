@@ -87,7 +87,7 @@ export function NavUser({
                 className="flex gap-3 items-center"
               >
                 <Settings />
-                Settings
+                Налаштування
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuItem
@@ -97,15 +97,15 @@ export function NavUser({
                 await signOut();
                 router.push("/login");
               }}
-              className="flex gap-3 items-center"
+              className="flex gap-3 items-center !text-red-500"
               disabled={isLoggingOut}
             >
               {isLoggingOut ? (
                 <Loader2 className="animate-spin w-4 mx-auto h-4 text-[#b2b2b2]" />
               ) : (
                 <>
-                  <LogOut />
-                  <span>Log out</span>
+                  <LogOut/>
+                  <span>Вихід</span>
                 </>
               )}
             </DropdownMenuItem>

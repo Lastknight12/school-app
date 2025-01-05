@@ -7,38 +7,27 @@ interface Props {
 
 export default function ModelsList({ onClick, activeItem }: Props) {
   return (
-    <div className="overflow-x-auto pb-2">
+    <div className="overflow-x-auto pb-2 text-sm">
       <div className="flex gap-2 items-center">
-        <div className={cn("bg-accent rounded-lg", activeItem === "users" ? "bg-primary text-primary-foreground" : "")}>
+        <div className={cn("bg-accent rounded-lg cursor-pointer", activeItem === "users" ? "bg-primary text-primary-foreground" : "")}>
           <div
             className={"py-2 px-4"}
             onClick={() => {
               onClick?.("users");
             }}
           >
-            Users
+            Користувачі
           </div>
         </div>
 
-        <div className={cn("bg-accent rounded-lg", activeItem === "badges" ? "bg-primary text-primary-foreground" : "")}>
-          <div
-            className={"py-2 px-4"}
-            onClick={() => {
-              onClick?.("badges");
-            }}
-          >
-            Badges
-          </div>
-        </div>
-
-        <div className={cn("bg-accent rounded-lg", activeItem === "transactions" ? "bg-primary text-primary-foreground" : "")}>
+        <div className={cn("bg-accent rounded-lg cursor-pointer", activeItem === "transactions" ? "bg-primary text-primary-foreground" : "")}>
           <div
             className={"py-2 px-4"}
             onClick={() => {
               onClick?.("transactions");
             }}
           >
-            Transactions
+            Перекази
           </div>
         </div>
       </div>
