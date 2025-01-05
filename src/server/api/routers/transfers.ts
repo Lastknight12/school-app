@@ -357,17 +357,6 @@ export const transfersRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const targetUrl = env.NEXTAUTH_URL
-      const formatedUrl = targetUrl.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-      const isValidUrl = new RegExp(`^${formatedUrl}`).test(input.url);
-
-      if(!isValidUrl) {
-        throw new TRPCError({
-          message: "Невірний URL",
-          code: "BAD_REQUEST"
-        })
-      }
-
       const parsedUrl = new URL(input.url);
       const params = parsedUrl.searchParams;
 
