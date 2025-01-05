@@ -446,7 +446,7 @@ export const transfersRouter = createTRPCRouter({
         if (transactionId) {
           await ctx.db.transaction.update({
             where: { id: transactionId },
-            data: { success: true },
+            data: { success: true, senderId: ctx.session.user.id },
           });
         } else {
           await ctx.db.transaction.create({
