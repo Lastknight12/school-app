@@ -445,8 +445,10 @@ export const transfersRouter = createTRPCRouter({
         ][Math.floor(Math.random() * 5)]!;
 
         if (transactionId && randomChannelId) {
-          await ctx.pusher.trigger(randomChannelId, "pay", null);
-          
+          await ctx.pusher.trigger(randomChannelId, "pay", {
+            error: null,
+          });
+
           await ctx.db.transaction.update({
             where: { id: transactionId },
             data: { success: true, senderId: ctx.session.user.id },
@@ -515,7 +517,12 @@ export const transfersRouter = createTRPCRouter({
           });
         }
 
-        await processTransaction(transaction.amount, productIds, transactionId, randomChannelId);
+        await processTransaction(
+          transaction.amount,
+          productIds,
+          transactionId,
+          randomChannelId,
+        );
       }
     }),
 
