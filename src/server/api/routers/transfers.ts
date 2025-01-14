@@ -427,6 +427,7 @@ export const transfersRouter = createTRPCRouter({
         amount: number,
         productIds: string[],
         transactionId?: string,
+        randomChannelId?: string,
       ) => {
         if (ctx.session.user.balance < amount) {
           throw new TRPCError({
@@ -443,7 +444,9 @@ export const transfersRouter = createTRPCRouter({
           { from: "#9CFFC3", to: "#9FDCFF" },
         ][Math.floor(Math.random() * 5)]!;
 
-        if (transactionId) {
+        if (transactionId && randomChannelId) {
+          await ctx.pusher.trigger(randomChannelId, "pay", null);
+          
           await ctx.db.transaction.update({
             where: { id: transactionId },
             data: { success: true, senderId: ctx.session.user.id },
@@ -495,7 +498,7 @@ export const transfersRouter = createTRPCRouter({
 
       if (params.has("token")) {
         const token = params.get("token")!;
-        const { transactionId, products } = jwt.verify(
+        const { transactionId, products, randomChannelId } = jwt.verify(
           token,
           env.QR_SECRET,
         ) as TokenData;
@@ -512,7 +515,7 @@ export const transfersRouter = createTRPCRouter({
           });
         }
 
-        await processTransaction(transaction.amount, productIds, transactionId);
+        await processTransaction(transaction.amount, productIds, transactionId, randomChannelId);
       }
     }),
 

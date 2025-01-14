@@ -9,15 +9,20 @@ import TeacherHomePage from "../_components/authorizedPages/HomePages/teacherHom
 export default async function Home() {
   const session = await getServerAuthSession();
 
-  const userRole = session!.user.role;
+  
+  if(!session) {
+    return redirect("/login");
+  }
+  
+  const userRole = session.user.role;
 
   switch (userRole) {
     case "STUDENT":
-      return <StudentHomePage session={session!} />;
+      return <StudentHomePage session={session} />;
     case "SELLER":
       return <SellerHomePage />;
     case "TEACHER":
-      if (session!.user.teacherClasses?.length === 0) {
+      if (session.user.teacherClasses?.length === 0) {
         return (
           <div className="px-5">
             <p>
@@ -27,10 +32,10 @@ export default async function Home() {
           </div>
         );
       }
-      return <TeacherHomePage session={session!} />;
+      return <TeacherHomePage session={session} />;
     case "ADMIN":
       return redirect("/admin");
     case "RADIO_CENTER":
-      return <StudentHomePage session={session!} />;
+      return <StudentHomePage session={session} />;
   }
 }

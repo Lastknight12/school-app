@@ -24,15 +24,12 @@ export default function BuyProduct() {
   const token = params.get("token");
   const productId = params.get("productId");
   
-  if (!productId && !token) {
-    return (
-      <h1 className="w-full text-center text-red-400">
-        Відсутній токен або id продукту
-      </h1>
-    );
+  let url = "";
+  if (token) {
+    url = `${env.NEXT_PUBLIC_BUY_URL}?token=${token}`;
+  } else if (productId) {
+    url = `${env.NEXT_PUBLIC_BUY_URL}?productId=${productId}`;
   }
-
-  const url = `${env.NEXT_PUBLIC_BUY_URL}?${token ? `token=${token}` : `productId=${productId}`}`
 
   const payMutation = api.transfers.pay.useMutation({
     onError: (error) => {
@@ -147,3 +144,4 @@ export default function BuyProduct() {
     </main>
   );
 }
+
