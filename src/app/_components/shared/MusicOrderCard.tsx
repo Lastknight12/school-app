@@ -29,17 +29,18 @@ interface Props {
   };
   type?: "radioCenter" | "student";
   className?: string;
+  refresh: () => void;
 }
 
 export default function MusicOrderCard({
   order,
   type = "student",
   className,
+  refresh,
 }: Props) {
-  const utils = api.useUtils();
   const acceptOrderMutation = api.radioCenter.acceptOrder.useMutation({
     onSuccess: () => {
-      void utils.radioCenter.getOrders.invalidate();
+      refresh();
       toast.success("Замовлення успішно прийняте");
     },
     onError: (error) => {
@@ -51,7 +52,7 @@ export default function MusicOrderCard({
 
   const cancelOrderMutation = api.radioCenter.cancelOrder.useMutation({
     onSuccess: () => {
-      void utils.radioCenter.getCurrentTrackAndQueue.invalidate();
+      refresh();
       toast.success("Замовлення успішно скасоване");
     },
     onError: (error) => {
@@ -62,11 +63,7 @@ export default function MusicOrderCard({
   });
 
   return (
-    <div
-      className={
-        "flex bg-card border items-start border-border rounded-lg"
-      }
-    >
+    <div className={"flex bg-card border items-start border-border rounded-lg"}>
       <Link
         href={order.musicUrl}
         className={cn(

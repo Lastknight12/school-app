@@ -24,12 +24,13 @@ interface Order
 }
 
 export default function Page() {
+  const [orders, setOrders] = useState<Order[]>([]);
   const getOrders = api.radioCenter.getOrders.useQuery(void 0, {
     refetchOnWindowFocus: false,
   });
+
   const [userInteraction, setUserInteracted] = useState(false);
 
-  const [orders, setOrders] = useState<Order[]>([]);
   const [play] = useSound("sounds/new-notification-7-210334.mp3", {
     volume: 1,
   });
@@ -39,7 +40,7 @@ export default function Page() {
     if (getOrders.data) {
       setOrders(getOrders.data);
     }
-  }, [getOrders.data]);
+  }, [getOrders.data])
 
   useEffect(() => {
     const channel = pusherClient.subscribe("radioCenter");
@@ -59,10 +60,14 @@ export default function Page() {
     }
   }, [pusherChannel, play]);
 
-  if (!userInteraction && !getOrders.isFetching) {
+  async function refresh(id: string) {
+    setOrders((prev) => prev.filter((order) => order.id !== id));
+  }
+
+  if (!userInteraction) {
     return (
       <button
-        className="w-full h-full flex items-center justify-center"
+        className="w-screen h-full_page flex items-center justify-center"
         onClick={() => setUserInteracted(true)}
       >
         <p>
@@ -87,7 +92,7 @@ export default function Page() {
         )}
 
         {orders.map((order) => (
-          <MusicOrderCard key={order.id} order={order} type="radioCenter" />
+          <MusicOrderCard key={order.id} order={order} type="radioCenter" refresh={() => refresh(order.id)}/>
         ))}
       </div>
     </div>

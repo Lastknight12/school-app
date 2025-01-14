@@ -50,8 +50,6 @@ export default function GenerateQRModal({ onSuccess, children }: Props) {
   const [paymentError, setPaymentError] = useState("");
   const [qrType, setQrType] = useState("expires");
 
-  const utils = api.useUtils();
-
   const products = useProducts((state) => state.products);
   const resetProducts = useProducts((state) => state.reset);
   const removeProduct = useProducts((state) => state.removeProduct);
