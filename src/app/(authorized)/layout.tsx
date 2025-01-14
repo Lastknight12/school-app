@@ -4,7 +4,7 @@ import { getServerAuthSession } from "~/server/auth";
 export default async function AuthorizedLayout({ children }: { children: React.ReactNode }) {
     const session = await getServerAuthSession();
 
-    if (!session?.user) {
+    if (!session || !session.user) {
         return redirect("/login");
     }
     
