@@ -449,6 +449,8 @@ export const transfersRouter = createTRPCRouter({
             error: null,
           });
 
+          console.log(products);
+
           const promises = [
             ctx.db.transaction.update({
               where: { id: transactionId },
@@ -460,12 +462,13 @@ export const transfersRouter = createTRPCRouter({
                 },
               },
             }),
-            products.map((product) =>
-              ctx.db.categoryItem.update({
+
+            ...products.map((product) => {
+              return ctx.db.categoryItem.update({
                 where: { id: product.id },
                 data: { count: { decrement: product.count } },
-              }),
-            ),
+              });
+            }),
           ];
 
           await Promise.all(promises);
@@ -483,11 +486,12 @@ export const transfersRouter = createTRPCRouter({
                 },
               },
             }),
+
             ctx.db.categoryItem.update({
               where: { id: products[0]?.id },
               data: { count: { decrement: products[0]?.count } },
-            })
-          ]
+            }),
+          ];
           await Promise.all(promises);
         }
       };
