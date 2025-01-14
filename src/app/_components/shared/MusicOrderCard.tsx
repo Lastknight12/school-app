@@ -29,7 +29,7 @@ interface Props {
   };
   type?: "radioCenter" | "student";
   className?: string;
-  refresh: () => void;
+  refresh?: () => void;
 }
 
 export default function MusicOrderCard({
@@ -40,7 +40,7 @@ export default function MusicOrderCard({
 }: Props) {
   const acceptOrderMutation = api.radioCenter.acceptOrder.useMutation({
     onSuccess: () => {
-      refresh();
+      refresh?.();
       toast.success("Замовлення успішно прийняте");
     },
     onError: (error) => {
@@ -52,7 +52,7 @@ export default function MusicOrderCard({
 
   const cancelOrderMutation = api.radioCenter.cancelOrder.useMutation({
     onSuccess: () => {
-      refresh();
+      refresh?.();
       toast.success("Замовлення успішно скасоване");
     },
     onError: (error) => {
