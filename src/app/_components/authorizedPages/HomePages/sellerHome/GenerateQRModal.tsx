@@ -78,13 +78,6 @@ export default function GenerateQRModal({ onSuccess, children }: Props) {
     },
   });
 
-  const decrementProductsCount =
-    api.category.decrementProductsCount.useMutation({
-      onSuccess: () => {
-        void utils.category.getCategoryItems.invalidate();
-      },
-    });
-
   // maybe wrap it into onSuccess callback in mutation
   useEffect(() => {
     if (genQRToken.data) {
@@ -102,15 +95,6 @@ export default function GenerateQRModal({ onSuccess, children }: Props) {
         
         setPaymentError("");
         setIsSuccess(true);
-
-        decrementProductsCount.mutate(
-          products.map((product) => {
-            return {
-              id: product.id,
-              count: product.count,
-            };
-          }),
-        );
 
         onSuccess?.();
 

@@ -43,30 +43,6 @@ export const categoryRouter = createTRPCRouter({
     });
   }),
 
-  decrementProductsCount: sellerProcedure
-    .input(
-      z.array(
-        z.object({
-          id: z.string(),
-          count: z.number(),
-        }),
-      ),
-    )
-    .mutation(async ({ ctx, input }) => {
-      void input.map(async (product) => {
-        await ctx.db.categoryItem.update({
-          where: {
-            id: product.id,
-          },
-          data: {
-            count: {
-              decrement: product.count,
-            },
-          },
-        });
-      });
-    }),
-
   getItemsByTokenOrId: protectedProcedure
     .input(
       z.object({
