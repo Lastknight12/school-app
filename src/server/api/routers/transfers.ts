@@ -425,7 +425,7 @@ export const transfersRouter = createTRPCRouter({
 
       const processTransaction = async (
         amount: number,
-        productIds: string[],
+        products: { id: string; count: number }[],
         transactionId?: string,
         randomChannelId?: string,
       ) => {
@@ -449,42 +449,47 @@ export const transfersRouter = createTRPCRouter({
             error: null,
           });
 
-          await ctx.db.transaction.update({
-            where: { id: transactionId },
-            data: {
-              success: true,
-              senderId: ctx.session.user.id,
-              productsBought: { connect: productIds.map((id) => ({ id })) },
-            },
-          });
-        } else {
-          await ctx.db.transaction.create({
-            data: {
-              amount,
-              type: "BUY",
-              randomGradient,
-              success: true,
-              senderId: ctx.session.user.id,
-              productsBought: {
-                connect: productIds.map((id) => ({ id })),
+          const promises = [
+            ctx.db.transaction.update({
+              where: { id: transactionId },
+              data: {
+                success: true,
+                senderId: ctx.session.user.id,
+                productsBought: {
+                  connect: products.map((product) => ({ id: product.id })),
+                },
               },
-            },
-          });
-        }
-
-        await ctx.db.user.update({
-          where: { id: ctx.session.user.id },
-          data: { balance: { decrement: amount } },
-        });
-
-        await Promise.all(
-          productIds.map((id) =>
-            ctx.db.categoryItem.update({
-              where: { id },
-              data: { count: { decrement: 1 } },
             }),
-          ),
-        );
+            products.map((product) =>
+              ctx.db.categoryItem.update({
+                where: { id: product.id },
+                data: { count: { decrement: product.count } },
+              }),
+            ),
+          ];
+
+          await Promise.all(promises);
+        } else {
+          const promises = [
+            ctx.db.transaction.create({
+              data: {
+                amount,
+                type: "BUY",
+                randomGradient,
+                success: true,
+                senderId: ctx.session.user.id,
+                productsBought: {
+                  connect: products.map((product) => ({ id: product.id })),
+                },
+              },
+            }),
+            ctx.db.categoryItem.update({
+              where: { id: products[0]?.id },
+              data: { count: { decrement: products[0]?.count } },
+            })
+          ]
+          await Promise.all(promises);
+        }
       };
 
       if (params.has("productId")) {
@@ -499,7 +504,9 @@ export const transfersRouter = createTRPCRouter({
             message: "Невіриний Id продукту",
           });
 
-        await processTransaction(product.pricePerOne, [productId]);
+        await processTransaction(product.pricePerOne, [
+          { id: productId, count: 1 },
+        ]);
       }
 
       if (params.has("token")) {
@@ -523,7 +530,7 @@ export const transfersRouter = createTRPCRouter({
 
         await processTransaction(
           transaction.amount,
-          productIds,
+          products,
           transactionId,
           randomChannelId,
         );
