@@ -17,7 +17,6 @@ import {
 export interface TokenData {
   randomChannelId: string;
   transactionId: string;
-  totalAmount: number;
   count: number;
   products: {
     id: string;
@@ -365,17 +364,11 @@ export const transfersRouter = createTRPCRouter({
         ][Math.floor(Math.random() * 5)]!;
 
         const amount = dbProducts.reduce((total, dbProduct) => {
-          // Find the corresponding product from the input array
           const productInput = input.products.find(
-            (product) => product.id === dbProduct.id,
+            ({ id }) => id === dbProduct.id
           );
-
-          // If the product exists in the input array, calculate the price
-          if (productInput) {
-            total += dbProduct.pricePerOne * productInput.count;
-          }
-
-          return total;
+          
+          return productInput ? total + dbProduct.pricePerOne * productInput.count : total;
         }, 0);
 
         const transaction = await ctx.db.transaction.create({
@@ -391,7 +384,6 @@ export const transfersRouter = createTRPCRouter({
         const token = jwt.sign(
           {
             products: input.products,
-            totalAmount: amount,
             transactionId: transaction.id,
             randomChannelId: randomChannelId,
           },
@@ -448,8 +440,6 @@ export const transfersRouter = createTRPCRouter({
           await ctx.pusher.trigger(randomChannelId, "pay", {
             error: null,
           });
-
-          console.log(products);
 
           const promises = [
             ctx.db.transaction.update({

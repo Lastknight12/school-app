@@ -107,39 +107,27 @@ export const categoryRouter = createTRPCRouter({
             },
           }),
         ]);
-
-        if (transaction?.success) {
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: "Покупка завершена",
-          });
-        }
-
-        if (dbProducts.length === 0) {
+        
+        if (dbProducts.length === 0 || !transaction) {
           throw new TRPCError({
             code: "BAD_REQUEST",
             message: "Невірний токен",
           });
         }
 
+        if (transaction.success) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Покупка завершена",
+          });
+        }
+
         return {
-          products: dbProducts.map((product) => {
-            const productCount = decryptedToken.products.find(
-              (item) => item.id === product.id,
-            );
-
-            if (!productCount)
-              return {
-                ...product,
-                count: 1,
-              };
-
-            return {
-              ...product,
-              count: productCount.count,
-            };
-          }),
-          totalAmount: decryptedToken.totalAmount,
+          products: dbProducts.map((product) => ({
+            ...product,
+            count: decryptedToken.products.find((item) => item.id === product.id)?.count ?? 1,
+          })),
+          totalAmount: transaction.amount,
         };
       }
     }),
