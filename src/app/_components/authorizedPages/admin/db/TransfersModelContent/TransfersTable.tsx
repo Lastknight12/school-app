@@ -79,7 +79,7 @@ export function TransfersTable({ range }: Props) {
                 {transfer.createdAt.toLocaleDateString()}
               </TableCell>
               <TableCell className="font-medium">
-                {transfer.sender?.name}
+                {transfer.sender?.name ?? "Відсутні дані"}
               </TableCell>
               <TableCell>{transfer.status}</TableCell>
               <TableCell>{transfer.sender?.email}</TableCell>
