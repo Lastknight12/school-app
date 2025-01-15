@@ -56,7 +56,8 @@ export function TransfersTable({ range }: Props) {
       <TableHeader>
         <TableRow>
           <TableHead className="w-[100px]">Date</TableHead>
-          <TableHead className="w-[100px]">Name</TableHead>
+          <TableHead className="w-[100px]">User Name</TableHead>
+          <TableHead className="w-[100px]">Status</TableHead>
           <TableHead>Email</TableHead>
           <TableHead>Products bought</TableHead>
           <TableHead className="text-right">Amount</TableHead>
@@ -80,6 +81,7 @@ export function TransfersTable({ range }: Props) {
               <TableCell className="font-medium">
                 {transfer.sender?.name}
               </TableCell>
+              <TableCell>{transfer.status}</TableCell>
               <TableCell>{transfer.sender?.email}</TableCell>
               <TableCell>
                 <div className="flex items-center">

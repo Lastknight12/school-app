@@ -115,7 +115,7 @@ export const categoryRouter = createTRPCRouter({
           });
         }
 
-        if (transaction.success) {
+        if (transaction.status !== "PENDING") {
           throw new TRPCError({
             code: "BAD_REQUEST",
             message: "Покупка завершена",

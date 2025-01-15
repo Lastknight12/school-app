@@ -98,11 +98,17 @@ enum TransactionType {
   TRANSFER
 }
 
+enum TransactionStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
 model Transaction {
-  id             String          @id @default(cuid())
+  id             String            @id @default(cuid())
   amount         Float
   type           TransactionType
-  success        Boolean         @default(false)
+  status         TransactionStatus @default(PENDING)
   randomGradient Json
   productsBought CategoryItem[]
 
@@ -141,19 +147,19 @@ model MusicOrder {
 }
 
 model Kazna {
-  id         String     @id @default(cuid())
-  amount     Float      @default(0)
+  id         String          @id @default(cuid())
+  amount     Float           @default(0)
   Transfers  KaznaTransfer[]
   transferId String?
 }
 
 model KaznaTransfer {
-  id      String @id @default(cuid())
-  sender  User   @relation(fields: [senderId], references: [id])
-  amount  Float
-  message String
-  Kazna   Kazna  @relation(fields: [kaznaId], references: [id])
+  id        String   @id @default(cuid())
+  sender    User     @relation(fields: [senderId], references: [id])
+  amount    Float
+  message   String
+  Kazna     Kazna    @relation(fields: [kaznaId], references: [id])
   createdAt DateTime @default(now())
   senderId  String
-  kaznaId String
+  kaznaId   String
 }

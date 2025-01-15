@@ -92,7 +92,7 @@ export const transfersRouter = createTRPCRouter({
               id: ctx.session.user.id,
             },
           },
-          success: true,
+          status: "PENDING",
           amount: input.amount,
           randomGradient: randomColor,
         },
@@ -365,10 +365,12 @@ export const transfersRouter = createTRPCRouter({
 
         const amount = dbProducts.reduce((total, dbProduct) => {
           const productInput = input.products.find(
-            ({ id }) => id === dbProduct.id
+            ({ id }) => id === dbProduct.id,
           );
-          
-          return productInput ? total + dbProduct.pricePerOne * productInput.count : total;
+
+          return productInput
+            ? total + dbProduct.pricePerOne * productInput.count
+            : total;
         }, 0);
 
         const transaction = await ctx.db.transaction.create({
@@ -422,6 +424,9 @@ export const transfersRouter = createTRPCRouter({
         randomChannelId?: string,
       ) => {
         if (ctx.session.user.balance < amount) {
+          transactionId &&
+            (await ctx.db.transaction.delete({ where: { id: transactionId } }));
+
           throw new TRPCError({
             code: "BAD_REQUEST",
             message: "Недостатньо коштів",
@@ -445,7 +450,7 @@ export const transfersRouter = createTRPCRouter({
             ctx.db.transaction.update({
               where: { id: transactionId },
               data: {
-                success: true,
+                status: "SUCCESS",
                 senderId: ctx.session.user.id,
                 productsBought: {
                   connect: products.map((product) => ({ id: product.id })),
@@ -469,7 +474,7 @@ export const transfersRouter = createTRPCRouter({
                 amount,
                 type: "BUY",
                 randomGradient,
-                success: true,
+                status: "SUCCESS",
                 senderId: ctx.session.user.id,
                 productsBought: {
                   connect: products.map((product) => ({ id: product.id })),
@@ -515,7 +520,11 @@ export const transfersRouter = createTRPCRouter({
         });
         const productIds = products.map((p) => p.id);
 
-        if (!transaction || transaction.success || productIds.length === 0) {
+        if (
+          !transaction ||
+          transaction.status !== "PENDING" ||
+          productIds.length === 0
+        ) {
           throw new TRPCError({
             code: "BAD_REQUEST",
             message: "Транзакція завершена або не знайдена",
@@ -549,14 +558,14 @@ export const transfersRouter = createTRPCRouter({
             lt: new Date(addDays(input.range.to ?? input.range.from, 1)),
           },
           type: "BUY",
-          success: true,
+          status: "SUCCESS",
         },
         select: {
           id: true,
           sender: true,
           amount: true,
           createdAt: true,
-          success: true,
+          status: true,
           productsBought: true,
         },
       });
