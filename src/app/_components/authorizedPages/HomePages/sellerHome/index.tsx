@@ -58,7 +58,7 @@ export default function SellerHomePage() {
         )}
       >
         <div className="flex flex-wrap justify-end gap-3 w-full">
-          <GenerateQRModal>
+          <GenerateQRModal onSuccess={() => getCategoryItems.refetch()}>
             <Button className="grow">Генерувати QR-код</Button>
           </GenerateQRModal>
 
