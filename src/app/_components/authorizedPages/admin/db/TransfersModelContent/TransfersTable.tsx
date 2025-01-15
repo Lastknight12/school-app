@@ -66,7 +66,7 @@ export function TransfersTable({ range }: Props) {
       <TableBody>
         {!getTransfers.isFetching && !hasData && (
           <TableRow>
-            <TableCell colSpan={5}>
+            <TableCell colSpan={6}>
               <div className="text-center">Транзакцій не знайдено</div>
             </TableCell>
           </TableRow>
@@ -114,7 +114,7 @@ export function TransfersTable({ range }: Props) {
       </TableBody>
       {getTransfers.isFetching && (
         <TableRow>
-          <TableCell colSpan={5}>
+          <TableCell colSpan={6}>
             <Loader2 className="h-6 w-6 animate-spin mx-auto text-[#b5b5b5]" />
           </TableCell>
         </TableRow>
@@ -123,7 +123,7 @@ export function TransfersTable({ range }: Props) {
       <TableFooter>
         {!getTransfers.isFetching && hasData && (
           <TableRow>
-            <TableCell colSpan={5}>Усього</TableCell>
+            <TableCell colSpan={6}>Усього</TableCell>
             <TableCell className="text-right">
               {getTransfers.data?.totalAmount} $
             </TableCell>

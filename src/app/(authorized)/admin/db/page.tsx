@@ -12,7 +12,7 @@ type Tabs = "users" | "badges" | "transactions";
 export default function Page() {
   const tab = useSearchParams().get("tab");
   const isTabCorrect =
-    tab === "users" || tab === "badges" || tab === "transactions";
+    tab === "users" || tab === "transactions";
 
   const [currentModel, setCurrentModel] = useState<Tabs>(
     isTabCorrect ? (tab as Tabs) : "users",
@@ -25,7 +25,7 @@ export default function Page() {
   }, [isTabCorrect, tab]);
 
   return (
-    <div className="px-6">
+    <div className="px-6" suppressHydrationWarning={true}>
       <div className="mb-5">
         <ModelsList onClick={setCurrentModel} activeItem={currentModel} />
       </div>

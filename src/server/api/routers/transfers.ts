@@ -558,7 +558,6 @@ export const transfersRouter = createTRPCRouter({
             lt: new Date(addDays(input.range.to ?? input.range.from, 1)),
           },
           type: "BUY",
-          status: "SUCCESS",
         },
         select: {
           id: true,
@@ -569,6 +568,10 @@ export const transfersRouter = createTRPCRouter({
           productsBought: true,
         },
       });
+
+      transfers.forEach((transfer) => {
+        transfer.createdAt = new Date(transfer.createdAt.setUTCHours(0, 0, 0, 0));
+      })
 
       const totalAmount = transfers.reduce((total, transfer) => {
         return total + transfer.amount;

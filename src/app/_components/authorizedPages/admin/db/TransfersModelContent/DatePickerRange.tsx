@@ -37,6 +37,7 @@ export default function DatePickerRange({ onSelect }: Props) {
       <Popover>
         <PopoverTrigger asChild>
           <Button
+            suppressHydrationWarning={true}
             variant={"outline"}
             className={cn(
               "justify-start text-left font-normal",
