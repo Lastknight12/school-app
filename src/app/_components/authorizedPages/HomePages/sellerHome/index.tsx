@@ -27,6 +27,8 @@ export default function SellerHomePage() {
     refetchOnReconnect: false,
   });
 
+  const utils = api.useUtils();
+
   useEffect(() => {
     if (getCategoryNames.data && getCategoryNames.data.length > 0) {
       setCurrentCategoryName(getCategoryNames.data[0]!.name);
@@ -58,7 +60,9 @@ export default function SellerHomePage() {
         )}
       >
         <div className="flex flex-wrap justify-end gap-3 w-full">
-          <GenerateQRModal onSuccess={() => getCategoryItems.refetch()}>
+          <GenerateQRModal
+            onSuccess={() => void utils.category.getCategoryItems.invalidate()}
+          >
             <Button className="grow">Генерувати QR-код</Button>
           </GenerateQRModal>
 
