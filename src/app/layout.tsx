@@ -1,5 +1,5 @@
 import { Loader2 } from "lucide-react";
-import { Orbitron, Source_Code_Pro } from "next/font/google";
+import { Krona_One, Orbitron, Source_Code_Pro } from "next/font/google";
 import localFont from "next/font/local";
 import { Suspense } from "react";
 import { Toaster } from "sonner";
@@ -39,6 +39,12 @@ const source_code_pro = Source_Code_Pro({
   variable: "--font-source-code-pro",
 });
 
+const krona_one = Krona_One({
+  subsets: ["latin"],
+  variable: "--font-krona-one",
+  weight: "400"
+})
+
 export default async function RootLayout({
   children,
 }: {
@@ -49,7 +55,7 @@ export default async function RootLayout({
   return (
     <html lang="en" className="dark">
       <body
-        className={`${metropolis.variable} ${orbitron.variable} ${source_code_pro.variable} overflow-x-hidden font-metropolis`}
+        className={`${metropolis.variable} ${orbitron.variable} ${source_code_pro.variable} ${krona_one.variable} overflow-x-hidden font-metropolis`}
       >
         <TRPCReactProvider>
           <NextAuthProvider>

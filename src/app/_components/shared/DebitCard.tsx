@@ -2,7 +2,6 @@
 
 import { Nfc } from "lucide-react";
 import Image, { type StaticImageData } from "next/image";
-import { BiLogoVisa } from "react-icons/bi";
 
 import { useCardVariant } from "~/lib/state";
 import { cn } from "~/lib/utils";
@@ -111,8 +110,9 @@ export default function DebitCard({
           className="flex items-center justify-between"
           style={{ color: variant_.color ?? "black" }}
         >
-          <BiLogoVisa size={60} />
-          <p className="text-xl">{"$" + balance}</p>
+          <p className="font-krona_one tracking-widest">EdCoin</p>
+
+          <p className="text-lg">{balance + " ₴"}</p>
         </div>
 
         {/* Center items */}

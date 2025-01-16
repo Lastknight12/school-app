@@ -24,7 +24,8 @@ const config = {
   		fontFamily: {
   			metropolis: ["var(--font-metropolis)"],
   			orbitron: ["var(--font-orbitron)"],
-  			source_code_pro: ["var(--font-source-code-pro)"]
+  			source_code_pro: ["var(--font-source-code-pro)"],
+  			krona_one: ["var(--font-krona-one)"]
   		},
   		colors: {
   			border: 'hsl(var(--border))',
