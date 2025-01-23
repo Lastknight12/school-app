@@ -32,7 +32,7 @@ export interface formatedTransfer extends Transaction {
 }
 
 export const transfersRouter = createTRPCRouter({
-  sendMoney: adminProcedure
+  sendMoney: protectedProcedure
     .input(
       z.object({
         receiverId: z.string().min(1, "receiverId не може бути порожнім"),
@@ -40,6 +40,12 @@ export const transfersRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ input, ctx }) => {
+      if(ctx.session.user.role !== "ADMIN" || ctx.session.user.role !== "TEACHER") {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Недостатньо прав"
+        })
+      }
       const userBalance = ctx.session.user.balance;
 
       if (userBalance < input.amount) {
