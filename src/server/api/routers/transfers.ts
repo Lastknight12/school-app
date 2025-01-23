@@ -40,7 +40,7 @@ export const transfersRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ input, ctx }) => {
-      if(ctx.session.user.role !== "ADMIN" || ctx.session.user.role !== "TEACHER") {
+      if(ctx.session.user.role !== "ADMIN" && ctx.session.user.role !== "TEACHER") {
         throw new TRPCError({
           code: "UNAUTHORIZED",
           message: "Недостатньо прав"
