@@ -36,7 +36,6 @@ export default function SearchResult({ users, session, isLoading }: Props) {
                 <TransactionDialog
                   key={user.name}
                   user={user}
-                  session={session}
                   onMutationSuccess={onMutationSuccess}
                 >
                   <div className="flex items-center gap-3">

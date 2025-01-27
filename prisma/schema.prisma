@@ -150,7 +150,6 @@ model Kazna {
   id         String          @id @default(cuid())
   amount     Float           @default(0)
   Transfers  KaznaTransfer[]
-  transferId String?
 }
 
 model KaznaTransfer {

@@ -83,12 +83,21 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     jwt: async ({ token, trigger, session }) => {
-      let tokenName;
-      let tokenImageSrc;
+      if (trigger === "update" && ("newUsername" in session || "newImageSrc" in session || "eventType" in session)) {
+        const dbUser = await db.user.update({
+          where: { id: token.sub },
+          data: {
+            name: session.newUsername ?? undefined,
+            image: session.newImageSrc ?? undefined,
+          },
+        })
 
-      if (trigger === "update" && session) {
-        tokenName = session.newUsername;
-        tokenImageSrc = session.newImageSrc;
+        return {
+          ...token,
+          name: dbUser.name,
+          image: dbUser.image,
+          balance: session.eventType === "refreshBalance" ? dbUser.balance : token.balance
+        };
       }
 
       const dbUser = await db.user.findFirst({
@@ -126,9 +135,9 @@ export const authOptions: NextAuthOptions = {
         case "TEACHER":
           return {
             sub: token.sub,
-            name: tokenName ?? dbUser.name,
+            name: dbUser.name,
             email: dbUser.email,
-            image: tokenImageSrc ?? dbUser.image,
+            image: dbUser.image,
             balance: dbUser.balance,
             role: dbUser.role,
             teacherClasses: dbUser.teacherClasses.map((klass) => ({
@@ -150,9 +159,9 @@ export const authOptions: NextAuthOptions = {
 
           return {
             sub: token.sub,
-            name: tokenName ?? dbUser.name,
+            name: dbUser.name,
             email: dbUser.email,
-            image: tokenImageSrc ?? dbUser.image,
+            image: dbUser.image,
             balance: kazna.amount,
             role: dbUser.role
           }
@@ -161,9 +170,9 @@ export const authOptions: NextAuthOptions = {
         case "STUDENT":
           return {
             sub: token.sub,
-            name: tokenName ?? dbUser.name,
+            name: dbUser.name,
             email: dbUser.email,
-            image: tokenImageSrc ?? dbUser.image,
+            image: dbUser.image,
             balance: dbUser.balance,
             role: dbUser.role,
             studentClass: dbUser.studentClass,
@@ -172,9 +181,9 @@ export const authOptions: NextAuthOptions = {
         default:
           return {
             sub: token.sub,
-            name: tokenName ?? dbUser.name,
+            name: dbUser.name,
             email: dbUser.email,
-            image: tokenImageSrc ?? dbUser.image,
+            image: dbUser.image,
             balance: dbUser.balance,
             role: dbUser.role,
           };

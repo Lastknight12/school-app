@@ -14,7 +14,7 @@ export default function TeacherHomePage({ session }: Props) {
           <Link
             key={teacherClass.id}
             href={`/klass/${teacherClass.id}?formatedName=${teacherClass.name}`}
-            className="flex w-full cursor-pointer justify-center rounded-md bg-card py-6 text-lg"
+            className="flex w-full cursor-pointer justify-center rounded-md bg-card border border-border py-6 text-lg"
           >
             {teacherClass.name}
           </Link>

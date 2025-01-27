@@ -2,7 +2,6 @@
 
 import type { User } from "@prisma/client";
 import { Loader2 } from "lucide-react";
-import { type Session } from "next-auth";
 import Image from "next/image";
 import { type ChangeEvent, useState } from "react";
 import { toast } from "sonner";
@@ -13,12 +12,12 @@ import { api } from "~/trpc/react";
 
 import { Button } from "~/shadcn/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "~/shadcn/ui/dialog";
+import { useSession } from "next-auth/react";
 
 interface Props {
   user: User;
   children?: React.ReactNode;
   isOpen?: boolean;
-  session: Session;
   onMutationSuccess?: () => void;
   onOpenChange?: (open: boolean) => void;
 }
@@ -26,12 +25,12 @@ interface Props {
 export default function TransactionDialog({
   user,
   children,
-  session,
   isOpen: customIsOpen,
   onOpenChange,
   onMutationSuccess,
 }: Props) {
-  console.log(session.user);
+  const {update: updateSession, data: session} = useSession()
+
   const [amount, setAmount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -41,6 +40,7 @@ export default function TransactionDialog({
   const sendMoneyMutation = api.transfers.sendMoney.useMutation({
     onSuccess: () => {
       toast.success("Кошти були надіслані");
+      void updateSession({eventType: "refreshBalance"})
       onMutationSuccess?.();
       setIsOpen(false);
     },
@@ -65,11 +65,10 @@ export default function TransactionDialog({
   }
 
   function handleSubmit() {
-    if (session.user.role === "STUDENT" || session.user.role === "TEACHER") {
       try {
         sendAmountSchema.parse({ amount });
 
-        if (amount > session.user.balance) {
+        if (amount > session!.user.balance) {
           throw new z.ZodError([
             {
               code: "custom",
@@ -84,7 +83,6 @@ export default function TransactionDialog({
           return;
         }
       }
-    }
 
     sendMoneyMutation.mutate({ receiverId: user.id, amount });
   }
@@ -98,7 +96,10 @@ export default function TransactionDialog({
         className="max-md:max-w-full h-full !rounded-none backdrop-blur-md"
         onEscapeKeyDown={() => setIsOpen(false)}
       >
-        <div className="flex flex-col justify-between">
+        <div className="flex flex-col justify-between relative">
+        {!session && (
+          <div className="w-full h-full absolute top-0 left-0 transparent blur-xl" />
+        )}
           <div className="flex items-center gap-3">
             <Image
               src={user.image}
@@ -112,7 +113,7 @@ export default function TransactionDialog({
           </div>
 
           <div className="flex w-full flex-col items-center">
-            <p className="text-[#6f6f6f]">Бланс: {session.user.balance}</p>
+            <p className="text-[#6f6f6f]">Бланс: {session?.user.balance}</p>
             <input
               className="w-[inherit] bg-transparent text-center text-4xl outline-none"
               value={amount}
@@ -122,7 +123,7 @@ export default function TransactionDialog({
           </div>
 
           <Button
-            disabled={!isAmountPositive || sendMoneyMutation.isPending}
+            disabled={!isAmountPositive || sendMoneyMutation.isPending || !session}
             onClick={handleSubmit}
             variant="secondary"
           >
