@@ -1,4 +1,4 @@
-import type { NextRequest } from "next/server";
+import type { NextRequest, NextResponse } from "next/server";
 import { env } from "~/env";
 
 import { db } from "~/server/db";
@@ -27,4 +27,9 @@ export async function GET(request: NextRequest) {
       balance: 0,
     },
   });
+
+  return new NextResponse(
+    "Success",
+    { status: 200 }
+  )
 }
