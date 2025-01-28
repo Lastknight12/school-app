@@ -4,6 +4,7 @@ import localFont from "next/font/local";
 import { Suspense } from "react";
 import { Toaster } from "sonner";
 import NextAuthProvider from "~/providers/NextAuthProvider";
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 import { getServerAuthSession } from "~/server/auth";
 import { TRPCReactProvider } from "~/trpc/react";
@@ -57,6 +58,8 @@ export default async function RootLayout({
       <body
         className={`${metropolis.variable} ${orbitron.variable} ${source_code_pro.variable} ${krona_one.variable} overflow-x-hidden font-metropolis`}
       >
+        <SpeedInsights />
+        
         <TRPCReactProvider>
           <NextAuthProvider>
             <Toaster
