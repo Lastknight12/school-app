@@ -4,7 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import { type ChangeEvent, useRef, useState } from "react";
-import { MdClose, MdFileUpload } from "react-icons/md";
+import { X, FileUp } from "lucide-react";
 import { toast } from "sonner";
 import { type uploadImageRes } from "~/app/api/uploadImage/route";
 
@@ -71,7 +71,7 @@ export default function UploadImage({
       
       {!perviewSrc && !uploadFileMutation.isPending && (
         <Button variant="secondary" onClick={() => fileInputRef.current?.click()}>
-          <MdFileUpload size={25} className="text-accent-foreground"/>
+          <FileUp size={25} className="text-accent-foreground"/>
         </Button>
       )}
 
@@ -85,7 +85,7 @@ export default function UploadImage({
               )}
               onClick={() => setPerviewSrc("")}
             >
-              <MdClose
+              <X
                 size={15}
                 className={cn(closeIconColor ?? "text-red-500")}
               />

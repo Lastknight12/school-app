@@ -15,6 +15,7 @@ const config = {
       { hostname: "res.cloudinary.com" },
       { hostname: "i.ytimg.com" },
       { hostname: "*.sndcdn.com" },
+      { hostname: "api.qrserver.com" },
     ],
   },
 };

@@ -1,4 +1,5 @@
-import { IoMdAdd, IoMdRemove } from "react-icons/io";
+import { Plus, Minus } from "lucide-react";
+
 import { cn } from "~/lib/utils";
 
 interface Props {
@@ -14,11 +15,9 @@ export default function Counter({
   maxDecrementRange,
   maxIncrementRange,
 }: Props) {
-  
   return (
     <div className="grid grid-cols-3 items-center justify-center">
-      <IoMdRemove
-        size={35}
+      <Minus
         onClick={() =>
           value > (maxDecrementRange ?? 0) && onValueChange(value - 1)
         }
@@ -37,10 +36,13 @@ export default function Counter({
         style={{ width: "100%" }}
       />
 
-      <IoMdAdd
-        size={35}
-        onClick={() => value < (maxIncrementRange ?? Infinity) && onValueChange(value + 1)}
-        className={cn(value === (maxIncrementRange ?? Infinity) && "opacity-50")}
+      <Plus
+        onClick={() =>
+          value < (maxIncrementRange ?? Infinity) && onValueChange(value + 1)
+        }
+        className={cn(
+          value === (maxIncrementRange ?? Infinity) && "opacity-50",
+        )}
         style={{ width: "100%" }}
       />
     </div>

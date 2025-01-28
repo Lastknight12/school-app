@@ -4,7 +4,7 @@ import { Loader2 } from "lucide-react";
 import { type Session } from "next-auth";
 import Image from "next/image";
 import { type CSSProperties } from "react";
-import { MdOutlineShoppingCart } from "react-icons/md";
+import { ShoppingCart } from "lucide-react";
 
 import { type formatedTransfer } from "~/server/api/routers/transfers";
 import { api } from "~/trpc/react";
@@ -64,7 +64,7 @@ export default function TransfersList({ session }: Props) {
                           } as CSSProperties
                         }
                       >
-                        <MdOutlineShoppingCart fill="#232323a1" size={20} />
+                        <ShoppingCart fill="#232323a1" size={20} />
                       </div>
                     ) : isUserSender ? (
                       <Image

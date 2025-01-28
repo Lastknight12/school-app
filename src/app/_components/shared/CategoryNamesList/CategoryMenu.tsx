@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { HiDotsVertical } from "react-icons/hi";
+import { EllipsisVertical } from "lucide-react";
 
 import { DeleteCategory } from "./DeleteCategory";
 import UpdateCategory from "./UpdateCategory";
@@ -22,7 +22,7 @@ export function CategoryMenu({ categoryName }: Props) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="outline-none py-2 pr-4 ml-2">
-        <HiDotsVertical />
+        <EllipsisVertical size={18}/>
       </DropdownMenuTrigger>
       <DropdownMenuContent
         onEscapeKeyDown={(e) => {
@@ -38,6 +38,7 @@ export function CategoryMenu({ categoryName }: Props) {
             !isUpdateOpen && setIsUpdateOpen(true);
           }}
         >
+          
           <UpdateCategory
             categoryName={categoryName}
             isOpen={isUpdateOpen}

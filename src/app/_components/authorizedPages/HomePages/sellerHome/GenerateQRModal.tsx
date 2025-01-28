@@ -1,10 +1,8 @@
 "use client";
 
-import { Loader2 } from "lucide-react";
+import { Download, Loader2, X } from "lucide-react";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
-import { IoMdClose } from "react-icons/io";
-import QRCode from "react-qr-code";
 import { toast } from "sonner";
 
 import { api } from "~/trpc/react";
@@ -68,7 +66,7 @@ export default function GenerateQRModal({ onSuccess, children }: Props) {
     setPaymentError("");
   };
 
-  const genQRToken = api.transfers.generateProductToken.useMutation({
+  const genQRToken = api.transfers.genProductToken.useMutation({
     onError: (error) => {
       error.data?.zodError && error.data?.zodError.length > 0
         ? toast.error(error.data.zodError[0]!.message)
@@ -78,7 +76,7 @@ export default function GenerateQRModal({ onSuccess, children }: Props) {
 
   // maybe wrap it into onSuccess callback in mutation
   useEffect(() => {
-    if (genQRToken.data) {
+    if (genQRToken.data?.channel) {
       const channel = pusherClient.subscribe(genQRToken.data.channel);
 
       channel.bind("pay", (data: { error?: string }) => {
@@ -87,10 +85,10 @@ export default function GenerateQRModal({ onSuccess, children }: Props) {
           setTimeout(() => {
             resetStates();
           }, 1500);
-          
+
           return;
         }
-        
+
         setPaymentError("");
         setIsSuccess(true);
 
@@ -104,7 +102,9 @@ export default function GenerateQRModal({ onSuccess, children }: Props) {
     }
 
     return () => {
-      pusherClient.unsubscribe(genQRToken.data?.channel ?? "");
+      if (genQRToken.data?.channel) {
+        pusherClient.unsubscribe(genQRToken.data.channel);
+      }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [genQRToken.data]);
@@ -132,12 +132,17 @@ export default function GenerateQRModal({ onSuccess, children }: Props) {
             {genQRToken.data ? "Відскануй QR код" : "Список доданих продуктів"}
           </DialogTitle>
         </DialogHeader>
-        <div className="flex w-full justify-center">
+        <div className="flex w-full">
           {genQRToken.data ? (
             <>
               {!isSuccess && !paymentError && (
-                <div className="bg-white p-2">
-                  <QRCode value={genQRToken.data.buyUrl} />
+                <div className="bg-white p-2 mx-auto">
+                  <Image
+                    src={genQRToken.data.qr}
+                    width={250}
+                    height={250}
+                    alt="qr code"
+                  />
                 </div>
               )}
               {paymentError && <p className="text-red-500">{paymentError}</p>}
@@ -153,7 +158,7 @@ export default function GenerateQRModal({ onSuccess, children }: Props) {
                       className="absolute top-0 right-0 z-10 h-auto p-2"
                       onClick={() => removeProduct(item.id)}
                     >
-                      <IoMdClose />
+                      <X />
                     </Button>
 
                     <div>
@@ -219,9 +224,19 @@ export default function GenerateQRModal({ onSuccess, children }: Props) {
               </Button>
             </>
           ) : (
-            <DialogClose>
-              <Button>Закрити</Button>
-            </DialogClose>
+            <>
+              {genQRToken.data && (
+                <a href={genQRToken.data.qr} download>
+                  <Button variant="secondary">
+                    <Download />
+                  </Button>
+                </a>
+              )}
+
+              <DialogClose>
+                <Button>Закрити</Button>
+              </DialogClose>
+            </>
           )}
         </DialogFooter>
       </DialogContent>

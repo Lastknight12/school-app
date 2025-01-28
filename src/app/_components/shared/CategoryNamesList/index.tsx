@@ -37,7 +37,7 @@ export default function CategoryNamesList({
               return (
                 <div
                   key={category.name}
-                  className="flex items-center bg-card border border-border rounded-[10px]"
+                  className="flex items-center bg-card border border-border rounded-[10px] w-max"
                 >
                   <div
                     className={cn(

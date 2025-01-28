@@ -1,11 +1,8 @@
 "use client";
 
 import { type CategoryItem } from "@prisma/client";
-import { Loader2 } from "lucide-react";
+import { Loader2, X, RefreshCw, Trash } from "lucide-react";
 import { useEffect, useState } from "react";
-import { GrUpdate } from "react-icons/gr";
-import { IoMdClose } from "react-icons/io";
-import { MdDelete } from "react-icons/md";
 import { toast } from "sonner";
 
 import { api } from "~/trpc/react";
@@ -145,7 +142,7 @@ export default function ProductListItem({ children, item }: Props) {
             {deleteProductMutation.isPending ? (
               <Loader2 className="h-4 w-4 animate-spin text-[#b5b5b5]" />
             ) : (
-              <MdDelete className="text-red-400" size={18} />
+              <Trash className="text-red-400" size={18} />
             )}
           </Button>
 
@@ -159,9 +156,9 @@ export default function ProductListItem({ children, item }: Props) {
             }}
           >
             {updating ? (
-              <IoMdClose className="text-yellow-300" size={20} />
+              <X className="text-yellow-300" size={20} />
             ) : (
-              <GrUpdate className="text-yellow-300" />
+              <RefreshCw className="text-yellow-300" />
             )}
           </Button>
 

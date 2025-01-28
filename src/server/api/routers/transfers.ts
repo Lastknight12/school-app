@@ -40,11 +40,14 @@ export const transfersRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ input, ctx }) => {
-      if(ctx.session.user.role !== "ADMIN" && ctx.session.user.role !== "TEACHER") {
+      if (
+        ctx.session.user.role !== "ADMIN" &&
+        ctx.session.user.role !== "TEACHER"
+      ) {
         throw new TRPCError({
           code: "UNAUTHORIZED",
-          message: "Недостатньо прав"
-        })
+          message: "Недостатньо прав",
+        });
       }
       const userBalance = ctx.session.user.balance;
 
@@ -313,7 +316,7 @@ export const transfersRouter = createTRPCRouter({
     };
   }),
 
-  generateProductToken: sellerProcedure
+  genProductToken: sellerProcedure
     .input(
       z.object({
         products: z.array(
@@ -339,9 +342,12 @@ export const transfersRouter = createTRPCRouter({
 
       // if type infinity generate qr code without token
       if (input.type === "infinity") {
+        const buyUrl = `${env.NEXT_PUBLIC_BUY_URL}?productId=${input.products[0]?.id}`;
+
         return {
-          buyUrl: `${env.NEXT_PUBLIC_BUY_URL}?productId=${input.products[0]?.id}`,
-          channel: "",
+          qr: 
+            `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${buyUrl}`,
+          channel: null,
         };
       }
 
@@ -398,8 +404,10 @@ export const transfersRouter = createTRPCRouter({
           env.QR_SECRET,
         );
 
+        const buyUrl = `${env.NEXT_PUBLIC_BUY_URL}?token=${token}`;
+
         return {
-          buyUrl: `${env.NEXT_PUBLIC_BUY_URL}?token=${token}`,
+          qr: `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${buyUrl}`,
           channel: randomChannelId,
         };
       }
@@ -576,8 +584,10 @@ export const transfersRouter = createTRPCRouter({
       });
 
       transfers.forEach((transfer) => {
-        transfer.createdAt = new Date(transfer.createdAt.setUTCHours(0, 0, 0, 0));
-      })
+        transfer.createdAt = new Date(
+          transfer.createdAt.setUTCHours(0, 0, 0, 0),
+        );
+      });
 
       const totalAmount = transfers.reduce((total, transfer) => {
         return total + transfer.amount;

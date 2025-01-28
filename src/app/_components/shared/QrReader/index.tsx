@@ -1,8 +1,8 @@
 "use client";
 
+import { X } from "lucide-react";
 import QrScanner from "qr-scanner";
 import { useEffect, useRef, useState } from "react";
-import { IoMdClose } from "react-icons/io";
 import { toast } from "sonner";
 
 import useClickOutside from "~/hooks/use-click-outside";
@@ -162,7 +162,7 @@ export default function QrReader({
                 onOpenChange?.(false);
               }}
             >
-              <IoMdClose size={30} />
+              <X size={30} />
             </div>
 
             <video ref={videoEl} />
