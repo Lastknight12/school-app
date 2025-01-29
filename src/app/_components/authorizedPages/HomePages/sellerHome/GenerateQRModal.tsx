@@ -226,7 +226,7 @@ export default function GenerateQRModal({ onSuccess, children }: Props) {
           ) : (
             <>
               {genQRToken.data && (
-                <a href={genQRToken.data.qr} download>
+                <a href={genQRToken.data.qr} target="_blank" download>
                   <Button variant="secondary">
                     <Download />
                   </Button>
