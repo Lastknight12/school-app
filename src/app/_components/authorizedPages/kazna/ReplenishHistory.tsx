@@ -42,7 +42,7 @@ export default function ReplenishHistory() {
                 </h1>
               </div>
 
-              <div className="w-max max-w-[350px] text-wrap">
+              <div className="w-max max-w-[240px] text-wrap">
                 {replenish.message.length > 45
                   ? replenish.message.slice(0, 45)
                   : replenish.message}
