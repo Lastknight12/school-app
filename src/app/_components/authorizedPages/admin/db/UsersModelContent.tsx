@@ -104,7 +104,7 @@ export default function UsersModelContent() {
   };
 
   return (
-    <div>
+    <div className="mb-4">
       <div className="flex justify-between items-center mb-4">
         <div className="flex justify-between items-center w-full">
           <div className="flex items-center ml-4">

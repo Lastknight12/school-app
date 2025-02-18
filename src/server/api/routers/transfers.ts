@@ -229,6 +229,55 @@ export const transfersRouter = createTRPCRouter({
     return transfers.reverse();
   }),
 
+  getAllTransactions: adminProcedure.query(async ({ ctx }) => {
+    return (
+      await ctx.db.transaction.findMany({
+        where: {
+          type: "TRANSFER",
+        },
+        select: {
+          id: true,
+          reciever: {
+            select: {
+              name: true,
+            },
+          },
+          sender: {
+            select: {
+              name: true,
+            },
+          },
+          type: true,
+          amount: true,
+          createdAt: true,
+        },
+      })
+    ).reverse();
+  }),
+
+  deleteTransaction: adminProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const isTransactionExist = await ctx.db.transaction.findUnique({
+        where: {
+          id: input.id,
+        },
+      });
+
+      if (!isTransactionExist) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Такої транзакції не існує",
+        });
+      }
+
+      await ctx.db.transaction.delete({
+        where: {
+          id: input.id,
+        },
+      });
+    }),
+
   getChartData: protectedProcedure.query(async ({ ctx }) => {
     const transfers = await ctx.db.user.findUnique({
       where: {
@@ -345,8 +394,7 @@ export const transfersRouter = createTRPCRouter({
         const buyUrl = `${env.NEXT_PUBLIC_BUY_URL}?productId=${input.products[0]?.id}`;
 
         return {
-          qr: 
-            `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${buyUrl}`,
+          qr: `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${buyUrl}`,
           channel: null,
         };
       }

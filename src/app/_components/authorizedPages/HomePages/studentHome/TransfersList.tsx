@@ -1,10 +1,10 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
+import { ShoppingCart } from "lucide-react";
 import { type Session } from "next-auth";
 import Image from "next/image";
 import { type CSSProperties } from "react";
-import { ShoppingCart } from "lucide-react";
 
 import { type formatedTransfer } from "~/server/api/routers/transfers";
 import { api } from "~/trpc/react";

@@ -4,15 +4,16 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import ModelsList from "~/app/_components/authorizedPages/admin/db/ModelsList";
-import TransfersModelContent from "~/app/_components/authorizedPages/admin/db/TransfersModelContent";
+import PurchasesTableContent from "~/app/_components/authorizedPages/admin/db/PurchasesTableContent";
+import TransactionsTableContent from "~/app/_components/authorizedPages/admin/db/TransactionsTableContent";
 import UsersModelContent from "~/app/_components/authorizedPages/admin/db/UsersModelContent";
 
-type Tabs = "users" | "badges" | "transactions";
+export type Tabs = "users" | "transactions" | "purchases";
 
 export default function Page() {
   const tab = useSearchParams().get("tab");
   const isTabCorrect =
-    tab === "users" || tab === "transactions";
+    tab === "users" || tab === "transactions" || tab === "purshares";
 
   const [currentModel, setCurrentModel] = useState<Tabs>(
     isTabCorrect ? (tab as Tabs) : "users",
@@ -32,7 +33,9 @@ export default function Page() {
 
       {currentModel === "users" && <UsersModelContent />}
 
-      {currentModel === "transactions" && <TransfersModelContent />}
+      {currentModel === "transactions" && <TransactionsTableContent />}
+
+      {currentModel === "purchases" && <PurchasesTableContent />}
     </div>
   );
 }
