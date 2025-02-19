@@ -520,6 +520,17 @@ export const transfersRouter = createTRPCRouter({
               },
             }),
 
+            ctx.db.user.update({
+              where: {
+                id: ctx.session.user.id,
+              },
+              data: {
+                balance: {
+                  decrement: amount,
+                },
+              },
+            }),
+
             ...products.map((product) => {
               return ctx.db.categoryItem.update({
                 where: { id: product.id },
