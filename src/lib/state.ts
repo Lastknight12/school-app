@@ -1,5 +1,6 @@
 import { type CategoryItem } from "@prisma/client";
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 interface ProductsState {
   products: CategoryItem[] | [];
@@ -64,14 +65,22 @@ export const useUpdateProduct = create<UpdateProductState>((set) => ({
     set((state) => ({ product: { ...state.product, newCount } })),
   updateImageSrc: (newImageSrc: string) =>
     set((state) => ({ product: { ...state.product, newImageSrc } })),
-  updatePrice: (newPrice: number) => set((state) => ({ product: { ...state.product, newPrice } })),
-  reset: () => set({ product: { newTitle: "", newCount: 0, newImageSrc: "", newPrice: 0 } }),
+  updatePrice: (newPrice: number) =>
+    set((state) => ({ product: { ...state.product, newPrice } })),
+  reset: () =>
+    set({
+      product: { newTitle: "", newCount: 0, newImageSrc: "", newPrice: 0 },
+    }),
 }));
 
-export const useCardVariant = create<CardVariant>((set) => ({
-  variant: 2,
-  setVariant: (variant) => {
-    set({ variant })
-    localStorage.setItem("variant", String(variant))
-  },
-}))
+export const useCardVariant = create<CardVariant>()(
+  persist(
+    (set) => ({
+      variant: 2,
+      setVariant: (val) => set({ variant: val }),
+    }),
+    {
+      name: "DebitCard",
+    },
+  ),
+);
