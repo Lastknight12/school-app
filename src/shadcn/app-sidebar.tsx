@@ -47,12 +47,12 @@ const data = {
               url: "/admin/db?tab=users",
             },
             {
-              name: "Перекази",
-              url: "/admin/db?tab=transactions",
+              name: "Покупки",
+              url: "/admin/db?tab=purchases",
             },
             {
-              name: "Покупки",
-              url: "admin/db?tab=purchases",
+              name: "Перекази",
+              url: "/admin/db?tab=transactions",
             },
           ],
         },

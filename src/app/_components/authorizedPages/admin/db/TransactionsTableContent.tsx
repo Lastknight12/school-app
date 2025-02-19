@@ -32,8 +32,8 @@ export default function UsersModelContent() {
 
   const {
     data: transactions,
-    isFetching: isFetchingUsers,
-    refetch: refetchUsers,
+    isFetching: isFetchingTransactions,
+    refetch: refetchTransactions,
   } = api.transfers.getAllTransactions.useQuery();
 
   const deleteTransactionMutation = api.transfers.deleteTransaction.useMutation(
@@ -50,11 +50,11 @@ export default function UsersModelContent() {
   );
 
   // Pagination
-  const indexOfLastUser = currentPage * transactionsPerPage;
-  const indexOfFirstUser = indexOfLastUser - transactionsPerPage;
+  const indexOfLastTransaction = currentPage * transactionsPerPage;
+  const indexOfFirstTransaction = indexOfLastTransaction - transactionsPerPage;
   const currentTransactions = transactions?.slice(
-    indexOfFirstUser,
-    indexOfLastUser,
+    indexOfFirstTransaction,
+    indexOfLastTransaction,
   );
   const totalPages = transactions
     ? Math.ceil(transactions.length / transactionsPerPage)
@@ -67,10 +67,12 @@ export default function UsersModelContent() {
           <Button
             size="sm"
             variant="outline"
-            onClick={() => refetchUsers()}
-            disabled={isFetchingUsers}
+            onClick={() => refetchTransactions()}
+            disabled={isFetchingTransactions}
           >
-            <RefreshCw className={cn(isFetchingUsers && "animate-spin")} />
+            <RefreshCw
+              className={cn(isFetchingTransactions && "animate-spin")}
+            />
           </Button>
           <Button
             variant="outline"
@@ -109,10 +111,18 @@ export default function UsersModelContent() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {isFetchingUsers && (
+          {isFetchingTransactions && (
             <TableRow>
               <TableCell colSpan={5}>
                 <Loader2 className="mx-auto h-5 w-5 animate-spin text-[#b5b5b5]" />
+              </TableCell>
+            </TableRow>
+          )}
+
+          {!isFetchingTransactions && transactions?.length === 0 && (
+            <TableRow>
+              <TableCell colSpan={5}>
+                <div className="text-center">Жодних транзакцій не знайдено</div>
               </TableCell>
             </TableRow>
           )}

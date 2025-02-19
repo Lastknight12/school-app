@@ -13,7 +13,7 @@ export type Tabs = "users" | "transactions" | "purchases";
 export default function Page() {
   const tab = useSearchParams().get("tab");
   const isTabCorrect =
-    tab === "users" || tab === "transactions" || tab === "purshares";
+    tab === "users" || tab === "transactions" || tab === "purchases";
 
   const [currentModel, setCurrentModel] = useState<Tabs>(
     isTabCorrect ? (tab as Tabs) : "users",
@@ -21,6 +21,7 @@ export default function Page() {
 
   useEffect(() => {
     if (tab && isTabCorrect) {
+      console.log(tab);
       setCurrentModel(tab as Tabs);
     }
   }, [isTabCorrect, tab]);
