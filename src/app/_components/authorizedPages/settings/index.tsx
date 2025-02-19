@@ -99,18 +99,20 @@ export default function Settings({
             <Input disabled placeholder={defaultSession.user.email} />
           </div>
 
-          <div className="flex gap-3">
-            {/* Klass */}
-            <Label className="text-left text-base">Клас:</Label>
+          {defaultSession.user.role === "STUDENT" && (
+            <div className="flex gap-3">
+              {/* Klass */}
+              <Label className="text-left text-base">Клас:</Label>
 
-            {getUserClass.isFetching ? (
-              <Loader2 className="h-5 w-5 animate-spin text-[#b5b5b5]" />
-            ) : getUserClass.data ? (
-              <div>{getUserClass.data.name}</div>
-            ) : (
-              <div className="text-red-500">Немає класу</div>
-            )}
-          </div>
+              {getUserClass.isFetching ? (
+                <Loader2 className="h-5 w-5 animate-spin text-[#b5b5b5]" />
+              ) : getUserClass.data ? (
+                <div>{getUserClass.data.name}</div>
+              ) : (
+                <div className="text-red-500">Немає класу</div>
+              )}
+            </div>
+          )}
         </div>
 
         <Button
