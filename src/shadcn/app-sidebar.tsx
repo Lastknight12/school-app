@@ -50,6 +50,10 @@ const data = {
               name: "Перекази",
               url: "/admin/db?tab=transactions",
             },
+            {
+              name: "Покупки",
+              url: "admin/db?tab=purchases",
+            },
           ],
         },
       ],

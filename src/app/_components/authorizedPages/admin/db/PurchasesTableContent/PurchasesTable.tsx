@@ -55,9 +55,9 @@ export function TransfersTable({ range }: Props) {
       </TableCaption>
       <TableHeader>
         <TableRow>
-          <TableHead className="w-[100px]">Date</TableHead>
-          <TableHead className="w-[100px]">User Name</TableHead>
-          <TableHead className="w-[100px]">Status</TableHead>
+          <TableHead className="w-[200px]">Date</TableHead>
+          <TableHead className="w-[200px]">User Name</TableHead>
+          <TableHead className="w-[150px]">Status</TableHead>
           <TableHead>Email</TableHead>
           <TableHead>Products bought</TableHead>
           <TableHead className="text-right">Amount</TableHead>
@@ -123,7 +123,7 @@ export function TransfersTable({ range }: Props) {
       <TableFooter>
         {!getTransfers.isFetching && hasData && (
           <TableRow>
-            <TableCell colSpan={6}>Усього</TableCell>
+            <TableCell colSpan={5}>Усього</TableCell>
             <TableCell className="text-right">
               {getTransfers.data?.totalAmount} $
             </TableCell>
