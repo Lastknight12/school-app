@@ -2,6 +2,7 @@
 
 import type { User } from "@prisma/client";
 import { Loader2 } from "lucide-react";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { type ChangeEvent, useState } from "react";
 import { toast } from "sonner";
@@ -12,7 +13,6 @@ import { api } from "~/trpc/react";
 
 import { Button } from "~/shadcn/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "~/shadcn/ui/dialog";
-import { useSession } from "next-auth/react";
 
 interface Props {
   user: User;
@@ -29,7 +29,9 @@ export default function TransactionDialog({
   onOpenChange,
   onMutationSuccess,
 }: Props) {
-  const {update: updateSession, data: session} = useSession()
+  const { update: updateSession, data: session } = useSession();
+
+  console.log(session);
 
   const [amount, setAmount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
@@ -40,7 +42,7 @@ export default function TransactionDialog({
   const sendMoneyMutation = api.transfers.sendMoney.useMutation({
     onSuccess: () => {
       toast.success("Кошти були надіслані");
-      void updateSession({eventType: "refreshBalance"})
+      void updateSession({ eventType: "refreshBalance" });
       onMutationSuccess?.();
       setIsOpen(false);
     },
@@ -65,24 +67,24 @@ export default function TransactionDialog({
   }
 
   function handleSubmit() {
-      try {
-        sendAmountSchema.parse({ amount });
+    try {
+      sendAmountSchema.parse({ amount });
 
-        if (amount > session!.user.balance) {
-          throw new z.ZodError([
-            {
-              code: "custom",
-              message: "Недостатній баланс",
-              path: ["amount"],
-            },
-          ]);
-        }
-      } catch (error) {
-        if (error instanceof z.ZodError) {
-          toast.error(error.issues[0]!.message);
-          return;
-        }
+      if (amount > session!.user.balance) {
+        throw new z.ZodError([
+          {
+            code: "custom",
+            message: "Недостатній баланс",
+            path: ["amount"],
+          },
+        ]);
       }
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        toast.error(error.issues[0]!.message);
+        return;
+      }
+    }
 
     sendMoneyMutation.mutate({ receiverId: user.id, amount });
   }
@@ -97,9 +99,9 @@ export default function TransactionDialog({
         onEscapeKeyDown={() => setIsOpen(false)}
       >
         <div className="flex flex-col justify-between relative">
-        {!session && (
-          <div className="w-full h-full absolute top-0 left-0 transparent blur-xl" />
-        )}
+          {!session && (
+            <div className="w-full h-full absolute top-0 left-0 transparent blur-xl" />
+          )}
           <div className="flex items-center gap-3">
             <Image
               src={user.image}
@@ -123,7 +125,9 @@ export default function TransactionDialog({
           </div>
 
           <Button
-            disabled={!isAmountPositive || sendMoneyMutation.isPending || !session}
+            disabled={
+              !isAmountPositive || sendMoneyMutation.isPending || !session
+            }
             onClick={handleSubmit}
             variant="secondary"
           >

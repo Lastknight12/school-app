@@ -13,6 +13,7 @@ interface Props {
 
 export default function Transactions({ session }: Props) {
   const getUsersByName = api.user.getUsersByName.useMutation();
+
   async function onInputChange(name: string) {
     getUsersByName.mutate({ name });
   }

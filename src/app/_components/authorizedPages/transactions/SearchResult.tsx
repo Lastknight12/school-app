@@ -2,7 +2,6 @@ import type { User } from "@prisma/client";
 import { Loader2 } from "lucide-react";
 import { type Session } from "next-auth";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 
 import TransactionDialog from "../../shared/TransactionDialog";
 
@@ -13,14 +12,8 @@ interface Props {
 }
 
 export default function SearchResult({ users, session, isLoading }: Props) {
-  const router = useRouter();
-
   if (isLoading) {
     return <Loader2 className="h-6 w-6 animate-spin text-[#b5b5b5] mx-auto" />;
-  }
-
-  function onMutationSuccess() {
-    router.refresh();
   }
 
   return (
@@ -33,11 +26,7 @@ export default function SearchResult({ users, session, isLoading }: Props) {
           return (
             <>
               {session.user.name === user.name ? null : (
-                <TransactionDialog
-                  key={user.name}
-                  user={user}
-                  onMutationSuccess={onMutationSuccess}
-                >
+                <TransactionDialog key={user.name} user={user}>
                   <div className="flex items-center gap-3">
                     <Image
                       src={user.image}

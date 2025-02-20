@@ -83,20 +83,31 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     jwt: async ({ token, trigger, session }) => {
-      if (trigger === "update" && ("newUsername" in session || "newImageSrc" in session || "eventType" in session)) {
+      if (
+        trigger === "update" &&
+        ("newUsername" in session ||
+          "newImageSrc" in session ||
+          "eventType" in session)
+      ) {
         const dbUser = await db.user.update({
           where: { id: token.sub },
           data: {
             name: session.newUsername ?? undefined,
             image: session.newImageSrc ?? undefined,
           },
-        })
+        });
+        let balance = dbUser.balance;
+
+        if (dbUser.role === "ADMIN") {
+          const kazna = await db.kazna.findFirst();
+          balance = kazna!.amount;
+        }
 
         return {
           ...token,
           name: dbUser.name,
           image: dbUser.image,
-          balance: session.eventType === "refreshBalance" ? dbUser.balance : token.balance
+          balance,
         };
       }
 
@@ -149,12 +160,12 @@ export const authOptions: NextAuthOptions = {
         case "ADMIN": {
           let kazna = await db.kazna.findFirst();
 
-          if(!kazna) {
+          if (!kazna) {
             kazna = await db.kazna.create({
               data: {
-                amount: 0
-              }
-            })
+                amount: 0,
+              },
+            });
           }
 
           return {
@@ -163,8 +174,8 @@ export const authOptions: NextAuthOptions = {
             email: dbUser.email,
             image: dbUser.image,
             balance: kazna.amount,
-            role: dbUser.role
-          }
+            role: dbUser.role,
+          };
         }
 
         case "STUDENT":
