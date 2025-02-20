@@ -28,7 +28,8 @@ export default function KlassTable({ id }: Props) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[100px]">Name</TableHead>
+              <TableHead className="w-[100px]">Image</TableHead>
+              <TableHead className="w-[200px]">Name</TableHead>
               <TableHead>Email</TableHead>
               <TableHead>Balance</TableHead>
             </TableRow>
@@ -36,7 +37,7 @@ export default function KlassTable({ id }: Props) {
           <TableBody>
             {klass.isFetching && (
               <TableRow>
-                <TableCell colSpan={3}>
+                <TableCell colSpan={4}>
                   <Loader2 className="mx-auto h-5 w-5 animate-spin text-[#b5b5b5]" />
                 </TableCell>
               </TableRow>
@@ -44,7 +45,7 @@ export default function KlassTable({ id }: Props) {
 
             {klass.data?.students.length === 0 && !klass.isFetching && (
               <TableRow>
-                <TableCell colSpan={3}>
+                <TableCell colSpan={4}>
                   <div className="text-center">Жодних учнів не знайдено</div>
                 </TableCell>
               </TableRow>
