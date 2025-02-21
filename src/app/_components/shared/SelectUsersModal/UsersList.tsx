@@ -31,7 +31,11 @@ export default function UsersList({
 
     if (value.length > 0) {
       setFilteredUsers(
-        filteredUsers?.filter((user) => user.name.includes(value)),
+        users?.filter(
+          (user) =>
+            user.name.toLowerCase().includes(value.toLowerCase()) ||
+            user.email.toLowerCase().includes(value.toLowerCase()),
+        ),
       );
     } else {
       setFilteredUsers(users);

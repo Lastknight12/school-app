@@ -78,8 +78,10 @@ export default function UsersModelContent() {
   });
 
   const filteredUsers = users
-    ?.filter((user) =>
-      user.email.toLowerCase().includes(searchTerm.toLowerCase()),
+    ?.filter(
+      (user) =>
+        user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.name.toLowerCase().includes(searchTerm.toLowerCase()),
     )
     .sort((a, b) => {
       if (sortOrder) {
@@ -99,7 +101,6 @@ export default function UsersModelContent() {
     : 0;
 
   const handleUpdateRole = (userId: string, newRole: string) => {
-    // In a real application, you would update the user's role in the database here
     updateUserRoleMutation.mutate({ userId, newRole: newRole as UserRole });
   };
 
@@ -112,7 +113,10 @@ export default function UsersModelContent() {
             <Input
               placeholder="Search users..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                currentPage !== 1 && setCurrentPage(1);
+              }}
               className="pl-10 -ml-8 rounded-full"
             />
           </div>
