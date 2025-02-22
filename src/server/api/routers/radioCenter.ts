@@ -8,6 +8,7 @@ import {
   createTRPCRouter,
   protectedProcedure,
   radioCenterProcedure,
+  studentProcedure,
 } from "../trpc";
 
 // Used for validate music
@@ -79,7 +80,7 @@ export async function getSoundcloudTrackInfo(trackUrl: string) {
 }
 
 export const radioCenterRouter = createTRPCRouter({
-  getCurrentTrackAndQueue: protectedProcedure.query(async ({ ctx }) => {
+  getCurrentTrackAndQueue: studentProcedure.query(async ({ ctx }) => {
     const orders = await ctx.db.musicOrder.findMany({
       where: {
         status: "ACCEPTED",
@@ -133,7 +134,6 @@ export const radioCenterRouter = createTRPCRouter({
   getVideoInfo: protectedProcedure
     .input(z.string())
     .mutation(async ({ input }) => {
-
       if (!youtubeRegexp.test(input) && !soundcloudRegexp.test(input)) {
         throw new TRPCError({
           code: "BAD_REQUEST",
@@ -158,16 +158,19 @@ export const radioCenterRouter = createTRPCRouter({
       return videoInfo;
     }),
 
-  createOrder: protectedProcedure
+  createOrder: studentProcedure
     .input(
       z.object({
         musicUrl: z.string(),
         musicImage: z.string(),
         musicTitle: z.string(),
-      })
+      }),
     )
     .mutation(async ({ input, ctx }) => {
-      if (!youtubeRegexp.test(input.musicUrl) && !soundcloudRegexp.test(input.musicUrl)) {
+      if (
+        !youtubeRegexp.test(input.musicUrl) &&
+        !soundcloudRegexp.test(input.musicUrl)
+      ) {
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "Невірний URL",
@@ -233,7 +236,7 @@ export const radioCenterRouter = createTRPCRouter({
     .input(
       z.object({
         id: z.string(),
-      })
+      }),
     )
     .mutation(async ({ input, ctx }) => {
       const order = await ctx.db.musicOrder.update({
@@ -253,7 +256,7 @@ export const radioCenterRouter = createTRPCRouter({
     .input(
       z.object({
         id: z.string(),
-      })
+      }),
     )
     .mutation(async ({ input, ctx }) => {
       const order = await ctx.db.musicOrder.update({
