@@ -217,7 +217,7 @@ export const radioCenterRouter = createTRPCRouter({
         },
       });
 
-      await ctx.pusher.trigger("radioCenter", "order-created", order);
+      return order;
     }),
 
   deleteOrder: radioCenterProcedure
@@ -248,8 +248,7 @@ export const radioCenterRouter = createTRPCRouter({
         },
       });
 
-      await ctx.pusher.trigger("radioCenter_client", "add-track", order);
-      await ctx.pusher.trigger("radioCenter", "refresh", null);
+      return order;
     }),
 
   cancelOrder: radioCenterProcedure

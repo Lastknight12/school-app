@@ -7,7 +7,7 @@ import { toast } from "sonner";
 
 import { api } from "~/trpc/react";
 
-import { pusherClient } from "~/lib/pusher-client";
+import { socket } from "~/lib/socket";
 import { useProducts } from "~/lib/state";
 import { cn } from "~/lib/utils";
 
@@ -74,40 +74,32 @@ export default function GenerateQRModal({ onSuccess, children }: Props) {
     },
   });
 
-  // maybe wrap it into onSuccess callback in mutation
   useEffect(() => {
-    if (genQRToken.data?.channel) {
-      const channel = pusherClient.subscribe(genQRToken.data.channel);
+    if (genQRToken.data) {
+      socket.emit("joinRoom", { roomId: genQRToken.data?.channel });
+    }
+  }, [genQRToken.data]);
 
-      channel.bind("pay", (data: { error?: string }) => {
-        if (data.error) {
-          setPaymentError(data.error);
-          setTimeout(() => {
-            resetStates();
-          }, 1500);
+  socket.on("pay", (data: { error?: string }) => {
+    if (data.error) {
+      setPaymentError(data.error);
+      setTimeout(() => {
+        resetStates();
+      }, 1500);
 
-          return;
-        }
-
-        setPaymentError("");
-        setIsSuccess(true);
-
-        onSuccess?.();
-
-        setTimeout(() => {
-          resetProducts();
-          resetStates();
-        }, 1500);
-      });
+      return;
     }
 
-    return () => {
-      if (genQRToken.data?.channel) {
-        pusherClient.unsubscribe(genQRToken.data.channel);
-      }
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [genQRToken.data]);
+    setPaymentError("");
+    setIsSuccess(true);
+
+    onSuccess?.();
+
+    setTimeout(() => {
+      resetProducts();
+      resetStates();
+    }, 1500);
+  });
 
   return (
     <Dialog
@@ -145,7 +137,9 @@ export default function GenerateQRModal({ onSuccess, children }: Props) {
                   />
                 </div>
               )}
-              {paymentError && <p className="text-red-500 mx-auto">{paymentError}</p>}
+              {paymentError && (
+                <p className="text-red-500 mx-auto">{paymentError}</p>
+              )}
               {isSuccess && <p className="text-green-500 mx-auto">Успішно</p>}
             </>
           ) : (

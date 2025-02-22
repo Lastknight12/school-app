@@ -5,7 +5,7 @@ import { useEffect } from "react";
 
 import { api } from "~/trpc/react";
 
-import { pusherClient } from "~/lib/pusher-client";
+import { socket } from "~/lib/socket";
 
 import CreateOrderModal from "~/app/_components/authorizedPages/music/CreateOrderModal";
 import MusicOrderCard from "~/app/_components/shared/MusicOrderCard";
@@ -20,11 +20,16 @@ export default function Page() {
   });
 
   useEffect(() => {
-    const channel = pusherClient.subscribe("radioCenter");
+    // const channel = pusherClient.subscribe("radioCenter");
+    socket.emit("joinRoom", { roomId: "radioCenter" });
 
-    channel.bind("refresh", () => {
+    socket.on("refresh", () => {
       void utils.radioCenter.getCurrentTrackAndQueue.invalidate();
     });
+
+    // channel.bind("refresh", () => {
+    //   void utils.radioCenter.getCurrentTrackAndQueue.invalidate();
+    // });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -66,7 +71,10 @@ export default function Page() {
         {getOrders.isFetching &&
           Array.from({ length: 3 }).map((_, index) => {
             return (
-              <div key={index} className="flex gap-5 px-5 py-4 bg-card border-border rounded-lg max-[380px]:flex-col">
+              <div
+                key={index}
+                className="flex gap-5 px-5 py-4 bg-card border-border rounded-lg max-[380px]:flex-col"
+              >
                 <Skeleton className="w-[100px] h-[70px]" />
 
                 <div className="flex flex-col gap-2">

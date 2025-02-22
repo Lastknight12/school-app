@@ -1,10 +1,14 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
+import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
+import { env } from "~/env";
 
 import { api } from "~/trpc/react";
+
+import { socket } from "~/lib/socket";
 
 import { Button } from "~/shadcn/ui/button";
 import {
@@ -15,15 +19,12 @@ import {
   CarouselPrevious,
 } from "~/shadcn/ui/carousel";
 
-import Image from "next/image";
-import { env } from "~/env";
-
 export default function BuyProduct() {
   const params = useSearchParams();
 
   const token = params.get("token");
   const productId = params.get("productId");
-  
+
   let url = "";
   if (token) {
     url = `${env.NEXT_PUBLIC_BUY_URL}?token=${token}`;
@@ -36,6 +37,9 @@ export default function BuyProduct() {
       error.data?.zodError
         ? toast.error(error.data.zodError[0]?.message)
         : toast.error(error.message);
+    },
+    onSuccess: () => {
+      socket.emit("pay", token);
     },
   });
 
@@ -81,9 +85,9 @@ export default function BuyProduct() {
                   : item.title,
               )
               .join(", ")}
-              <br />
-              <br />
-              Дата покупки: {new Date().toLocaleString()}
+            <br />
+            <br />
+            Дата покупки: {new Date().toLocaleString()}
           </h1>
         </div>
       ) : (
@@ -144,4 +148,3 @@ export default function BuyProduct() {
     </main>
   );
 }
-

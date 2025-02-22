@@ -8,6 +8,7 @@ import { toast } from "sonner";
 
 import { api } from "~/trpc/react";
 
+import { socket } from "~/lib/socket";
 import { cn } from "~/lib/utils";
 
 import {
@@ -39,9 +40,11 @@ export default function MusicOrderCard({
   refresh,
 }: Props) {
   const acceptOrderMutation = api.radioCenter.acceptOrder.useMutation({
-    onSuccess: () => {
+    onSuccess: (data) => {
       refresh?.();
       toast.success("Замовлення успішно прийняте");
+      socket.emit("add-track", data);
+      socket.emit("refresh");
     },
     onError: (error) => {
       error.data?.zodError

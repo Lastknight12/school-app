@@ -2,13 +2,12 @@
 
 import { type MusicOrder } from "@prisma/client";
 import { Loader2 } from "lucide-react";
-import { type Channel } from "pusher-js";
 import { useEffect, useState } from "react";
 import useSound from "use-sound";
 
 import { api } from "~/trpc/react";
 
-import { pusherClient } from "~/lib/pusher-client";
+import { socket } from "~/lib/socket";
 import { cn } from "~/lib/utils";
 
 import MusicOrderCard from "~/app/_components/shared/MusicOrderCard";
@@ -34,31 +33,27 @@ export default function Page() {
   const [play] = useSound("sounds/new-notification-7-210334.mp3", {
     volume: 1,
   });
-  const [pusherChannel, setPusherChannel] = useState<Channel | null>(null);
 
   useEffect(() => {
-    if (getOrders.data) {
+    // const channel = pusherClient.subscribe("radioCenter");
+    socket.emit("joinRoom", { roomId: "radioCenter" });
+
+    socket.on("order-created", (data: Order) => {
+      play();
+      setOrders((prev) => [data, ...prev]);
+    });
+
+    return () => {
+      socket.removeAllListeners();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [play]);
+
+  useEffect(() => {
+    if (getOrders.data && getOrders.data.length > 0) {
       setOrders(getOrders.data);
     }
-  }, [getOrders.data])
-
-  useEffect(() => {
-    const channel = pusherClient.subscribe("radioCenter");
-    setPusherChannel(channel);
-  }, []);
-
-  useEffect(() => {
-    if (pusherChannel) {
-      pusherChannel.bind("order-created", (data: Order) => {
-        play();
-        setOrders((prev) => [data, ...prev]);
-      });
-
-      return () => {
-        pusherChannel.unbind("order-created");
-      };
-    }
-  }, [pusherChannel, play]);
+  }, [getOrders.data]);
 
   async function refresh(id: string) {
     setOrders((prev) => prev.filter((order) => order.id !== id));
@@ -92,7 +87,12 @@ export default function Page() {
         )}
 
         {orders.map((order) => (
-          <MusicOrderCard key={order.id} order={order} type="radioCenter" refresh={() => refresh(order.id)}/>
+          <MusicOrderCard
+            key={order.id}
+            order={order}
+            type="radioCenter"
+            refresh={() => refresh(order.id)}
+          />
         ))}
       </div>
     </div>
