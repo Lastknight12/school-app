@@ -80,7 +80,7 @@ export async function getSoundcloudTrackInfo(trackUrl: string) {
 }
 
 export const radioCenterRouter = createTRPCRouter({
-  getCurrentTrackAndQueue: studentProcedure.query(async ({ ctx }) => {
+  getCurrentTrackAndQueue: protectedProcedure.query(async ({ ctx }) => {
     const orders = await ctx.db.musicOrder.findMany({
       where: {
         status: "ACCEPTED",
