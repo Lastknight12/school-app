@@ -4,6 +4,8 @@ import { type ChangeEvent, useEffect, useState } from "react";
 
 import { useDebounceValue } from "~/hooks/use-debounce-value";
 
+import { Input } from "~/shadcn/ui/input";
+
 interface Props {
   onInputChange: (name: string) => void;
 }
@@ -27,10 +29,9 @@ export default function SearchInput({ onInputChange }: Props) {
 
   return (
     <div>
-      <input
-        type="text"
-        className="mb-2 w-full rounded-lg border border-[#3d3d3d] bg-card px-3 py-2 outline-none placeholder:text-[#8f8f8f]"
-        placeholder="Введіть ім'я користувача"
+      <Input
+        variant="accent"
+        placeholder="Search user..."
         value={username}
         onChange={handleInputChange}
       />

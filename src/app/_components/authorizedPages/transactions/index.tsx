@@ -12,10 +12,10 @@ interface Props {
 }
 
 export default function Transactions({ session }: Props) {
-  const getUsersByName = api.user.getUsersByName.useMutation();
+  const getUsers = api.user.getUsersByNameOrEmail.useMutation();
 
-  async function onInputChange(name: string) {
-    getUsersByName.mutate({ name });
+  async function onInputChange(searchTerm: string) {
+    getUsers.mutate({ searchTerm });
   }
 
   return (
@@ -23,9 +23,9 @@ export default function Transactions({ session }: Props) {
       <SearchInput onInputChange={onInputChange} />
 
       <SearchResult
-        users={getUsersByName.data ?? []}
+        users={getUsers.data ?? []}
         session={session}
-        isLoading={getUsersByName.isPending}
+        isLoading={getUsers.isPending}
       />
     </main>
   );

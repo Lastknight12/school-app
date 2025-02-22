@@ -11,19 +11,20 @@ import {
 } from "~/server/api/trpc";
 
 export const userRouter = createTRPCRouter({
-  getUsersByName: protectedProcedure
+  getUsersByNameOrEmail: protectedProcedure
     .input(
       z.object({
-        name: z.string(),
+        searchTerm: z.string(),
       }),
     )
     .mutation(async ({ input, ctx }) => {
-      if (input.name == "") return [];
+      if (input.searchTerm == "") return [];
       const users = await ctx.db.user.findMany({
         where: {
-          name: {
-            contains: input.name,
-          },
+          OR: [
+            { email: { contains: input.searchTerm, mode: "insensitive" } },
+            { name: { contains: input.searchTerm, mode: "insensitive" } },
+          ],
           role:
             ctx.session.user.role === "ADMIN"
               ? {
