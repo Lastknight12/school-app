@@ -1,10 +1,9 @@
+"use client";
+
+import { TransactionStatus, UserRole } from "@prisma/client";
 import { format } from "date-fns";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
-import { useEffect } from "react";
-import { toast } from "sonner";
-
-import { api } from "~/trpc/react";
 
 import { cn } from "~/lib/utils";
 
@@ -19,28 +18,34 @@ import {
   TableRow,
 } from "~/shadcn/ui/table";
 
-interface Props {
-  range: { from: string; to?: string };
+interface Data {
+  status: TransactionStatus;
+  id: string;
+  amount: number;
+  createdAt: Date;
+  productsBought: {
+    id: string;
+    image: string;
+  }[];
+  sender: {
+    name: string;
+    email: string;
+  } | null;
 }
 
-export function TransfersTable({ range }: Props) {
-  const getTransfers = api.transfers.getTransfersByPeriod.useQuery(
-    {
-      range,
-    },
-    {
-      gcTime: 0,
-    },
-  );
+interface Props {
+  range: { from: string; to?: string };
+  data?: Data[];
+  totalAmount?: number;
+  isFetching: boolean;
+}
 
-  const hasData = getTransfers.data && getTransfers.data.transfers.length > 0;
-
-  useEffect(() => {
-    if (getTransfers.error) {
-      toast.error(getTransfers.error.message);
-    }
-  }, [getTransfers.error]);
-
+export function TransfersTable({
+  data,
+  range,
+  isFetching,
+  totalAmount,
+}: Props) {
   return (
     <Table>
       <TableCaption>
@@ -64,7 +69,7 @@ export function TransfersTable({ range }: Props) {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {!getTransfers.isFetching && !hasData && (
+        {!isFetching && !data && (
           <TableRow>
             <TableCell colSpan={6}>
               <div className="text-center">Транзакцій не знайдено</div>
@@ -72,8 +77,8 @@ export function TransfersTable({ range }: Props) {
           </TableRow>
         )}
 
-        {hasData &&
-          getTransfers.data.transfers.map((transfer) => (
+        {data &&
+          data.map((transfer) => (
             <TableRow key={transfer.id}>
               <TableCell className="font-medium">
                 {transfer.createdAt.toLocaleDateString()}
@@ -111,22 +116,21 @@ export function TransfersTable({ range }: Props) {
               <TableCell className="text-right">{transfer.amount} $</TableCell>
             </TableRow>
           ))}
+
+        {isFetching && (
+          <TableRow>
+            <TableCell colSpan={6}>
+              <Loader2 className="h-6 w-6 animate-spin mx-auto text-[#b5b5b5]" />
+            </TableCell>
+          </TableRow>
+        )}
       </TableBody>
-      {getTransfers.isFetching && (
-        <TableRow>
-          <TableCell colSpan={6}>
-            <Loader2 className="h-6 w-6 animate-spin mx-auto text-[#b5b5b5]" />
-          </TableCell>
-        </TableRow>
-      )}
 
       <TableFooter>
-        {!getTransfers.isFetching && hasData && (
+        {!isFetching && totalAmount && (
           <TableRow>
             <TableCell colSpan={5}>Усього</TableCell>
-            <TableCell className="text-right">
-              {getTransfers.data?.totalAmount} $
-            </TableCell>
+            <TableCell className="text-right">{totalAmount} $</TableCell>
           </TableRow>
         )}
       </TableFooter>

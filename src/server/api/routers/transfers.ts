@@ -9,6 +9,7 @@ import { env } from "~/env";
 import {
   adminProcedure,
   createTRPCRouter,
+  customProcedure,
   protectedProcedure,
   sellerProcedure,
   studentProcedure,
@@ -613,7 +614,7 @@ export const transfersRouter = createTRPCRouter({
       }
     }),
 
-  getTransfersByPeriod: adminProcedure
+  getTransfersByPeriod: customProcedure(["ADMIN", "SELLER"])
     .input(
       z.object({
         range: z.object({

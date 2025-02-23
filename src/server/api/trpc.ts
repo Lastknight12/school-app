@@ -6,6 +6,7 @@
  * TL;DR - This is where all the tRPC server stuff is created and plugged in. The pieces you will
  * need to use are documented accordingly near the end.
  */
+import { UserRole } from "@prisma/client";
 import { TRPCError, initTRPC } from "@trpc/server";
 import Pusher from "pusher";
 import superjson from "superjson";
@@ -204,3 +205,18 @@ export const studentProcedure = t.procedure.use(({ ctx, next }) => {
     },
   });
 });
+
+export const customProcedure = (roles: UserRole[]) => {
+  return t.procedure.use(({ ctx, next }) => {
+    if (!ctx.session || !roles.includes(ctx.session.user.role)) {
+      throw new TRPCError({ code: "UNAUTHORIZED" });
+    }
+
+    return next({
+      ctx: {
+        // infers the `session` as non-nullable
+        session: { ...ctx.session, user: ctx.session.user },
+      },
+    });
+  });
+};
