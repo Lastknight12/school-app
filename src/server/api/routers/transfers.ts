@@ -9,6 +9,7 @@ import { env } from "~/env";
 import {
   adminProcedure,
   createTRPCRouter,
+  customProcedure,
   protectedProcedure,
   sellerProcedure,
   studentProcedure,
@@ -504,10 +505,6 @@ export const transfersRouter = createTRPCRouter({
         ][Math.floor(Math.random() * 5)]!;
 
         if (transactionId && randomChannelId) {
-          await ctx.pusher.trigger(randomChannelId, "pay", {
-            error: null,
-          });
-
           const promises = [
             ctx.db.transaction.update({
               where: { id: transactionId },
@@ -613,7 +610,7 @@ export const transfersRouter = createTRPCRouter({
       }
     }),
 
-  getTransfersByPeriod: adminProcedure
+  getTransfersByPeriod: customProcedure(["ADMIN", "SELLER"])
     .input(
       z.object({
         range: z.object({
@@ -632,13 +629,26 @@ export const transfersRouter = createTRPCRouter({
           },
           type: "BUY",
         },
+        orderBy: {
+          createdAt: "desc",
+        },
         select: {
           id: true,
-          sender: true,
+          sender: {
+            select: {
+              name: true,
+              email: true,
+            },
+          },
           amount: true,
           createdAt: true,
           status: true,
-          productsBought: true,
+          productsBought: {
+            select: {
+              id: true,
+              image: true,
+            },
+          },
         },
       });
 

@@ -76,7 +76,7 @@ export default function GenerateQRModal({ onSuccess, children }: Props) {
 
   useEffect(() => {
     if (genQRToken.data) {
-      socket.emit("joinRoom", { roomId: genQRToken.data?.channel });
+      socket.emit("joinRoom", { roomId: genQRToken.data.channel });
     }
   }, [genQRToken.data]);
 

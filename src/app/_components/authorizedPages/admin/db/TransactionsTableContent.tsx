@@ -19,7 +19,7 @@ import {
 
 export default function UsersModelContent() {
   const [currentPage, setCurrentPage] = useState(1);
-  const [transactionsPerPage] = useState(10);
+  const transactionsPerPage = 10;
 
   const {
     data: transactions,

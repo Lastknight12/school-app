@@ -4,9 +4,9 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import ModelsList from "~/app/_components/authorizedPages/admin/db/ModelsList";
-import PurchasesTableContent from "~/app/_components/authorizedPages/admin/db/PurchasesTableContent";
 import TransactionsTableContent from "~/app/_components/authorizedPages/admin/db/TransactionsTableContent";
 import UsersModelContent from "~/app/_components/authorizedPages/admin/db/UsersModelContent";
+import PurchasesTableContent from "~/app/_components/shared/PurchasesTableContent";
 
 export type Tabs = "users" | "transactions" | "purchases";
 

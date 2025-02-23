@@ -46,7 +46,7 @@ export default function UsersModelContent() {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOrder, setSortOrder] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [usersPerPage] = useState(10);
+  const usersPerPage = 10;
   const utils = api.useUtils();
 
   const {

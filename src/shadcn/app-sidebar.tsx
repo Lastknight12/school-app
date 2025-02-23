@@ -12,6 +12,7 @@ import {
   Rocket,
   Shield,
   Store,
+  Table,
   Wallet,
 } from "lucide-react";
 import { type Session } from "next-auth";
@@ -72,14 +73,16 @@ const data = {
     },
   ],
 
+  seller: [{ name: "Покупки", url: "/seller/purchases", icon: Table }],
+
   radioCenter: [
     {
-      name: "Music Orders",
+      name: "Замовлення",
       url: "/musicOrders",
       icon: Archive,
     },
     {
-      name: "Music Player",
+      name: "Плеєр",
       url: "/music/player",
       icon: Play,
     },
@@ -146,6 +149,15 @@ export function AppSidebar({
           <>
             <SidebarSeparator />
             <NavMain items={data.radioCenter} label="Radio Center" />
+            <SidebarSeparator />
+          </>
+        )}
+
+        {session.user.role === "SELLER" && (
+          <>
+            <SidebarSeparator />
+            <NavMain items={data.seller} label="Seller" />
+            <SidebarSeparator />
           </>
         )}
 
