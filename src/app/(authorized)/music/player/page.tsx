@@ -41,7 +41,6 @@ export default function Player() {
   }, [getTracks.data]);
 
   useEffect(() => {
-    // const pusherChannel = pusherClient.subscribe("radioCenter_client");
     socket.emit("joinRoom", { roomId: "radioCenter-client" });
 
     socket.on("add-track", (data: MusicOrder) => {
@@ -67,6 +66,7 @@ export default function Player() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentTrack, tracks]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   function handleAddTrack(track: Track) {
     if (
       !youtubeRegexp.test(track.musicUrl) &&

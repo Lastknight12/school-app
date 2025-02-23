@@ -217,7 +217,7 @@ export const radioCenterRouter = createTRPCRouter({
         },
       });
 
-      return order;
+      ctx.socket.emit("order-created", order.id);
     }),
 
   deleteOrder: radioCenterProcedure
@@ -228,8 +228,6 @@ export const radioCenterRouter = createTRPCRouter({
           id: input.id,
         },
       });
-
-      await ctx.pusher.trigger("radioCenter", "refresh", null);
     }),
 
   acceptOrder: radioCenterProcedure
@@ -248,7 +246,8 @@ export const radioCenterRouter = createTRPCRouter({
         },
       });
 
-      return order;
+      ctx.socket.emit("add-track", order.id);
+      ctx.socket.emit("refresh");
     }),
 
   cancelOrder: radioCenterProcedure
@@ -258,7 +257,7 @@ export const radioCenterRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ input, ctx }) => {
-      const order = await ctx.db.musicOrder.update({
+      await ctx.db.musicOrder.update({
         where: {
           id: input.id,
         },
@@ -278,6 +277,6 @@ export const radioCenterRouter = createTRPCRouter({
         },
       });
 
-      await ctx.pusher.trigger("radioCenter", "refresh", order);
+      ctx.socket.emit("refresh");
     }),
 });

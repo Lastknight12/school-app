@@ -7,7 +7,7 @@
  * need to use are documented accordingly near the end.
  */
 import { TRPCError, initTRPC } from "@trpc/server";
-import Pusher from "pusher";
+import { io } from "socket.io-client";
 import superjson from "superjson";
 import { ZodError } from "zod";
 import { env } from "~/env";
@@ -31,17 +31,14 @@ import { db } from "~/server/db";
 export const createTRPCContext = async (opts: { headers: Headers }) => {
   const session = await getServerAuthSession();
 
+  const socket = io("http://localhost:3001", {
+    auth: { secret: env.SOCKET_SECRET },
+  });
+
   return {
     db,
     session,
-
-    pusher: new Pusher({
-      appId: env.PUSHER_APP_ID,
-      key: env.PUSHER_KEY,
-      secret: env.PUSHER_SECRET,
-      cluster: env.PUSHER_CLUSTER,
-      useTLS: true,
-    }),
+    socket,
 
     ...opts,
   };

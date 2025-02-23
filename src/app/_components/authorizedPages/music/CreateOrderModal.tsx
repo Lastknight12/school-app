@@ -5,8 +5,6 @@ import { toast } from "sonner";
 
 import { api } from "~/trpc/react";
 
-import { socket } from "~/lib/socket";
-
 import { Button } from "~/shadcn/ui/button";
 import {
   Dialog,
@@ -38,12 +36,11 @@ export default function DialogDemo() {
   });
 
   const createOrderMutation = api.radioCenter.createOrder.useMutation({
-    onSuccess: (data) => {
+    onSuccess: () => {
       void utils.radioCenter.getOrders.invalidate();
       setIsOpen(false);
       setMusicUrl("");
       setVideoInfo(undefined);
-      socket.emit("order-created", data);
     },
 
     onError: (error) => {

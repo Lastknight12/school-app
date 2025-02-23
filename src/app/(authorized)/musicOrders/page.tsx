@@ -35,10 +35,10 @@ export default function Page() {
   });
 
   useEffect(() => {
-    // const channel = pusherClient.subscribe("radioCenter");
     socket.emit("joinRoom", { roomId: "radioCenter" });
 
     socket.on("order-created", (data: Order) => {
+      console.log(data);
       play();
       setOrders((prev) => [data, ...prev]);
     });

@@ -20,16 +20,11 @@ export default function Page() {
   });
 
   useEffect(() => {
-    // const channel = pusherClient.subscribe("radioCenter");
     socket.emit("joinRoom", { roomId: "radioCenter" });
 
     socket.on("refresh", () => {
       void utils.radioCenter.getCurrentTrackAndQueue.invalidate();
     });
-
-    // channel.bind("refresh", () => {
-    //   void utils.radioCenter.getCurrentTrackAndQueue.invalidate();
-    // });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
