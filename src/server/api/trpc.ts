@@ -6,7 +6,7 @@
  * TL;DR - This is where all the tRPC server stuff is created and plugged in. The pieces you will
  * need to use are documented accordingly near the end.
  */
-import { UserRole } from "@prisma/client";
+import { type UserRole } from "@prisma/client";
 import { TRPCError, initTRPC } from "@trpc/server";
 import Pusher from "pusher";
 import superjson from "superjson";
