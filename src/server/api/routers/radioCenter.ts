@@ -217,7 +217,7 @@ export const radioCenterRouter = createTRPCRouter({
         },
       });
 
-      ctx.socket.emit("order-created", order.id);
+      return order.id;
     }),
 
   deleteOrder: radioCenterProcedure
@@ -246,8 +246,7 @@ export const radioCenterRouter = createTRPCRouter({
         },
       });
 
-      ctx.socket.emit("add-track", order.id);
-      ctx.socket.emit("refresh");
+      return order.id;
     }),
 
   cancelOrder: radioCenterProcedure
@@ -276,7 +275,5 @@ export const radioCenterRouter = createTRPCRouter({
           status: true,
         },
       });
-
-      ctx.socket.emit("refresh");
     }),
 });

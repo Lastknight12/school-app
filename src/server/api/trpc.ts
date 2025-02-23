@@ -8,10 +8,8 @@
  */
 import { type UserRole } from "@prisma/client";
 import { TRPCError, initTRPC } from "@trpc/server";
-import { io } from "socket.io-client";
 import superjson from "superjson";
 import { ZodError } from "zod";
-import { env } from "~/env";
 
 import { getServerAuthSession } from "~/server/auth";
 import { db } from "~/server/db";
@@ -32,14 +30,9 @@ import { db } from "~/server/db";
 export const createTRPCContext = async (opts: { headers: Headers }) => {
   const session = await getServerAuthSession();
 
-  const socket = io("http://localhost:3001", {
-    auth: { secret: env.SOCKET_SECRET },
-  });
-
   return {
     db,
     session,
-    socket,
 
     ...opts,
   };

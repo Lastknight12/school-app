@@ -36,6 +36,9 @@ export default function Page() {
 
       <div className=" mb-8 max-w-max">
         <h1 className="text-xl mb-3">Поточний трек:</h1>
+        {!getOrders.data?.currentTrack && !getOrders.isFetching && (
+          <h1>Немає Поточного треку</h1>
+        )}
 
         {getOrders.isFetching ? (
           <div className="flex gap-5 px-5 py-4 bg-card border-border rounded-lg max-[380px]:flex-col">
