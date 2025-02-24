@@ -69,7 +69,7 @@ export function TransfersTable({
         </TableRow>
       </TableHeader>
       <TableBody>
-        {!isFetching && !data && (
+        {!isFetching && data?.length === 0 && (
           <TableRow>
             <TableCell colSpan={6}>
               <div className="text-center">Транзакцій не знайдено</div>
@@ -126,7 +126,7 @@ export function TransfersTable({
       </TableBody>
 
       <TableFooter>
-        {!isFetching && totalAmount && (
+        {!isFetching && data && data.length > 0 && (
           <TableRow>
             <TableCell colSpan={5}>Усього</TableCell>
             <TableCell className="text-right">{totalAmount} $</TableCell>
