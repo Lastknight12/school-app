@@ -6,7 +6,7 @@ import { addProductSchema } from "~/schemas/zod";
 
 import { api } from "~/trpc/react";
 
-import UploadImage from "../../../../shared/UploadImage";
+import UploadImage from "../../../shared/UploadImage";
 
 import { Button } from "~/shadcn/ui/button";
 import Counter from "~/shadcn/ui/counter";

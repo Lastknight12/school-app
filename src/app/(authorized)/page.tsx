@@ -2,18 +2,17 @@ import { redirect } from "next/navigation";
 
 import { getServerAuthSession } from "~/server/auth";
 
-import SellerHomePage from "../_components/authorizedPages/HomePages/sellerHome";
-import StudentHomePage from "../_components/authorizedPages/HomePages/studentHome";
-import TeacherHomePage from "../_components/authorizedPages/HomePages/teacherHome/HomePage";
+import SellerHomePage from "../_components/homePages/sellerHome";
+import StudentHomePage from "../_components/homePages/studentHome";
+import TeacherHomePage from "../_components/homePages/teacherHome";
 
 export default async function Home() {
   const session = await getServerAuthSession();
 
-  
-  if(!session) {
+  if (!session) {
     return redirect("/login");
   }
-  
+
   const userRole = session.user.role;
 
   switch (userRole) {

@@ -5,7 +5,7 @@ import Link from "next/link";
 
 import { api } from "~/trpc/react";
 
-import AddClass from "../../_components/authorizedPages/admin/home/AddClass";
+import AddClass from "./_components/AddClass";
 
 export default function KlassesTable() {
   const klassNames = api.klass.getAllKlasses.useQuery(void 0, {

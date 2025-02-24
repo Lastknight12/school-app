@@ -3,7 +3,7 @@ import { Loader2 } from "lucide-react";
 import { type Session } from "next-auth";
 import Image from "next/image";
 
-import TransactionDialog from "../../shared/TransactionDialog";
+import TransactionDialog from "../../../_components/shared/TransactionDialog";
 
 interface Props {
   users: User[];

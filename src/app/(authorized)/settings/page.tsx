@@ -1,6 +1,6 @@
 import { getServerAuthSession } from "~/server/auth";
 
-import Settings from "~/app/_components/authorizedPages/settings";
+import Settings from "./_components/Settings";
 
 export default async function SettingsPage() {
   const session = await getServerAuthSession();

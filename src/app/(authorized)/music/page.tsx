@@ -7,7 +7,8 @@ import { api } from "~/trpc/react";
 
 import { socket } from "~/lib/socket";
 
-import CreateOrderModal from "~/app/_components/authorizedPages/music/CreateOrderModal";
+import CreateOrderModal from "./_components/CreateOrderModal";
+
 import MusicOrderCard from "~/app/_components/shared/MusicOrderCard";
 
 import { Skeleton } from "~/shadcn/ui/skeleton";

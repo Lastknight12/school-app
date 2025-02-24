@@ -1,7 +1,7 @@
 import { api } from "~/trpc/server";
 
-import ReplenishDialog from "~/app/_components/authorizedPages/kazna/ReplenishDialog";
-import ReplenishHistory from "~/app/_components/authorizedPages/kazna/ReplenishHistory";
+import ReplenishDialog from "./_components/ReplenishDialog";
+import ReplenishHistory from "./_components/ReplenishHistory";
 
 export default async function KaznaPage() {
   const kaznaAmount = await api.kazna.getKaznaAmount();

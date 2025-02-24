@@ -10,7 +10,7 @@ import { cn } from "~/lib/utils";
 
 import { useDebounceValue } from "~/hooks/use-debounce-value";
 
-import CategoryNamesList from "../../../shared/CategoryNamesList";
+import CategoryNamesList from "../../shared/CategoryNamesList";
 import GenerateQRModal from "./GenerateQRModal";
 import ProductListItem from "./ProductItem";
 import AddNewCategory from "./TopButtons/AddNewCategory";

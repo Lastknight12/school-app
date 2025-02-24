@@ -4,8 +4,8 @@ import { Loader2 } from "lucide-react";
 
 import { api } from "~/trpc/react";
 
-import Chart from "~/app/_components/authorizedPages/stats/Chart";
-import StatsInfo from "~/app/_components/authorizedPages/stats/StatsInfo";
+import Chart from "./_components/Chart";
+import StatsInfo from "./_components/StatsInfo";
 
 export default function Stats() {
   const chartData = api.transfers.getChartData.useQuery();

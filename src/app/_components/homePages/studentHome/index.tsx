@@ -1,6 +1,6 @@
 import { type Session } from "next-auth";
 
-import DebitCard from "../../../shared/DebitCard";
+import DebitCard from "../../shared/DebitCard";
 import TransfersList from "./TransfersList";
 
 interface Props {
