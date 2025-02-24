@@ -6,7 +6,7 @@ import { toast } from "sonner";
 
 import { api } from "~/trpc/react";
 
-import UpdateUsers from "../../../shared/SelectUsersModal";
+import UpdateUsers from "../../../../../_components/shared/SelectUsersModal";
 
 import { Button } from "~/shadcn/ui/button";
 

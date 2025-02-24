@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 
 import { getServerAuthSession } from "~/server/auth";
 
-import KlassTable from "~/app/_components/authorizedPages/klass/[id]/KlassTable";
+import KlassTable from "./_components/KlassTable";
 
 type Params = { id: string };
 

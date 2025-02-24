@@ -2,9 +2,9 @@ import { notFound } from "next/navigation";
 
 import { api } from "~/trpc/server";
 
-import ButtonsGroup from "~/app/_components/authorizedPages/admin/klass/ButtonsGroup";
-import StudentsTable from "~/app/_components/authorizedPages/admin/klass/StudentTable";
-import { StudentTableSearch } from "~/app/_components/authorizedPages/admin/klass/StudentTableSearch";
+import ButtonsGroup from "./_components/ButtonsGroup";
+import StudentsTable from "./_components/StudentTable";
+import { StudentTableSearch } from "./_components/StudentTableSearch";
 
 export default async function Page({
   params,

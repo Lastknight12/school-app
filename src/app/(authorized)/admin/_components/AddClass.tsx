@@ -11,7 +11,7 @@ import { api } from "~/trpc/react";
 
 import { cn } from "~/lib/utils";
 
-import SelectUsersModal from "../../../shared/SelectUsersModal";
+import SelectUsersModal from "~/app/_components/shared/SelectUsersModal";
 
 import { Avatar, AvatarFallback, AvatarImage } from "~/shadcn/ui/avatar";
 import { Button } from "~/shadcn/ui/button";

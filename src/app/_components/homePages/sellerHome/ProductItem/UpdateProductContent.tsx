@@ -1,6 +1,6 @@
 import { useUpdateProduct } from "~/lib/state";
 
-import UploadImage from "../../../../shared/UploadImage";
+import UploadImage from "../../../shared/UploadImage";
 
 import Counter from "~/shadcn/ui/counter";
 import { Input } from "~/shadcn/ui/input";
