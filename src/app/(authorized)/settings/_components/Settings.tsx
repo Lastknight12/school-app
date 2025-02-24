@@ -13,8 +13,8 @@ import { api } from "~/trpc/react";
 import { useCardVariant } from "~/lib/state";
 import { cn } from "~/lib/utils";
 
-import DebitCard from "../../shared/DebitCard";
-import UploadImage from "../../shared/UploadImage";
+import DebitCard from "~/app/_components/shared/DebitCard";
+import UploadImage from "~/app/_components/shared/UploadImage";
 
 import { Button } from "~/shadcn/ui/button";
 import { Input } from "~/shadcn/ui/input";
