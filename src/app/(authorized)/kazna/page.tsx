@@ -1,10 +1,10 @@
-import { api } from "~/trpc/server";
+import getKaznaAmount from "~/server/callers/kazna/amount/server";
 
 import ReplenishDialog from "./_components/ReplenishDialog";
 import ReplenishHistory from "./_components/ReplenishHistory";
 
 export default async function KaznaPage() {
-  const kaznaAmount = await api.kazna.getKaznaAmount();
+  const kaznaAmount = getKaznaAmount();
 
   return (
     <div className="px-6 flex items-center w-full flex-col gap-6">

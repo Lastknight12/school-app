@@ -1,10 +1,11 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { ZodError } from "zod";
 import { addProductSchema } from "~/schemas/zod";
 
-import { api } from "~/trpc/react";
+import addProduct from "~/server/callers/category/product/add/post";
 
 import UploadImage from "../../../shared/UploadImage";
 
@@ -38,7 +39,7 @@ export default function AddNewProduct({
   const [price, setPrice] = useState(0);
   const [imageSrc, setImageSrc] = useState("");
 
-  const utils = api.useUtils();
+  const utils = useQueryClient();
 
   // Reset form when dialog is closed
   useEffect(() => {
@@ -52,11 +53,9 @@ export default function AddNewProduct({
     }
   }, [isOpen]);
 
-  const addProductMutation = api.category.addProduct.useMutation({
+  const addProductMutation = addProduct({
     onSuccess: () => {
-      void utils.category.getCategoryItems.invalidate({
-        categoryName: currentCategoryName,
-      });
+      void utils.invalidateQueries({ queryKey: ["getCategoryItems"] });
       toast.success(
         // short title if title is too long
         <p className="text-white">
@@ -70,9 +69,11 @@ export default function AddNewProduct({
       setIsOpen(false);
     },
     onError: (error) => {
-      error.data?.zodError && error.data?.zodError.length > 0
-        ? toast.error(error.data.zodError[0]!.message)
-        : toast.error(error.message);
+      if (typeof error.message === "string") {
+        toast.error(error.message);
+      } else {
+        toast.error(error.message[0]?.message);
+      }
     },
   });
 

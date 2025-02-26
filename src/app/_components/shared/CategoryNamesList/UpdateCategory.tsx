@@ -1,8 +1,9 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-import { api } from "~/trpc/react";
+import updateCategory from "~/server/callers/category/update/post";
 
 import { Button } from "~/shadcn/ui/button";
 import {
@@ -31,7 +32,7 @@ export default function UpdateCategory({
   const [isOpen, setIsOpen] = useState(false);
   const [name, setName] = useState("");
 
-  const utils = api.useUtils();
+  const utils = useQueryClient();
 
   // Reset form when dialog is closed
   useEffect(() => {
@@ -42,9 +43,9 @@ export default function UpdateCategory({
     }
   }, [isOpen]);
 
-  const updateCategoryMutation = api.category.updateCategory.useMutation({
+  const updateCategoryMutation = updateCategory({
     onSuccess: () => {
-      void utils.category.getCategoryNames.invalidate();
+      void utils.invalidateQueries({ queryKey: ["getCategoryNames"] });
       toast.success(
         // short title if title is too long
         <p className="text-white">

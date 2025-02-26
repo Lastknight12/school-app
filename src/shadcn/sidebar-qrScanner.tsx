@@ -1,23 +1,24 @@
 "use client";
 
+import { useQueryClient } from "@tanstack/react-query";
 import { ScanQrCode } from "lucide-react";
 import { toast } from "sonner";
 
-import { api } from "~/trpc/react";
+import pay from "~/server/callers/transfers/pay/post";
 
 import QrReader from "~/app/_components/shared/QrReader";
 
 export default function SidebarQrScanner() {
-  const utils = api.useUtils();
+  const utils = useQueryClient();
 
-  const payment = api.transfers.pay.useMutation({
+  const payment = pay({
     onSuccess: () => {
-      void utils.transfers.getTransfers.invalidate();
+      void utils.invalidateQueries({ queryKey: ["getTransfers"] });
       toast.success("Успішно оплачено");
     },
     onError: (error) => {
-      error.data?.zodError
-        ? toast.error(error.data.zodError[0]?.message)
+      typeof error.message !== "string"
+        ? toast.error(error.message[0]?.message)
         : toast.error(error.message);
     },
   });

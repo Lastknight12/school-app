@@ -5,7 +5,8 @@ import { type Channel } from "pusher-js";
 import { useEffect, useState } from "react";
 import ReactPlayer from "react-player";
 
-import { api } from "~/trpc/react";
+import getCurrentQueue from "~/server/callers/radioCenter/currentQueue/get";
+import deleteOrder from "~/server/callers/radioCenter/orders/delete/post";
 
 import { pusherClient } from "~/lib/pusher-client";
 
@@ -24,9 +25,9 @@ export default function Player() {
   const soundcloudRegexp =
     /^(?:(https?):\/\/)?(?:(?:www|m)\.)?(soundcloud\.com|snd\.sc)\/(.*)$/;
 
-  const getTracks = api.radioCenter.getCurrentTrackAndQueue.useQuery();
+  const getTracks = getCurrentQueue();
 
-  const deleteTrack = api.radioCenter.deleteOrder.useMutation();
+  const deleteTrack = deleteOrder();
 
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
@@ -73,6 +74,7 @@ export default function Player() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [channel, currentTrack, tracks]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   function handleAddTrack(track: Track) {
     if (
       !youtubeRegexp.test(track.musicUrl) &&

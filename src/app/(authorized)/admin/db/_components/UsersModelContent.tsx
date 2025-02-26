@@ -1,6 +1,7 @@
 "use client";
 
 import { UserRole } from "@prisma/client";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   ChevronDown,
   ChevronUp,
@@ -12,7 +13,9 @@ import {
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { api } from "~/trpc/react";
+import getUsersByRole from "~/server/callers/user/byRole/post";
+import deleteUser from "~/server/callers/user/delete/post";
+import updateUserRole from "~/server/callers/user/update/role/post";
 
 import { cn } from "~/lib/utils";
 
@@ -46,18 +49,18 @@ export default function UsersModelContent() {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOrder, setSortOrder] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [usersPerPage] = useState(10);
-  const utils = api.useUtils();
+  const usersPerPage = 10;
+  const utils = useQueryClient();
 
   const {
     data: users,
     isFetching: isFetchingUsers,
     refetch: refetchUsers,
-  } = api.user.getUsersByRole.useQuery();
+  } = getUsersByRole({ role: undefined });
 
-  const updateUserRoleMutation = api.user.updateUserRole.useMutation({
+  const updateUserRoleMutation = updateUserRole({
     onSuccess: () => {
-      void utils.user.getUsersByRole.invalidate();
+      void utils.invalidateQueries({ queryKey: ["getUsersByRole"] });
       toast.success("Користувача оновлено");
     },
 
@@ -66,9 +69,9 @@ export default function UsersModelContent() {
     },
   });
 
-  const deleteUserMutation = api.user.deleteUser.useMutation({
+  const deleteUserMutation = deleteUser({
     onSuccess: () => {
-      void utils.user.getUsersByRole.invalidate();
+      void utils.invalidateQueries({ queryKey: ["getUsersByRole"] });
       toast.success("Користувача видалено");
     },
 

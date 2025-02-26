@@ -1,13 +1,14 @@
 "use client";
 
 import { type User } from "@prisma/client";
+import { useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { addKlassSchema } from "~/schemas/zod";
 
-import { api } from "~/trpc/react";
+import addKlass from "~/server/callers/klass/add/post";
 
 import { cn } from "~/lib/utils";
 
@@ -29,22 +30,22 @@ export default function AddClass() {
   const [isOpen, setIsOpen] = useState(false);
   const [isTeachersModalOpen, setIsTeachersModalOpen] = useState(false);
 
-  const utils = api.useUtils();
+  const utils = useQueryClient();
 
   const [klassName, setKlassName] = useState("");
   const [teachers, setTeachers] = useState<
     Pick<User, "id" | "image" | "name">[]
   >([]);
 
-  const addKlassMutation = api.klass.addKlass.useMutation({
+  const addKlassMutation = addKlass({
     onSuccess: () => {
-      void utils.klass.getAllKlasses.invalidate();
+      void utils.invalidateQueries({ queryKey: ["getAllKlasses"] });
       setIsOpen(false);
       setIsTeachersModalOpen(false);
     },
     onError: (error) => {
-      error.data?.zodError
-        ? toast.error(error.data.zodError[0]?.message)
+      typeof error.message !== "string"
+        ? toast.error(error.message[0]?.message)
         : toast.error(error.message);
     },
   });

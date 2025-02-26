@@ -1,8 +1,9 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-import { api } from "~/trpc/react";
+import addCategory from "~/server/callers/category/add/post";
 
 import { Button } from "~/shadcn/ui/button";
 import {
@@ -26,7 +27,7 @@ export default function AddNewCategory({ children }: Props) {
 
   const [name, setName] = useState("");
 
-  const utils = api.useUtils();
+  const utils = useQueryClient();
 
   // Reset form when dialog is closed
   useEffect(() => {
@@ -37,9 +38,9 @@ export default function AddNewCategory({ children }: Props) {
     }
   }, [isOpen]);
 
-  const addCategoryMutation = api.category.addCategory.useMutation({
+  const addCategoryMutation = addCategory({
     onSuccess: () => {
-      void utils.category.getCategoryNames.invalidate();
+      void utils.invalidateQueries({ queryKey: ["getCategoryNames"] });
       toast.success(
         // short title if title is too long
         <p className="text-white">
@@ -54,9 +55,11 @@ export default function AddNewCategory({ children }: Props) {
     },
     onError: (error) => {
       // is zod error show first error
-      error.data?.zodError && error.data?.zodError.length > 0
-        ? toast.error(error.data.zodError[0]!.message)
-        : toast.error(error.message);
+      if (typeof error.message === "string") {
+        toast.error(error.message);
+      } else {
+        toast.error(error.message[0]?.message);
+      }
     },
   });
 

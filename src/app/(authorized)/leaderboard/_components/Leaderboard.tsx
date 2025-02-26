@@ -7,7 +7,7 @@ import Image from "next/image";
 import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 
-import { api } from "~/trpc/react";
+import getLeaderboard from "~/server/callers/user/getLeaderboard/post";
 
 import { cn } from "~/lib/utils";
 
@@ -18,17 +18,16 @@ interface Props {
 export default function Leaderboard({ session }: Props) {
   const limit = 10;
 
-  const getLeaderboard = api.user.getLeaderboard.useInfiniteQuery(
+  const leaderboard = getLeaderboard(
     {
       limit,
     },
     {
       refetchOnWindowFocus: false,
-      getNextPageParam: (lastPage) => lastPage.nextCursor,
     },
   );
 
-  if (getLeaderboard.isError) {
+  if (leaderboard.isError) {
     toast.error("Виникла помилка під час завантаження даних");
   }
 
@@ -39,24 +38,23 @@ export default function Leaderboard({ session }: Props) {
   useEffect(() => {
     if (
       isScrolledToTrigger &&
-      getLeaderboard.hasNextPage &&
-      !getLeaderboard.isFetching
+      leaderboard.hasNextPage &&
+      !leaderboard.isFetching
     ) {
-      console.log("fetch next page");
-      void getLeaderboard.fetchNextPage();
+      void leaderboard.fetchNextPage();
     }
-  }, [getLeaderboard, isScrolledToTrigger]);
+  }, [leaderboard, isScrolledToTrigger]);
 
   return (
     <div
       className={cn(
         "flex flex-col items-center",
-        getLeaderboard.isFetching && "h-[calc(100vh-72px)]",
+        leaderboard.isFetching && "h-[calc(100vh-72px)]",
       )}
     >
       {/* Top 3 users and their balances */}
       <div className="mb-4 mt-20 grid grid-cols-3 items-end gap-3 px-3">
-        {getLeaderboard.data?.pages[0]!.users.slice(0, 3).map((user, i) => (
+        {leaderboard.data?.pages[0]!.users.slice(0, 3).map((user, i) => (
           <motion.div
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
@@ -106,11 +104,11 @@ export default function Leaderboard({ session }: Props) {
           "flex w-full h-[calc(100vh-64px-165px)] grow flex-col items-center gap-3 rounded-tl-xl rounded-tr-xl bg-card px-3 py-6",
         )}
       >
-        {getLeaderboard.isLoading && (
+        {leaderboard.isLoading && (
           <Loader2 className="h-6 w-6 animate-spin text-[#b5b5b5]" />
         )}
 
-        {getLeaderboard.data?.pages?.map((page, pageIndex) =>
+        {leaderboard.data?.pages?.map((page, pageIndex) =>
           page.users.map((user, userIndexInPage) => (
             <div
               key={user.id}
@@ -148,7 +146,7 @@ export default function Leaderboard({ session }: Props) {
         )}
 
         {/* loading when fetching next page */}
-        {getLeaderboard.isFetchingNextPage && (
+        {leaderboard.isFetchingNextPage && (
           <Loader2 className="mx-auto h-6 w-6 animate-spin text-[#b5b5b5]" />
         )}
 

@@ -1,8 +1,9 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { api } from "~/trpc/react";
+import deleteCategory from "~/server/callers/category/delete/post";
 
 import { Button } from "~/shadcn/ui/button";
 import {
@@ -29,12 +30,11 @@ export function DeleteCategory({
 }: Props) {
   const [isOpen, setIsOpen] = useState(false);
 
-  const utils = api.useUtils();
+  const utils = useQueryClient();
 
-  const deleteCategoryMutation = api.category.deleteCategory.useMutation({
+  const deleteCategoryMutation = deleteCategory({
     onSuccess: () => {
-      void utils.category.getCategoryNames.invalidate();
-      void utils.category.getCategoryItems.invalidate();
+      void utils.invalidateQueries({ queryKey: ["getCategoryNames"] });
       toast.success(
         <p className="text-white">
           Категорію{" "}

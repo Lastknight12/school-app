@@ -80,7 +80,7 @@ export function TransfersTable({
         {data?.map((transfer) => (
           <TableRow key={transfer.id}>
             <TableCell className="font-medium">
-              {transfer.createdAt.toLocaleDateString()}
+              {new Date(transfer.createdAt).toLocaleDateString()}
             </TableCell>
             <TableCell className="font-medium">
               {transfer.sender?.name ?? "Відсутні дані"}

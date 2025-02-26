@@ -2,14 +2,15 @@
 
 import { Loader2 } from "lucide-react";
 
-import { api } from "~/trpc/react";
+import getChartData from "~/server/callers/transfers/chart/get";
+import getStats from "~/server/callers/transfers/stats/get";
 
 import Chart from "./_components/Chart";
 import StatsInfo from "./_components/StatsInfo";
 
 export default function Stats() {
-  const chartData = api.transfers.getChartData.useQuery();
-  const statsData = api.transfers.getStatsData.useQuery();
+  const chartData = getChartData();
+  const statsData = getStats();
 
   if (chartData.isLoading || statsData.isLoading) {
     return (

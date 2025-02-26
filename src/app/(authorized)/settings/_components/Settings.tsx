@@ -8,7 +8,8 @@ import { useState } from "react";
 import { FaCheck } from "react-icons/fa";
 import { toast } from "sonner";
 
-import { api } from "~/trpc/react";
+import getUserClass from "~/server/callers/user/class/get";
+import updateUser from "~/server/callers/user/update/post";
 
 import { useCardVariant } from "~/lib/state";
 import { cn } from "~/lib/utils";
@@ -49,20 +50,20 @@ export default function Settings({
     setCardVariant(variant);
   }
 
-  const updateUserMutation = api.user.updateUser.useMutation({
+  const updateUserMutation = updateUser({
     onSuccess: async () => {
       await update({ newUsername, newImageSrc });
       router.refresh();
     },
     onError: (error) => {
-      error.data?.zodError && error.data?.zodError.length > 0
-        ? toast.error(error.data.zodError[0]!.message)
+      typeof error.message !== "string"
+        ? toast.error(error.message[0]?.message)
         : toast.error(error.message);
     },
   });
 
-  const getUserClass = api.user.getUserClass.useQuery(void 0, {
-    refetchOnWindowFocus: false,
+  const userClass = getUserClass({
+    enabled: defaultSession.user.role === "STUDENT",
   });
 
   return (
@@ -104,10 +105,10 @@ export default function Settings({
               {/* Klass */}
               <Label className="text-left text-base">Клас:</Label>
 
-              {getUserClass.isFetching ? (
+              {userClass.isFetching ? (
                 <Loader2 className="h-5 w-5 animate-spin text-[#b5b5b5]" />
-              ) : getUserClass.data ? (
-                <div>{getUserClass.data.name}</div>
+              ) : userClass.data ? (
+                <div>{userClass.data.name}</div>
               ) : (
                 <div className="text-red-500">Немає класу</div>
               )}

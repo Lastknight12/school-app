@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 
-import { api } from "~/trpc/server";
+import getAdminData from "~/server/callers/klass/adminData/server";
 
 import ButtonsGroup from "./_components/ButtonsGroup";
 import StudentsTable from "./_components/StudentTable";
@@ -13,7 +13,7 @@ export default async function Page({
 }) {
   const decodedParam = decodeURIComponent(params.klassName);
 
-  const klass = await api.klass.getAdminKlassData({ name: decodedParam });
+  const klass = await getAdminData({ name: decodedParam });
 
   if (!klass) {
     return notFound();

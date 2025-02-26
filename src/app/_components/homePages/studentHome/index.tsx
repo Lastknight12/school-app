@@ -7,7 +7,7 @@ interface Props {
   session: Session;
 }
 
-export default async function StudentHomePage({ session }: Props) {
+export default function StudentHomePage({ session }: Props) {
   return (
     <main className="flex h-full_page flex-col justify-between">
       <div className="relative flex w-full justify-center">

@@ -2,7 +2,7 @@
 
 import { Loader2 } from "lucide-react";
 
-import { api } from "~/trpc/react";
+import getTeacherKlassData from "~/server/callers/klass/teacherData/post";
 
 import KlassTableContent from "./KlassTableContent";
 
@@ -20,7 +20,7 @@ interface Props {
 }
 
 export default function KlassTable({ id }: Props) {
-  const klass = api.klass.getTeacherKlassData.useQuery({ id });
+  const klass = getTeacherKlassData({ id });
 
   return (
     <main className="mx-5 px-6">

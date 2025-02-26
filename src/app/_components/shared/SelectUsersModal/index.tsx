@@ -5,7 +5,7 @@ import { Loader2 } from "lucide-react";
 import { type ReactNode, useState } from "react";
 import { toast } from "sonner";
 
-import { api } from "~/trpc/react";
+import getUsersByRole from "~/server/callers/user/byRole/post";
 
 import UsersList from "./UsersList";
 
@@ -52,10 +52,10 @@ export default function UpdateUsers({
     data: students,
     isFetching: isFetchingStudents,
     isLoading: isLoadingStudents,
-  } = api.user.getUsersByRole.useQuery(
+  } = getUsersByRole(
     { role: "STUDENT" },
     {
-      enabled: usersType === "STUDENT",
+      enabled: true,
     },
   );
 
@@ -63,7 +63,7 @@ export default function UpdateUsers({
     data: teachers,
     isFetching: isFetchingTeachers,
     isLoading: isLoadingTeachers,
-  } = api.user.getUsersByRole.useQuery(
+  } = getUsersByRole(
     { role: "TEACHER" },
     {
       enabled: usersType === "TEACHER",

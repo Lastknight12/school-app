@@ -1,13 +1,13 @@
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Loader2 } from "lucide-react";
 import { Krona_One, Orbitron, Source_Code_Pro } from "next/font/google";
 import localFont from "next/font/local";
 import { Suspense } from "react";
 import { Toaster } from "sonner";
 import NextAuthProvider from "~/providers/NextAuthProvider";
-import { SpeedInsights } from '@vercel/speed-insights/next';
+import { ReactQueryProvider } from "~/providers/ReactQueryProvider";
 
 import { getServerAuthSession } from "~/server/auth";
-import { TRPCReactProvider } from "~/trpc/react";
 
 import "../styles/globals.css";
 import Sidebar from "./_components/shared/Sidebar";
@@ -43,8 +43,8 @@ const source_code_pro = Source_Code_Pro({
 const krona_one = Krona_One({
   subsets: ["latin"],
   variable: "--font-krona-one",
-  weight: "400"
-})
+  weight: "400",
+});
 
 export default async function RootLayout({
   children,
@@ -59,8 +59,8 @@ export default async function RootLayout({
         className={`${metropolis.variable} ${orbitron.variable} ${source_code_pro.variable} ${krona_one.variable} overflow-x-hidden font-metropolis`}
       >
         <SpeedInsights />
-        
-        <TRPCReactProvider>
+
+        <ReactQueryProvider>
           <NextAuthProvider>
             <Toaster
               toastOptions={{
@@ -82,11 +82,12 @@ export default async function RootLayout({
                 }
               >
                 <PageTransition>
-                  <div className="mt-3">{children}</div></PageTransition>
+                  <div className="mt-3">{children}</div>
+                </PageTransition>
               </Suspense>
             </Sidebar>
           </NextAuthProvider>
-        </TRPCReactProvider>
+        </ReactQueryProvider>
       </body>
     </html>
   );

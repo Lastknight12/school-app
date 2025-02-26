@@ -1,10 +1,11 @@
 "use client";
 
 import { type User as UserModel } from "@prisma/client";
+import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { api } from "~/trpc/react";
+import updateKlassUsers from "~/server/callers/klass/updateUsers/post";
 
 import UpdateUsers from "../../../../../_components/shared/SelectUsersModal";
 
@@ -26,12 +27,12 @@ export default function ButtonsGroup({
   const [isTeachersModalOpen, setIsTeachersModalOpen] = useState(false);
   const [isStudentsModalOpen, setIsStudentsModalOpen] = useState(false);
 
-  const utils = api.useUtils();
+  const utils = useQueryClient();
 
-  const updateUsersMutation = api.klass.updateUsers.useMutation({
+  const updateUsersMutation = updateKlassUsers({
     onSuccess: () => {
       toast.success("Користувачів оновлено");
-      void utils.klass.getKlassStudents.invalidate();
+      void utils.invalidateQueries({ queryKey: ["getKlassStudents"] });
       setIsTeachersModalOpen(false);
       setIsStudentsModalOpen(false);
     },

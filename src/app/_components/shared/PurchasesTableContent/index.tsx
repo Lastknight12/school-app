@@ -4,7 +4,7 @@ import { addDays, format } from "date-fns";
 import { RefreshCw } from "lucide-react";
 import { useState } from "react";
 
-import { api } from "~/trpc/react";
+import getTransfersByPeriod from "~/server/callers/transfers/byPeriod/post";
 
 import { cn } from "~/lib/utils";
 
@@ -22,17 +22,12 @@ export default function PurchasesTableContent() {
     to: format(addDays(new Date(), 1), "yyyy-MM-dd"),
   });
 
-  const getTransfers = api.transfers.getTransfersByPeriod.useQuery(
-    {
-      range: {
-        from: dateRange.from,
-        to: dateRange.to,
-      },
+  const getTransfers = getTransfersByPeriod({
+    range: {
+      from: dateRange.from,
+      to: dateRange.to,
     },
-    {
-      gcTime: 0,
-    },
-  );
+  });
 
   const indexOfLastUser = currentPage * usersPerPage;
   const indexOfFirstUser = indexOfLastUser - usersPerPage;

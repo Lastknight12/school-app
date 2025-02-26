@@ -1,10 +1,11 @@
 "use client";
 
+import { useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { api } from "~/trpc/react";
+import replenishKazna from "~/server/callers/kazna/replenish/post";
 
 import { Button } from "~/shadcn/ui/button";
 import {
@@ -21,15 +22,15 @@ export default function ReplenishDialog() {
   const [amount, setAmount] = useState(0);
   const [message, setMessage] = useState("");
 
-  const utils = api.useUtils();
+  const utils = useQueryClient();
 
   const isAmountPositive = amount > 0;
 
-  const replenishKaznaMutation = api.kazna.replenishKazna.useMutation({
+  const replenishKaznaMutation = replenishKazna({
     onSuccess: () => {
       setOpen(false);
       toast.success("Казна поповнена");
-      void utils.kazna.getReplenishHistory.invalidate();
+      void utils.invalidateQueries({ queryKey: ["getKaznaReplenish"] });
     },
 
     onError: () => {

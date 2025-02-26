@@ -1,9 +1,10 @@
 "use client";
 
+import { useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { useEffect } from "react";
 
-import { api } from "~/trpc/react";
+import getCurrentQueue from "~/server/callers/radioCenter/currentQueue/get";
 
 import { pusherClient } from "~/lib/pusher-client";
 
@@ -14,17 +15,15 @@ import MusicOrderCard from "~/app/_components/shared/MusicOrderCard";
 import { Skeleton } from "~/shadcn/ui/skeleton";
 
 export default function Page() {
-  const utils = api.useUtils();
+  const utils = useQueryClient();
 
-  const getOrders = api.radioCenter.getCurrentTrackAndQueue.useQuery(void 0, {
-    refetchOnWindowFocus: false,
-  });
+  const getOrders = getCurrentQueue();
 
   useEffect(() => {
     const channel = pusherClient.subscribe("radioCenter");
 
     channel.bind("refresh", () => {
-      void utils.radioCenter.getCurrentTrackAndQueue.invalidate();
+      void utils.invalidateQueries({ queryKey: ["getCurrentQueue"] });
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

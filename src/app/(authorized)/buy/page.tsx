@@ -1,10 +1,13 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
+import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
+import { env } from "~/env";
 
-import { api } from "~/trpc/react";
+import getCategoryItemsFromTokenOrId from "~/server/callers/category/items/fromToken/get";
+import pay from "~/server/callers/transfers/pay/post";
 
 import { Button } from "~/shadcn/ui/button";
 import {
@@ -15,15 +18,12 @@ import {
   CarouselPrevious,
 } from "~/shadcn/ui/carousel";
 
-import Image from "next/image";
-import { env } from "~/env";
-
 export default function BuyProduct() {
   const params = useSearchParams();
 
   const token = params.get("token");
   const productId = params.get("productId");
-  
+
   let url = "";
   if (token) {
     url = `${env.NEXT_PUBLIC_BUY_URL}?token=${token}`;
@@ -31,42 +31,34 @@ export default function BuyProduct() {
     url = `${env.NEXT_PUBLIC_BUY_URL}?productId=${productId}`;
   }
 
-  const payMutation = api.transfers.pay.useMutation({
+  const payMutation = pay({
     onError: (error) => {
-      error.data?.zodError
-        ? toast.error(error.data.zodError[0]?.message)
+      typeof error.message !== "string"
+        ? toast.error(error.message[0]?.message)
         : toast.error(error.message);
     },
   });
 
-  const getItemsFromTokenOrId = api.category.getItemsByTokenOrId.useQuery(
-    { token, productId },
-    {
-      refetchOnWindowFocus: false,
-      refetchOnMount: false,
-      retry: 1,
-    },
-  );
+  const categoryItems = getCategoryItemsFromTokenOrId({ token, productId });
 
-  if (getItemsFromTokenOrId.error) {
-    getItemsFromTokenOrId.error.data?.zodError &&
-      getItemsFromTokenOrId.error.data?.zodError.length > 0 &&
-      toast.error(getItemsFromTokenOrId.error.data.zodError[0]!.message);
+  if (categoryItems.error) {
+    if (typeof categoryItems.error.message !== "string")
+      toast.error(categoryItems.error.message[0]?.message);
 
     return (
       <h1 className="w-full text-center text-red-400">
-        {getItemsFromTokenOrId.error.message}
+        {String(categoryItems.error.message)}
       </h1>
     );
   }
 
-  if (!getItemsFromTokenOrId.data && !getItemsFromTokenOrId.isFetching) {
+  if (!categoryItems.data && !categoryItems.isFetching) {
     return <h1>Невіриний токен або id продукту</h1>;
   }
 
   return (
     <main className="flex h-[calc(100vh-72px)] w-full flex-col justify-between pb-2 px-6">
-      {getItemsFromTokenOrId.isFetching ? (
+      {categoryItems.isFetching ? (
         <div className="flex h-[calc(100vh-72px)] w-full items-center justify-center">
           <Loader2 className="h-6 w-6 animate-spin text-[#b5b5b5]" />
         </div>
@@ -74,26 +66,26 @@ export default function BuyProduct() {
         <div className="flex h-[calc(100vh-72px)] w-full items-center justify-center">
           <h1 className="text-2xl text-lime-500">
             Успішно куплено продукти:{" "}
-            {getItemsFromTokenOrId.data?.products
+            {categoryItems.data?.products
               .map((item) =>
                 item.title.length > 15
                   ? item.title.slice(0, 15) + "..."
                   : item.title,
               )
               .join(", ")}
-              <br />
-              <br />
-              Дата покупки: {new Date().toLocaleString()}
+            <br />
+            <br />
+            Дата покупки: {new Date().toLocaleString()}
           </h1>
         </div>
       ) : (
-        getItemsFromTokenOrId.data && (
+        categoryItems.data && (
           <>
             <div className="flex flex-col items-center">
               <Carousel className="w-full max-w-[377px] gap-8">
                 <CarouselPrevious className="z-10 left-0" />
                 <CarouselContent>
-                  {getItemsFromTokenOrId.data.products.map((item) => (
+                  {categoryItems.data.products.map((item) => (
                     <CarouselItem key={item.title}>
                       <div>
                         <div className="flex gap-3 justify-center select-none items-center max-mobile:flex-col max-[410px]:flex-col">
@@ -123,7 +115,7 @@ export default function BuyProduct() {
             </div>
             <div>
               <h1 className="mb-3 w-full text-center text-xl">
-                В суммі: {getItemsFromTokenOrId.data.totalAmount}
+                В суммі: {categoryItems.data.totalAmount}
               </h1>
               <Button
                 disabled={payMutation.isPending}
@@ -144,4 +136,3 @@ export default function BuyProduct() {
     </main>
   );
 }
-

@@ -5,7 +5,8 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-import { api } from "~/trpc/react";
+import getCategoryItems from "~/server/callers/category/items/get";
+import getCategoryNames from "~/server/callers/category/names/get";
 
 import { cn } from "~/lib/utils";
 
@@ -15,27 +16,23 @@ import { useSidebar } from "~/shadcn/ui/sidebar";
 
 export default function Shop() {
   const [currentCategoryName, setCurrentCategoryName] = useState("");
-  const getCategoryNames = api.category.getCategoryNames.useQuery(void 0, {
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-  });
+  const categoryNames = getCategoryNames();
 
-  useEffect(() => {
-    if (getCategoryNames.data?.length === 0 && !getCategoryNames.isFetching) {
-      toast.error("Не вдалося завантажити категорії. Спробуйте пізніше");
-    } else if (getCategoryNames.data && getCategoryNames.data.length > 0) {
-      setCurrentCategoryName(getCategoryNames.data[0]!.name);
-    }
-  }, [getCategoryNames.data, getCategoryNames.isFetching]);
-
-  const getCategoryItems = api.category.getCategoryItems.useQuery(
+  const fetchCategoryItems = getCategoryItems(
     {
       categoryName: currentCategoryName,
+      searchFilter: null,
     },
-    {
-      enabled: currentCategoryName !== "",
-    },
+    { enabled: currentCategoryName.length > 0 },
   );
+
+  useEffect(() => {
+    if (categoryNames.data?.length === 0 && !categoryNames.isFetching) {
+      toast.error("Не вдалося завантажити категорії. Спробуйте пізніше");
+    } else if (categoryNames.data && categoryNames.data.length > 0) {
+      setCurrentCategoryName(categoryNames.data[0]!.name);
+    }
+  }, [categoryNames.data, categoryNames.isFetching]);
 
   const { open, isMobile } = useSidebar();
 
@@ -49,25 +46,25 @@ export default function Shop() {
         )}
       >
         <CategoryNamesList
-          categories={getCategoryNames.data ?? []}
-          isLoading={getCategoryNames.isPending}
-          onClick={setCurrentCategoryName}
+          categories={categoryNames.data ?? []}
+          isLoading={categoryNames.isPending}
+          onClick={(data) => setCurrentCategoryName(data)}
         />
 
         {/* If data is loading show spinner */}
-        {getCategoryItems.isPending ? (
+        {fetchCategoryItems.isPending ? (
           <div className="flex h-full items-center justify-center">
             <Loader2 className="h-6 w-6 animate-spin text-[#b5b5b5]" />
           </div>
         ) : // if not loading and data is empty show message
-        getCategoryItems.data?.length === 0 ? (
+        !fetchCategoryItems.data ? (
           <p className="text-center">
             Не знайдено жодних продуктів в категорі{" "}
             <span className="text-emerald-300">{currentCategoryName}</span>
           </p>
         ) : (
           // else show items
-          getCategoryItems.data?.map((item) => {
+          fetchCategoryItems.data?.map((item) => {
             return (
               <div
                 className={cn(

@@ -5,7 +5,7 @@ import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-import { api } from "~/trpc/react";
+import genProductToken from "~/server/callers/transfers/token/post";
 
 import { pusherClient } from "~/lib/pusher-client";
 import { useProducts } from "~/lib/state";
@@ -66,15 +66,14 @@ export default function GenerateQRModal({ onSuccess, children }: Props) {
     setPaymentError("");
   };
 
-  const genQRToken = api.transfers.genProductToken.useMutation({
+  const genQRToken = genProductToken({
     onError: (error) => {
-      error.data?.zodError && error.data?.zodError.length > 0
-        ? toast.error(error.data.zodError[0]!.message)
+      typeof error.message !== "string"
+        ? toast.error(error.message[0]?.message)
         : toast.error(error.message);
     },
   });
 
-  // maybe wrap it into onSuccess callback in mutation
   useEffect(() => {
     if (genQRToken.data?.channel) {
       const channel = pusherClient.subscribe(genQRToken.data.channel);
@@ -145,7 +144,9 @@ export default function GenerateQRModal({ onSuccess, children }: Props) {
                   />
                 </div>
               )}
-              {paymentError && <p className="text-red-500 mx-auto">{paymentError}</p>}
+              {paymentError && (
+                <p className="text-red-500 mx-auto">{paymentError}</p>
+              )}
               {isSuccess && <p className="text-green-500 mx-auto">Успішно</p>}
             </>
           ) : (

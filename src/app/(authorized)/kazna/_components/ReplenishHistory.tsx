@@ -3,12 +3,12 @@
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
 
-import { api } from "~/trpc/react";
+import getReplenish from "~/server/callers/kazna/replenish/get";
 
 import { cn } from "~/lib/utils";
 
 export default function ReplenishHistory() {
-  const replenishHistory = api.kazna.getReplenishHistory.useQuery();
+  const replenishHistory = getReplenish();
 
   return (
     <div className="w-full">

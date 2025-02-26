@@ -3,14 +3,12 @@
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
 
-import { api } from "~/trpc/react";
+import getAllKlasses from "~/server/callers/klass/all/get";
 
 import AddClass from "./_components/AddClass";
 
 export default function KlassesTable() {
-  const klassNames = api.klass.getAllKlasses.useQuery(void 0, {
-    refetchOnWindowFocus: false,
-  });
+  const klassNames = getAllKlasses();
 
   return (
     <div className="px-6">

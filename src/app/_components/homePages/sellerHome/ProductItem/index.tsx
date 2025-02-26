@@ -1,11 +1,13 @@
 "use client";
 
 import { type CategoryItem } from "@prisma/client";
-import { Loader2, X, RefreshCw, Trash } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
+import { Loader2, RefreshCw, Trash, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-import { api } from "~/trpc/react";
+import deleteProduct from "~/server/callers/category/product/delete/post";
+import updateProduct from "~/server/callers/category/product/update/post";
 
 import { useProducts, useUpdateProduct } from "~/lib/state";
 import { cn } from "~/lib/utils";
@@ -47,12 +49,12 @@ export default function ProductListItem({ children, item }: Props) {
   // updated item from state
   const updatedProduct = useUpdateProduct((state) => state.product);
 
-  const utils = api.useUtils();
+  const utils = useQueryClient();
 
-  const updateProductMutation = api.category.updateProduct.useMutation({
+  const updateProductMutation = updateProduct({
     onSuccess: () => {
       toast.success("Продукт успішно оновлено");
-      void utils.category.getCategoryItems.invalidate();
+      void utils.invalidateQueries({ queryKey: ["categoryItems"] });
       setIsOpen(false);
     },
     onError: () => {
@@ -60,10 +62,10 @@ export default function ProductListItem({ children, item }: Props) {
     },
   });
 
-  const deleteProductMutation = api.category.deleteProduct.useMutation({
+  const deleteProductMutation = deleteProduct({
     onSuccess: () => {
       toast.success("Продукт успішно видалено");
-      void utils.category.getCategoryItems.invalidate();
+      void utils.invalidateQueries({ queryKey: ["categoryItems"] });
     },
     onError: () => {
       toast.error("Помилка під час видалення продукту");
@@ -108,8 +110,13 @@ export default function ProductListItem({ children, item }: Props) {
       >
         <DialogHeader>
           <DialogTitle>
-            Додати <span className="text-emerald-300">{item.title.length > 30 ? item.title.slice(0, 30) + "..." : item.title}</span> до
-            списку
+            Додати{" "}
+            <span className="text-emerald-300">
+              {item.title.length > 30
+                ? item.title.slice(0, 30) + "..."
+                : item.title}
+            </span>{" "}
+            до списку
           </DialogTitle>
 
           <DialogDescription>

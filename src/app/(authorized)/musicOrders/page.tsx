@@ -6,7 +6,7 @@ import { type Channel } from "pusher-js";
 import { useEffect, useState } from "react";
 import useSound from "use-sound";
 
-import { api } from "~/trpc/react";
+import getMusicOrders from "~/server/callers/radioCenter/orders/get";
 
 import { pusherClient } from "~/lib/pusher-client";
 import { cn } from "~/lib/utils";
@@ -25,9 +25,7 @@ interface Order
 
 export default function Page() {
   const [orders, setOrders] = useState<Order[]>([]);
-  const getOrders = api.radioCenter.getOrders.useQuery(void 0, {
-    refetchOnWindowFocus: false,
-  });
+  const getOrders = getMusicOrders();
 
   const [userInteraction, setUserInteracted] = useState(false);
 
@@ -35,12 +33,6 @@ export default function Page() {
     volume: 1,
   });
   const [pusherChannel, setPusherChannel] = useState<Channel | null>(null);
-
-  useEffect(() => {
-    if (getOrders.data) {
-      setOrders(getOrders.data);
-    }
-  }, [getOrders.data])
 
   useEffect(() => {
     const channel = pusherClient.subscribe("radioCenter");
@@ -59,6 +51,12 @@ export default function Page() {
       };
     }
   }, [pusherChannel, play]);
+
+  useEffect(() => {
+    if (getOrders.data && getOrders.data.length > 0) {
+      setOrders(getOrders.data);
+    }
+  }, [getOrders.data]);
 
   async function refresh(id: string) {
     setOrders((prev) => prev.filter((order) => order.id !== id));
@@ -92,7 +90,12 @@ export default function Page() {
         )}
 
         {orders.map((order) => (
-          <MusicOrderCard key={order.id} order={order} type="radioCenter" refresh={() => refresh(order.id)}/>
+          <MusicOrderCard
+            key={order.id}
+            order={order}
+            type="radioCenter"
+            refresh={() => refresh(order.id)}
+          />
         ))}
       </div>
     </div>

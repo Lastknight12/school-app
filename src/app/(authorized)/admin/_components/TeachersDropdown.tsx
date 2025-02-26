@@ -2,7 +2,7 @@ import { Check, Loader2 } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 
-import { api } from "~/trpc/react";
+import getUsersByRole from "~/server/callers/user/byRole/post";
 
 import { cn } from "~/lib/utils";
 
@@ -16,7 +16,7 @@ interface Props {
 export default function TeachersDropdown({ onSelect, teacherIds }: Props) {
   const [showDropdown, setShowDropdown] = useState(false);
 
-  const getAllTeachers = api.user.getUsersByRole.useQuery({ role: "TEACHER" });
+  const getAllTeachers = getUsersByRole({ role: "TEACHER" });
 
   return (
     <div className="relative">
