@@ -30,7 +30,7 @@
 
 ## 🔧 Технології
 - **Frontend**: Next.js, TailwindCSS, Zustand
-- **Backend**: tRPC, Nest.js, Socket.io, Pusher.js
+- **Backend**: Nest.js, Socket.io
 - **Database**: PostgreSQL
 
 ## 📥 Встановлення та запуск
