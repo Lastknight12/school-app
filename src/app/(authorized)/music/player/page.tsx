@@ -1,20 +1,19 @@
 "use client";
 
 import { type MusicOrder } from "@prisma/client";
-import { type Channel } from "pusher-js";
 import { useEffect, useState } from "react";
 import ReactPlayer from "react-player";
 
-import { api } from "~/trpc/react";
+import getCurrentQueue from "~/server/callers/radioCenter/currentQueue/get";
+import deleteOrder from "~/server/callers/radioCenter/orders/delete/post";
 
-import { pusherClient } from "~/lib/pusher-client";
+import { socket } from "~/lib/socket";
 
 type Track = Omit<MusicOrder, "createdAt" | "buyerId">;
 
 export default function Player() {
   const [tracks, addTracks] = useState<Track[] | undefined>([]);
   const [currentTrack, setCurrentTrack] = useState<Track | undefined>();
-  const [channel, setChannel] = useState<Channel | null>(null);
 
   const [userInteraction, setUserInteracted] = useState(false);
 
@@ -24,9 +23,13 @@ export default function Player() {
   const soundcloudRegexp =
     /^(?:(https?):\/\/)?(?:(?:www|m)\.)?(soundcloud\.com|snd\.sc)\/(.*)$/;
 
-  const getTracks = api.radioCenter.getCurrentTrackAndQueue.useQuery();
+  const getTracks = getCurrentQueue();
 
-  const deleteTrack = api.radioCenter.deleteOrder.useMutation();
+  const deleteTrack = deleteOrder({
+    onSuccess: () => {
+      socket.emit("refresh");
+    },
+  });
 
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
@@ -39,14 +42,17 @@ export default function Player() {
   }, [getTracks.data]);
 
   useEffect(() => {
-    const pusherChannel = pusherClient.subscribe("radioCenter_client");
-    setChannel(pusherChannel);
+    socket.emit("joinRoom", { roomId: "radioCenter-client" });
+
+    socket.on("add-track", (data: MusicOrder) => {
+      console.log(data);
+      handleAddTrack(data);
+    });
 
     return () => {
-      pusherClient.unsubscribe("radioCenter_client");
-      pusherClient.unbind_all();
+      socket.removeAllListeners();
     };
-  }, []);
+  }, [handleAddTrack]);
 
   useEffect(() => {
     const handleBeforeUnload = () => {
@@ -58,21 +64,10 @@ export default function Player() {
     if (currentTrack) {
       window.addEventListener("beforeunload", handleBeforeUnload);
     }
-
-    // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
-    if (channel && channel.bind) {
-      channel.bind("add-track", function (data: MusicOrder) {
-        handleAddTrack(data);
-      });
-
-      return () => {
-        channel.unbind_all();
-        window.removeEventListener("beforeunload", handleBeforeUnload);
-      };
-    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [channel, currentTrack, tracks]);
+  }, [currentTrack, tracks]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   function handleAddTrack(track: Track) {
     if (
       !youtubeRegexp.test(track.musicUrl) &&

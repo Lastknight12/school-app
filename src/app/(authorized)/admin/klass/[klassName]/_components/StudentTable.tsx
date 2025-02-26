@@ -19,7 +19,7 @@ import {
 import Image from "next/image";
 import { createContext, useContext } from "react";
 
-import { api } from "~/trpc/react";
+import getKlassStudents from "~/server/callers/klass/students/post";
 
 import { Button } from "~/shadcn/ui/button";
 import {
@@ -93,7 +93,7 @@ const columns: ColumnDef<Student>[] = [
 const StudentTableContext = createContext<TanstackTable<Student> | null>(null);
 
 export default function StudentsTable({ klassId, children }: Props) {
-  const getStudents = api.klass.getKlassStudents.useQuery({ id: klassId });
+  const getStudents = getKlassStudents({ id: klassId });
   const table = useReactTable<Student>({
     data: getStudents.data ?? [],
     columns,

@@ -3,7 +3,7 @@
 import { Loader2, RefreshCw } from "lucide-react";
 import { useState } from "react";
 
-import { api } from "~/trpc/react";
+import getAllTransactions from "~/server/callers/transfers/all/get";
 
 import { cn } from "~/lib/utils";
 
@@ -19,13 +19,13 @@ import {
 
 export default function UsersModelContent() {
   const [currentPage, setCurrentPage] = useState(1);
-  const [transactionsPerPage] = useState(10);
+  const transactionsPerPage = 10;
 
   const {
     data: transactions,
     isFetching: isFetchingTransactions,
     refetch: refetchTransactions,
-  } = api.transfers.getAllTransactions.useQuery();
+  } = getAllTransactions();
 
   // Pagination
   const indexOfLastTransaction = currentPage * transactionsPerPage;
@@ -107,7 +107,7 @@ export default function UsersModelContent() {
           {currentTransactions?.map((transaction) => (
             <TableRow key={transaction.id}>
               <TableCell className="font-medium">
-                {transaction.createdAt.toLocaleDateString()}
+                {new Date(transaction.createdAt).toLocaleDateString()}
               </TableCell>
 
               <TableCell>{transaction.sender?.name}</TableCell>

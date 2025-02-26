@@ -1,9 +1,13 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { api } from "~/trpc/react";
+import createOrder from "~/server/callers/radioCenter/orders/create/post";
+import getVideoInfo from "~/server/callers/radioCenter/videoInfo/post";
+
+import { socket } from "~/lib/socket";
 
 import { Button } from "~/shadcn/ui/button";
 import {
@@ -24,9 +28,9 @@ export default function DialogDemo() {
   const [videoInfo, setVideoInfo] = useState<
     { musicTitle: string; musicImage: string } | undefined
   >();
-  const utils = api.useUtils();
+  const utils = useQueryClient();
 
-  const getVideoInfoMutation = api.radioCenter.getVideoInfo.useMutation({
+  const getVideoInfoMutation = getVideoInfo({
     onSuccess: (data) => {
       setVideoInfo(data);
     },
@@ -35,17 +39,18 @@ export default function DialogDemo() {
     },
   });
 
-  const createOrderMutation = api.radioCenter.createOrder.useMutation({
-    onSuccess: () => {
-      void utils.radioCenter.getOrders.invalidate();
+  const createOrderMutation = createOrder({
+    onSuccess: (orderId) => {
+      void utils.invalidateQueries({ queryKey: ["radioCenterOrders"] });
       setIsOpen(false);
       setMusicUrl("");
       setVideoInfo(undefined);
+      socket.emit("order-created", orderId);
     },
 
     onError: (error) => {
-      error.data?.zodError
-        ? toast.error(error.data.zodError[0]?.message)
+      typeof error.message !== "string"
+        ? toast.error(error.message[0]?.message)
         : toast.error(error.message);
     },
   });
@@ -65,7 +70,7 @@ export default function DialogDemo() {
       (youtubeRegexp.test(e.target.value) && videoId.length >= 11) ||
       soundcloudRegexp.test(e.target.value)
     ) {
-      getVideoInfoMutation.mutate(e.target.value);
+      getVideoInfoMutation.mutate({ url: e.target.value });
     } else {
       videoInfo && setVideoInfo(undefined);
     }
@@ -96,7 +101,7 @@ export default function DialogDemo() {
             <Loader2 className="mx-auto mt-3 h-5 w-5 animate-spin text-[#b5b5b5]" />
           )}
 
-          {getVideoInfoMutation.isError && (
+          {typeof getVideoInfoMutation.error?.message === "string" && (
             <div className="mt-3 text-sm text-red-500 text-center">
               {getVideoInfoMutation.error.message}
             </div>

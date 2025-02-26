@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { sendAmountSchema } from "~/schemas/zod";
 
-import { api } from "~/trpc/react";
+import sendMoney from "~/server/callers/transfers/sendMoney/post";
 
 import { Button } from "~/shadcn/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "~/shadcn/ui/dialog";
@@ -39,7 +39,7 @@ export default function TransactionDialog({
   const isAmountPositive = amount > 0;
   const maxValue = 99999999; // 99 999 999
 
-  const sendMoneyMutation = api.transfers.sendMoney.useMutation({
+  const sendMoneyMutation = sendMoney({
     onSuccess: () => {
       toast.success("Кошти були надіслані");
       void updateSession({ eventType: "refreshBalance" });
@@ -47,8 +47,8 @@ export default function TransactionDialog({
       setIsOpen(false);
     },
     onError: (error) => {
-      error.data?.zodError && error.data?.zodError.length > 0
-        ? toast.error(error.data.zodError[0]!.message)
+      typeof error.message !== "string"
+        ? toast.error(error.message[0]?.message)
         : toast.error(error.message);
     },
   });

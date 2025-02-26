@@ -6,8 +6,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { toast } from "sonner";
 
-import { api } from "~/trpc/react";
+import acceptOrder from "~/server/callers/radioCenter/orders/accept/post";
+import cancelOrder from "~/server/callers/radioCenter/orders/cancel/post";
 
+import { socket } from "~/lib/socket";
 import { cn } from "~/lib/utils";
 
 import {
@@ -38,26 +40,29 @@ export default function MusicOrderCard({
   className,
   refresh,
 }: Props) {
-  const acceptOrderMutation = api.radioCenter.acceptOrder.useMutation({
-    onSuccess: () => {
+  const acceptOrderMutation = acceptOrder({
+    onSuccess: (orderId) => {
       refresh?.();
       toast.success("Замовлення успішно прийняте");
+
+      socket.emit("add-track", orderId);
+      socket.emit("refresh");
     },
     onError: (error) => {
-      error.data?.zodError
-        ? toast.error(error.data.zodError[0]?.message)
+      typeof error.message !== "string"
+        ? toast.error(error.message[0]?.message)
         : toast.error(error.message);
     },
   });
 
-  const cancelOrderMutation = api.radioCenter.cancelOrder.useMutation({
+  const cancelOrderMutation = cancelOrder({
     onSuccess: () => {
       refresh?.();
       toast.success("Замовлення успішно скасоване");
     },
     onError: (error) => {
-      error.data?.zodError
-        ? toast.error(error.data.zodError[0]?.message)
+      typeof error.message !== "string"
+        ? toast.error(error.message[0]?.message)
         : toast.error(error.message);
     },
   });

@@ -1,25 +1,27 @@
 "use client";
 
+import type { Transaction } from "@prisma/client";
 import { Loader2 } from "lucide-react";
 import { ShoppingCart } from "lucide-react";
 import { type Session } from "next-auth";
 import Image from "next/image";
 import { type CSSProperties } from "react";
 
-import { type formatedTransfer } from "~/server/api/routers/transfers";
-import { api } from "~/trpc/react";
+import getTransfers from "~/server/callers/transfers/get";
 
 interface Props {
   session: Session | null;
 }
 
+export interface formatedTransfer extends Transaction {
+  randomGradient: {
+    from: string;
+    to: string;
+  };
+}
+
 export default function TransfersList({ session }: Props) {
-  const { data: transfers, isFetching } = api.transfers.getTransfers.useQuery(
-    void 0,
-    {
-      refetchOnWindowFocus: false,
-    },
-  );
+  const { data: transfers, isFetching } = getTransfers();
 
   return (
     <div className="mt-12 min-h-[calc(100vh-64px-200px)] overflow-hidden rounded-tl-[30px] rounded-tr-[30px] border-t border-border bg-accent pb-4">
@@ -94,11 +96,14 @@ export default function TransfersList({ session }: Props) {
                             : transfer.sender?.name}
                       </h1>
                       <p className="text-sm font-semibold text-[#fafafa4d]">
-                        {transfer.createdAt.toLocaleDateString("uk-UA", {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        })}
+                        {new Date(transfer.createdAt).toLocaleDateString(
+                          "uk-UA",
+                          {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          },
+                        )}
                       </p>
                     </div>
                   </div>

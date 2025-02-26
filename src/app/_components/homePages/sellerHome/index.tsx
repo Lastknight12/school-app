@@ -1,10 +1,12 @@
 "use client";
 
+import { useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
-import { api } from "~/trpc/react";
+import getCategoryItems from "~/server/callers/category/items/get";
+import getCategoryNames from "~/server/callers/category/names/get";
 
 import { cn } from "~/lib/utils";
 
@@ -22,23 +24,20 @@ import { useSidebar } from "~/shadcn/ui/sidebar";
 
 export default function SellerHomePage() {
   const [currentCategoryName, setCurrentCategoryName] = useState("");
-  const getCategoryNames = api.category.getCategoryNames.useQuery(void 0, {
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-  });
+  const categoryNames = getCategoryNames();
 
-  const utils = api.useUtils();
+  const utils = useQueryClient();
 
   useEffect(() => {
-    if (getCategoryNames.data && getCategoryNames.data.length > 0) {
-      setCurrentCategoryName(getCategoryNames.data[0]!.name);
+    if (categoryNames.data && categoryNames.data.length > 0) {
+      setCurrentCategoryName(categoryNames.data[0]!.name);
     }
-  }, [getCategoryNames.data, getCategoryNames.isFetching]);
+  }, [categoryNames.data, categoryNames.isFetching]);
 
   const [searchFilter, setSearchFilter] = useState("");
   const debauncedFilterValue = useDebounceValue(searchFilter, 800);
 
-  const getCategoryItems = api.category.getCategoryItems.useQuery(
+  const categoryItems = getCategoryItems(
     {
       categoryName: currentCategoryName,
       searchFilter: debauncedFilterValue,
@@ -61,7 +60,9 @@ export default function SellerHomePage() {
       >
         <div className="flex flex-wrap justify-end gap-3 w-full">
           <GenerateQRModal
-            onSuccess={() => void utils.category.getCategoryItems.invalidate()}
+            onSuccess={() =>
+              void utils.invalidateQueries({ queryKey: ["getCategoryItems"] })
+            }
           >
             <Button className="grow">Генерувати QR-код</Button>
           </GenerateQRModal>
@@ -77,8 +78,8 @@ export default function SellerHomePage() {
 
         {/* Top scrollable categories list */}
         <CategoryNamesList
-          categories={getCategoryNames.data ?? []}
-          isLoading={getCategoryNames.isPending}
+          categories={categoryNames.data ?? []}
+          isLoading={categoryNames.isPending}
           onClick={setCurrentCategoryName}
           showMenu
         />
@@ -93,26 +94,24 @@ export default function SellerHomePage() {
           />
 
           {/* Loading state */}
-          {getCategoryItems.isFetching && (
+          {categoryItems.isFetching && (
             <div className="flex h-full items-center justify-center">
               <Loader2 className="h-6 w-6 animate-spin text-[#b5b5b5]" />
             </div>
           )}
 
-          {getCategoryNames.data?.length === 0 &&
-            !getCategoryNames.isPending && (
-              <p>Не знайдено жодних категорій. Спробуйте добавити нову</p>
-            )}
+          {categoryNames.data?.length === 0 && !categoryNames.isPending && (
+            <p>Не знайдено жодних категорій. Спробуйте добавити нову</p>
+          )}
 
-          {getCategoryItems.data?.length === 0 &&
-            !getCategoryItems.isPending && (
-              <p className="text-center">
-                Не знайдено жодних продуктів в категорі{" "}
-                <span className="text-emerald-300">{currentCategoryName}</span>
-              </p>
-            )}
+          {categoryItems.data?.length === 0 && !categoryItems.isPending && (
+            <p className="text-center">
+              Не знайдено жодних продуктів в категорі{" "}
+              <span className="text-emerald-300">{currentCategoryName}</span>
+            </p>
+          )}
 
-          {getCategoryItems.data?.map((item) => {
+          {categoryItems.data?.map((item) => {
             return (
               <ProductListItem key={item.id} item={item}>
                 <div className="flex items-center gap-3">
