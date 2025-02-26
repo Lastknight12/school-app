@@ -54,7 +54,7 @@ export default function ProductListItem({ children, item }: Props) {
   const updateProductMutation = updateProduct({
     onSuccess: () => {
       toast.success("Продукт успішно оновлено");
-      void utils.invalidateQueries({ queryKey: ["categoryItems"] });
+      void utils.invalidateQueries({ queryKey: ["getCategoryItems"] });
       setIsOpen(false);
     },
     onError: () => {

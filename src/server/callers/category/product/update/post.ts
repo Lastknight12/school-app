@@ -12,7 +12,7 @@ type Res = Awaited<ReturnType<typeof updateProductHandler>>;
 type Props = z.infer<typeof updateProductInput>;
 
 const updateProductFn = async (body: Props): Promise<Res> => {
-  const response = await fetch("/api/product/update", {
+  const response = await fetch("/api/category/product/update", {
     method: "POST",
     credentials: "include",
     body: JSON.stringify(body),
