@@ -36,7 +36,7 @@
 ## 📥 Встановлення та запуск
 ```sh
 # Клонування репозиторію
-git clone git clone -b rest-api-with-socket.io https://github.com/Lastknight12/school-app
+git clone -b rest-api-with-socket.io https://github.com/Lastknight12/school-app
 cd school-app
 
 # Встановлення залежностей
