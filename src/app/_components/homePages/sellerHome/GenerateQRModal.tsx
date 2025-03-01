@@ -145,7 +145,9 @@ export default function GenerateQRModal({ onSuccess, children }: Props) {
                   />
                 </div>
               )}
-              {paymentError && <p className="text-red-500 mx-auto">{paymentError}</p>}
+              {paymentError && (
+                <p className="text-red-500 mx-auto">{paymentError}</p>
+              )}
               {isSuccess && <p className="text-green-500 mx-auto">Успішно</p>}
             </>
           ) : (

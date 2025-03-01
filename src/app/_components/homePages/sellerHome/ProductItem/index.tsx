@@ -1,7 +1,7 @@
 "use client";
 
 import { type CategoryItem } from "@prisma/client";
-import { Loader2, X, RefreshCw, Trash } from "lucide-react";
+import { Loader2, RefreshCw, Trash, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -99,17 +99,20 @@ export default function ProductListItem({ children, item }: Props) {
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild className={cn(item.count === 0 && "opacity-30")}>
-        {children}
-      </DialogTrigger>
+      <DialogTrigger>{children}</DialogTrigger>
       <DialogContent
         className="sm:max-w-[425px]"
         onOpenAutoFocus={(e) => e.preventDefault()}
       >
         <DialogHeader>
           <DialogTitle>
-            Додати <span className="text-emerald-300">{item.title.length > 30 ? item.title.slice(0, 30) + "..." : item.title}</span> до
-            списку
+            Додати{" "}
+            <span className="text-emerald-300">
+              {item.title.length > 30
+                ? item.title.slice(0, 30) + "..."
+                : item.title}
+            </span>{" "}
+            до списку
           </DialogTitle>
 
           <DialogDescription>
