@@ -28,7 +28,6 @@ export const env = createEnv({
     CLOUDINARY_API_KEY: z.string(),
     CLOUDINARY_API_SECRET: z.string(),
     PUSHER_APP_ID: z.string(),
-    PUSHER_KEY: z.string(),
     PUSHER_SECRET: z.string(),
     PUSHER_CLUSTER: z.string(),
     YOUTUBE_API_KEY: z.string(),
@@ -45,6 +44,7 @@ export const env = createEnv({
    */
   client: {
     NEXT_PUBLIC_BUY_URL: z.string(),
+    NEXT_PUBLIC_PUSHER_KEY: z.string(),
   },
   /**
    * You can't destruct `process.env` as a regular object in the Next.js edge runtimes (e.g.
@@ -62,7 +62,7 @@ export const env = createEnv({
     CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
     CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
     PUSHER_APP_ID: process.env.PUSHER_APP_ID,
-    PUSHER_KEY: process.env.PUSHER_KEY,
+    NEXT_PUBLIC_PUSHER_KEY: process.env.NEXT_PUBLIC_PUSHER_KEY,
     PUSHER_SECRET: process.env.PUSHER_SECRET,
     PUSHER_CLUSTER: process.env.PUSHER_CLUSTER,
     YOUTUBE_API_KEY: process.env.YOUTUBE_API_KEY,
