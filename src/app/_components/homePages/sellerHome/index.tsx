@@ -107,7 +107,7 @@ export default function SellerHomePage() {
           {getCategoryItems.data?.length === 0 &&
             !getCategoryItems.isPending && (
               <p className="text-center">
-                Не знайдено жодних продуктів в категорі{" "}
+                Не знайдено жодних продуктів в категорії{" "}
                 <span className="text-emerald-300">{currentCategoryName}</span>
               </p>
             )}
