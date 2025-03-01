@@ -13,6 +13,7 @@ import { cn } from "~/lib/utils";
 import { useDebounceValue } from "~/hooks/use-debounce-value";
 
 import CategoryNamesList from "../../shared/CategoryNamesList";
+import ProductCard from "../../shared/ProductCard";
 import GenerateQRModal from "./GenerateQRModal";
 import ProductListItem from "./ProductItem";
 import AddNewCategory from "./TopButtons/AddNewCategory";
@@ -106,35 +107,21 @@ export default function SellerHomePage() {
 
           {categoryItems.data?.length === 0 && !categoryItems.isPending && (
             <p className="text-center">
-              Не знайдено жодних продуктів в категорі{" "}
+              Не знайдено жодних продуктів в категорії{" "}
               <span className="text-emerald-300">{currentCategoryName}</span>
             </p>
           )}
-
-          {categoryItems.data?.map((item) => {
-            return (
-              <ProductListItem key={item.id} item={item}>
-                <div className="flex items-center gap-3">
-                  <Image
-                    src={item.image}
-                    width={100}
-                    height={100}
-                    className="rounded-md h-[100px]"
-                    alt="product image"
-                  />
-                  <div className="flex flex-col justify-center gap-2">
-                    <h1>
-                      {item.title.length > 30
-                        ? item.title.slice(0, 30) + "..."
-                        : item.title}
-                    </h1>
-                    <p>{item.pricePerOne + " Балів"}</p>
-                    <p>Кількість: {item.count}</p>
-                  </div>
-                </div>
-              </ProductListItem>
-            );
-          })}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 grid-rows-5 gap-4 py-4">
+            {categoryItems.data
+              ?.sort((a, b) => (a.count > b.count ? -1 : 1))
+              ?.map((item) => {
+                return (
+                  <ProductListItem key={item.id} item={item}>
+                    <ProductCard product={item} />
+                  </ProductListItem>
+                );
+              })}
+          </div>
         </div>
       </div>
     </main>

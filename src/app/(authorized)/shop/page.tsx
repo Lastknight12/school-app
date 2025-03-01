@@ -11,6 +11,7 @@ import getCategoryNames from "~/server/callers/category/names/get";
 import { cn } from "~/lib/utils";
 
 import CategoryNamesList from "~/app/_components/shared/CategoryNamesList";
+import ProductCard from "~/app/_components/shared/ProductCard";
 
 import { useSidebar } from "~/shadcn/ui/sidebar";
 
@@ -64,30 +65,13 @@ export default function Shop() {
           </p>
         ) : (
           // else show items
-          fetchCategoryItems.data?.map((item) => {
-            return (
-              <div
-                className={cn(
-                  "flex items-center gap-3",
-                  item.count === 0 && "opacity-30",
-                )}
-                key={item.id}
-              >
-                <Image
-                  src={item.image}
-                  width={100}
-                  height={100}
-                  className="rounded-md h-[100px]"
-                  alt="product image"
-                />
-                <div className="flex flex-col justify-center gap-2">
-                  <h1>{item.title}</h1>
-                  <p>{item.pricePerOne + " Балів"}</p>
-                  <p>Кількість: {item.count}</p>
-                </div>
-              </div>
-            );
-          })
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 grid-rows-5 gap-4 py-4">
+            {fetchCategoryItems.data
+              ?.sort((a, b) => (a.count > b.count ? -1 : 1))
+              .map((item) => {
+                return <ProductCard product={item} />;
+              })}
+          </div>
         )}
       </div>
     </main>

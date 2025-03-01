@@ -101,9 +101,7 @@ export default function ProductListItem({ children, item }: Props) {
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild className={cn(item.count === 0 && "opacity-30")}>
-        {children}
-      </DialogTrigger>
+      <DialogTrigger>{children}</DialogTrigger>
       <DialogContent
         className="sm:max-w-[425px]"
         onOpenAutoFocus={(e) => e.preventDefault()}
