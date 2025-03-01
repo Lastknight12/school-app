@@ -2,7 +2,6 @@
 
 import { useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
-import Image from "next/image";
 import { useEffect, useState } from "react";
 
 import getCategoryItems from "~/server/callers/category/items/get";

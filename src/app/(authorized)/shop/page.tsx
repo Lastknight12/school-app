@@ -1,7 +1,6 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
-import Image from "next/image";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -69,7 +68,7 @@ export default function Shop() {
             {fetchCategoryItems.data
               ?.sort((a, b) => (a.count > b.count ? -1 : 1))
               .map((item) => {
-                return <ProductCard product={item} />;
+                return <ProductCard product={item} key={item.id} />;
               })}
           </div>
         )}
