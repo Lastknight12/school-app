@@ -647,6 +647,14 @@ export const transfersRouter = createTRPCRouter({
             select: {
               id: true,
               image: true,
+              title: true,
+              pricePerOne: true,
+              count: true,
+              Category: {
+                select: {
+                  name: true,
+                },
+              },
             },
           },
         },

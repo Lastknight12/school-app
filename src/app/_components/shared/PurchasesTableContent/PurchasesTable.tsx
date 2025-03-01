@@ -3,9 +3,8 @@
 import { type TransactionStatus } from "@prisma/client";
 import { format } from "date-fns";
 import { Loader2 } from "lucide-react";
-import Image from "next/image";
 
-import { cn } from "~/lib/utils";
+import ProductsModal from "./ProductsModal";
 
 import {
   Table,
@@ -25,7 +24,13 @@ interface Data {
   createdAt: Date;
   productsBought: {
     id: string;
+    title: string;
     image: string;
+    count: number;
+    Category: {
+      name: string;
+    };
+    pricePerOne: number;
   }[];
   sender: {
     name: string;
@@ -88,29 +93,7 @@ export function TransfersTable({
             <TableCell>{transfer.status}</TableCell>
             <TableCell>{transfer.sender?.email}</TableCell>
             <TableCell>
-              <div className="flex items-center">
-                {transfer.productsBought.slice(0, 4).map((product, i) => (
-                  <div
-                    key={product.id}
-                    className={cn(
-                      "relative z-10 h-10 w-10 overflow-hidden rounded-full",
-                      i > 0 ? `-ml-5` : "ml-0",
-                    )}
-                  >
-                    <Image
-                      src={product.image}
-                      alt={product.id}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                ))}
-                {transfer.productsBought.length > 4 && (
-                  <div className="ml-2">
-                    +{transfer.productsBought.length - 4}
-                  </div>
-                )}
-              </div>
+              <ProductsModal products={transfer.productsBought} />
             </TableCell>
             <TableCell className="text-right">{transfer.amount} $</TableCell>
           </TableRow>

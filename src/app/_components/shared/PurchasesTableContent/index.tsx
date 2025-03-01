@@ -34,17 +34,20 @@ export default function PurchasesTableContent() {
     },
   );
 
-  const indexOfLastUser = currentPage * usersPerPage;
-  const indexOfFirstUser = indexOfLastUser - usersPerPage;
+  const indexOfLastPurchase = currentPage * usersPerPage;
+  const indexOfFirstPurchase = indexOfLastPurchase - usersPerPage;
   const currentPurchases = getTransfers.data?.transfers?.slice(
-    indexOfFirstUser,
-    indexOfLastUser,
+    indexOfFirstPurchase,
+    indexOfLastPurchase,
   );
+
   const totalPages = getTransfers.data
     ? Math.ceil(getTransfers.data.transfers.length / usersPerPage)
     : 0;
 
   getTransfers.data?.transfers[0]?.sender;
+
+  console.log(currentPurchases);
 
   return (
     <div className="mb-4">
