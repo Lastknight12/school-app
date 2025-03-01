@@ -2,7 +2,6 @@ import type { Transaction } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { randomUUID } from "crypto";
 import { addDays } from "date-fns";
-import { truncate } from "fs";
 import jwt from "jsonwebtoken";
 import { z } from "zod";
 import { env } from "~/env";
