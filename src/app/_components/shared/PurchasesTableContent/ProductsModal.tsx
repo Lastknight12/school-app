@@ -60,7 +60,7 @@ export default function ProductsModal({ products, maxLength = 4 }: Props) {
         </DialogHeader>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 py-4">
           {products.map((product) => (
-            <ProductCard product={product} />
+            <ProductCard product={product} key={product.id} />
           ))}
         </div>
       </DialogContent>
