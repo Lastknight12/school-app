@@ -12,7 +12,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "~/shadcn/ui/dialog";
 import { Input } from "~/shadcn/ui/input";
 import { Label } from "~/shadcn/ui/label";
@@ -69,34 +68,28 @@ export default function UpdateCategory({
 
   return (
     <Dialog
-      // here
       open={customIsOpen ?? isOpen}
       onOpenChange={(open) => {
         onOpenChange?.(open);
         setIsOpen(open);
       }}
     >
-      <DialogTrigger className="select-none outline-none">
-        Оновити
-      </DialogTrigger>
-      <DialogContent
-        className="sm:max-w-[425px]"
-        onEscapeKeyDown={() =>
-          customIsOpen ? onOpenChange?.(false) : setIsOpen(false)
-        }
-      >
+      <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Оновити категорію</DialogTitle>
           <DialogDescription>Змініть назву категорії</DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-2 mt-3">
-          {/* New name */}
           <Label className="text-left text-base">Нова назва:</Label>
           <Input
-            variant="accent"
             value={name}
             onChange={(e) => {
               setName(e.target.value);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === " ") {
+                e.stopPropagation();
+              }
             }}
           />
         </div>

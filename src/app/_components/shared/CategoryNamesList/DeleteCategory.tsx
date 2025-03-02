@@ -12,7 +12,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "~/shadcn/ui/dialog";
 
 interface Props {
@@ -60,9 +59,6 @@ export function DeleteCategory({
         setIsOpen(open);
       }}
     >
-      <DialogTrigger className="text-red-400 outline-none">
-        Видалити
-      </DialogTrigger>
       <DialogContent
         className="sm:max-w-[425px]"
         onEscapeKeyDown={() =>
