@@ -22,7 +22,6 @@ export default function Page() {
 
   useEffect(() => {
     if (tab && isTabCorrect) {
-      console.log(tab);
       setCurrentModel(tab as Tabs);
     }
   }, [isTabCorrect, tab]);

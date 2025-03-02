@@ -84,7 +84,7 @@ img {
     --muted-foreground: 240 5% 64.9%;
     --accent: 240 3% 20%;
     --accent-foreground: 0 0% 100%;
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 0 81% 48%;
     --destructive-foreground: 0 0% 100%;
     --border: 240 3% 20%;
     --input: 240 3% 20%;
@@ -102,11 +102,6 @@ img {
     height: 100%;
     /* by default dont lock user interactions */
     pointer-events: all !important;
-  }
-
-  /* lock if open e.g modal, dropdown, dont metter number of locked elements */
-  body[data-scroll-locked] {
-    pointer-events: none;
   }
 }
 

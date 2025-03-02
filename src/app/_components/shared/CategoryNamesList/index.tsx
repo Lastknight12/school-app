@@ -19,12 +19,9 @@ export default function CategoryNamesList({
   categories,
   showMenu,
 }: Props) {
-
   return (
     // if no categories and not loading, hide list
-    <div
-      className="overflow-x-auto pb-2"
-    >
+    <div className="overflow-x-auto pb-2">
       <div className="flex gap-2">
         {isLoading
           ? Array.from({ length: 40 }).map((_, index) => (
