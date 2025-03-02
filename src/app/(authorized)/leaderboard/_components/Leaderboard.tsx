@@ -42,7 +42,6 @@ export default function Leaderboard({ session }: Props) {
       getLeaderboard.hasNextPage &&
       !getLeaderboard.isFetching
     ) {
-      console.log("fetch next page");
       void getLeaderboard.fetchNextPage();
     }
   }, [getLeaderboard, isScrolledToTrigger]);

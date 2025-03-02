@@ -47,8 +47,6 @@ export default function PurchasesTableContent() {
 
   getTransfers.data?.transfers[0]?.sender;
 
-  console.log(currentPurchases);
-
   return (
     <div className="mb-4">
       <div className="flex justify-between flex-wrap mb-4">
