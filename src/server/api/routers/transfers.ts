@@ -191,44 +191,64 @@ export const transfersRouter = createTRPCRouter({
       });
     }),
 
-  getTransfers: protectedProcedure.query(async ({ ctx }) => {
-    const transfers = await ctx.db.transaction.findMany({
-      where: {
-        OR: [
-          {
-            senderId: ctx.session.user.id,
-          },
-          {
-            recieverId: ctx.session.user.id,
-          },
-        ],
-      },
-      select: {
-        id: true,
-        productsBought: true,
-        randomGradient: true,
-        reciever: {
-          select: {
-            id: true,
-            name: true,
-            image: true,
-          },
-        },
-        sender: {
-          select: {
-            id: true,
-            name: true,
-            image: true,
-          },
-        },
-        type: true,
-        amount: true,
-        createdAt: true,
-      },
-    });
+  getTransfers: protectedProcedure
+    .input(
+      z.object({
+        limit: z.number().min(3).max(50).nullish(),
+        cursor: z.string().nullish(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const limit = input.limit ?? 50;
 
-    return transfers.reverse();
-  }),
+      const transfers = await ctx.db.transaction.findMany({
+        where: {
+          OR: [
+            {
+              senderId: ctx.session.user.id,
+            },
+            {
+              recieverId: ctx.session.user.id,
+            },
+          ],
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        cursor: input.cursor ? { id: input.cursor } : undefined,
+        take: input.limit ? input.limit + 1 : undefined,
+        select: {
+          id: true,
+          productsBought: true,
+          randomGradient: true,
+          reciever: {
+            select: {
+              id: true,
+              name: true,
+              image: true,
+            },
+          },
+          sender: {
+            select: {
+              id: true,
+              name: true,
+              image: true,
+            },
+          },
+          type: true,
+          amount: true,
+          createdAt: true,
+        },
+      });
+
+      let nextCursor: string | undefined = undefined;
+      if (transfers.length > limit) {
+        const nextItem = transfers.pop();
+        nextCursor = nextItem!.id;
+      }
+
+      return { transfers, nextCursor };
+    }),
 
   getAllTransactions: adminProcedure.query(async ({ ctx }) => {
     return (
