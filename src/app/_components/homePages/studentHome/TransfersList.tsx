@@ -46,7 +46,7 @@ export default function TransfersList({ session }: Props) {
       <div className="flex items-center justify-center py-5">
         <div className="h-1 w-9 rounded bg-[#ffffff1a]" />
       </div>
-      {getTransfers.isLoading! && transfers?.pages.length === 0 && (
+      {!getTransfers.isLoading && transfers?.pages.length === 0 && (
         <div className="flex h-full w-full items-center justify-center text-2xl">
           Немає транзакцій
         </div>
