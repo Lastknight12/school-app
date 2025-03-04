@@ -3,31 +3,30 @@ import {
   useInfiniteQuery,
 } from "@tanstack/react-query";
 import { type z } from "zod";
-import {
-  type getLeaderboardHandler,
-  type getLeaderboardInput,
-} from "~/app/api/user/getLeaderboard/route";
+import type {
+  getTransfersHandler,
+  getTransfersInput,
+} from "~/app/api/transfers/route";
 
 import { type QueryError } from "~/lib/server";
 
-type Res = Awaited<ReturnType<typeof getLeaderboardHandler>>;
-type Props = z.infer<typeof getLeaderboardInput>;
+type Props = z.infer<typeof getTransfersInput>;
 
-const getLeaderboardFn = async (body: Props): Promise<Res> => {
-  const response = await fetch("/api/user/getLeaderboard", {
+type Res = Awaited<ReturnType<typeof getTransfersHandler>>;
+
+export const getTransfersFn = async (body: Props): Promise<Res> => {
+  const response = await fetch("/api/transfers", {
     method: "POST",
     credentials: "include",
     body: JSON.stringify(body),
   });
-
   if (!response.ok) {
-    throw new Error("Failed to fetch user/getLeaderboard");
+    throw new Error("Failed to fetch /transfers");
   }
-
   return response.json();
 };
 
-const getLeaderboard = (
+const getTransfers = (
   body: Props,
   opts?: Omit<
     UseInfiniteQueryOptions<Res, QueryError>,
@@ -36,9 +35,9 @@ const getLeaderboard = (
 ) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   return useInfiniteQuery<Res, QueryError>({
-    queryKey: ["getLeaderboard", body],
+    queryKey: ["getTransfers", body],
     queryFn: ({ pageParam = body.cursor }) =>
-      getLeaderboardFn({ ...body, cursor: pageParam as Props["cursor"] }),
+      getTransfersFn({ ...body, cursor: pageParam as Props["cursor"] }),
     initialPageParam: body.cursor,
     getNextPageParam: (data) => data.nextCursor,
     ...opts,
@@ -52,4 +51,4 @@ const getLeaderboard = (
   });
 };
 
-export default getLeaderboard;
+export default getTransfers;
