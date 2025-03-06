@@ -20,7 +20,7 @@ const payFn = async (body: Props): Promise<Res> => {
     body: JSON.stringify(body),
   });
   if (!response.ok) {
-    throw new Error("Failed to fetch");
+    throw new Error("Виникла помилка під час оплати");
   }
   return response.json();
 };

@@ -1,16 +1,21 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
+import { useState } from "react";
 
 import getChartData from "~/server/callers/transfers/chart/get";
 import getStats from "~/server/callers/transfers/stats/get";
 
-import Chart from "./_components/Chart";
+import IncomingChart from "./_components/IncomingChart";
+import OutgoingChart from "./_components/OutgoingChart";
 import StatsInfo from "./_components/StatsInfo";
 
 export default function Stats() {
-  const chartData = getChartData();
+  const [currentTab, setCurrentTab] = useState<"incoming" | "outgoing">(
+    "outgoing",
+  );
   const statsData = getStats();
+  const chartData = getChartData();
 
   if (chartData.isLoading || statsData.isLoading) {
     return (
@@ -22,8 +27,23 @@ export default function Stats() {
 
   return (
     <div className="mb-6 h-max px-6">
-      <Chart chartData={chartData.data ?? []} />
-      <StatsInfo statsData={statsData.data!} />
+      {chartData.data && (
+        <>
+          {currentTab === "incoming" && (
+            <IncomingChart chartData={chartData.data} />
+          )}
+          {currentTab === "outgoing" && (
+            <OutgoingChart chartData={chartData.data} />
+          )}
+        </>
+      )}
+
+      {statsData.data && (
+        <StatsInfo
+          statsData={statsData.data}
+          onTabChange={(tab) => setCurrentTab(tab)}
+        />
+      )}
     </div>
   );
 }
