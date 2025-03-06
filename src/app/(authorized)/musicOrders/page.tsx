@@ -34,13 +34,15 @@ export default function Page() {
   const [play] = useSound("sounds/new-notification-7-210334.mp3", {
     volume: 1,
   });
-  const [pusherChannel, setPusherChannel] = useState<Channel | null>(null);
+  const [pusherChannel, setPusherChannel] = useState<Channel | undefined>(
+    undefined,
+  );
 
   useEffect(() => {
     if (getOrders.data) {
       setOrders(getOrders.data);
     }
-  }, [getOrders.data])
+  }, [getOrders.data]);
 
   useEffect(() => {
     const channel = pusherClient.subscribe("radioCenter");
@@ -92,7 +94,12 @@ export default function Page() {
         )}
 
         {orders.map((order) => (
-          <MusicOrderCard key={order.id} order={order} type="radioCenter" refresh={() => refresh(order.id)}/>
+          <MusicOrderCard
+            key={order.id}
+            order={order}
+            type="radioCenter"
+            refresh={() => refresh(order.id)}
+          />
         ))}
       </div>
     </div>

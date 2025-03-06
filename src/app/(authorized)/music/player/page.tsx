@@ -14,7 +14,7 @@ type Track = Omit<MusicOrder, "createdAt" | "buyerId">;
 export default function Player() {
   const [tracks, addTracks] = useState<Track[] | undefined>([]);
   const [currentTrack, setCurrentTrack] = useState<Track | undefined>();
-  const [channel, setChannel] = useState<Channel | null>(null);
+  const [channel, setChannel] = useState<Channel | undefined>(undefined);
 
   const [userInteraction, setUserInteracted] = useState(false);
 
