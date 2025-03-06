@@ -26,9 +26,9 @@ export default function TransfersList({ session }: Props) {
       },
     );
 
-  const fetchTriger = useRef(null);
+  const fetchTrigger = useRef(null);
 
-  const isScrolledToTrigger = useInView(fetchTriger);
+  const isScrolledToTrigger = useInView(fetchTrigger);
 
   useEffect(() => {
     if (
@@ -46,11 +46,12 @@ export default function TransfersList({ session }: Props) {
       <div className="flex items-center justify-center py-5">
         <div className="h-1 w-9 rounded bg-[#ffffff1a]" />
       </div>
-      {!getTransfers.isLoading && transfers?.pages.length === 0 && (
-        <div className="flex h-full w-full items-center justify-center text-2xl">
-          Немає транзакцій
-        </div>
-      )}
+      {!getTransfers.isLoading &&
+        transfers?.pages[0]?.transfers.length === 0 && (
+          <div className="flex h-full w-full items-center justify-center text-2xl">
+            Немає транзакцій
+          </div>
+        )}
 
       {getTransfers.isLoading && (
         <div className="flex h-full w-full items-center justify-center">
@@ -133,13 +134,14 @@ export default function TransfersList({ session }: Props) {
               });
             })}
 
-          {getTransfers.isFetchingNextPage && (
-            <div className="flex h-full w-full items-center justify-center">
+          <div
+            className="flex h-full w-full items-center justify-center"
+            ref={fetchTrigger}
+          >
+            {getTransfers.hasNextPage && (
               <Loader2 className="h-6 w-6 animate-spin text-[#b5b5b5]" />
-            </div>
-          )}
-
-          <div ref={fetchTriger} />
+            )}
+          </div>
         </div>
       </div>
     </div>
