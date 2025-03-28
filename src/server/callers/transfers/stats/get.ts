@@ -1,4 +1,8 @@
-import { type UseQueryOptions, useQuery } from "@tanstack/react-query";
+import {
+  type QueryKey,
+  type UseQueryOptions,
+  useQuery,
+} from "@tanstack/react-query";
 import { type getStatsHandler } from "~/app/api/transfers/stats/route";
 
 import { type QueryError } from "~/lib/server";
@@ -17,11 +21,13 @@ export const getStatsFn = async (): Promise<Res> => {
 };
 
 const getStats = (
-  opts?: Omit<UseQueryOptions<Res, QueryError>, "queryFn" | "queryKey">,
+  opts?: Omit<UseQueryOptions<Res, QueryError>, "queryFn" | "queryKey"> & {
+    queryKey?: QueryKey;
+  },
 ) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   return useQuery<Res, QueryError>({
-    queryKey: ["getStats"],
+    queryKey: ["getStats", ...(opts?.queryKey ?? [])],
     queryFn: () => getStatsFn(),
     refetchOnWindowFocus: false,
     ...opts,

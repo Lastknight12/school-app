@@ -14,9 +14,10 @@ type Props = z.infer<typeof getAdminDataInput>;
 export const getAdminData = async (body: Props): Promise<Res> => {
   const headersList = headers();
   const host = headersList.get("host");
+  const protocol = host?.includes("localhost") ? "http://" : "https://";
   const clientCookie = headersList.get("Cookie");
 
-  const response = await fetch(`http://${host}/api/klass/adminData`, {
+  const response = await fetch(`${protocol}${host}/api/klass/adminData`, {
     method: "POST",
     body: JSON.stringify(body),
     headers: {

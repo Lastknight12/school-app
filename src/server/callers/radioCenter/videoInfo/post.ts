@@ -1,4 +1,8 @@
-import { type UseMutationOptions, useMutation } from "@tanstack/react-query";
+import {
+  type MutationKey,
+  type UseMutationOptions,
+  useMutation,
+} from "@tanstack/react-query";
 import { type z } from "zod";
 import type {
   getVideoInfoHandler,
@@ -27,11 +31,11 @@ const getVideoInfo = (
   opts?: Omit<
     UseMutationOptions<Res, QueryError, Props>,
     "mutationFn" | "mutationkey"
-  >,
+  > & { mutationKey?: MutationKey },
 ) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   return useMutation<Res, QueryError, Props>({
-    mutationKey: opts?.mutationKey ?? ["getVideoInfo"],
+    mutationKey: ["getVideoInfo", ...(opts?.mutationKey ?? [])],
     mutationFn: (body) => getVideoInfoFn(body),
     ...opts,
   });

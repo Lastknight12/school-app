@@ -1,4 +1,8 @@
-import { type UseQueryOptions, useQuery } from "@tanstack/react-query";
+import {
+  type QueryKey,
+  type UseQueryOptions,
+  useQuery,
+} from "@tanstack/react-query";
 import type { getMusicOrdersHandler } from "~/app/api/radioCenter/orders/route";
 
 import { type QueryError } from "~/lib/server";
@@ -17,11 +21,13 @@ const getMusicOrdersFn = async (): Promise<Res> => {
 };
 
 const getMusicOrders = (
-  opts?: Omit<UseQueryOptions<Res, QueryError>, "queryFn" | "queryKey">,
+  opts?: Omit<UseQueryOptions<Res, QueryError>, "queryFn" | "queryKey"> & {
+    queryKey?: QueryKey;
+  },
 ) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   return useQuery<Res, QueryError>({
-    queryKey: ["getMusicOrders"],
+    queryKey: ["getMusicOrders", ...(opts?.queryKey ?? [])],
     queryFn: () => getMusicOrdersFn(),
     refetchOnWindowFocus: false,
     ...opts,

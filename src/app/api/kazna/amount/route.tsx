@@ -4,7 +4,7 @@ import { db } from "~/server/db";
 
 import { withAuth } from "~/lib/server";
 
-export async function getAmountHandler() {
+export async function getKaznaAmountHandler() {
   const kazna = await db.kazna.findFirst();
 
   if (!kazna) {
@@ -21,5 +21,5 @@ export async function getAmountHandler() {
 }
 
 export async function GET(req: NextRequest) {
-  return withAuth(req, getAmountHandler, ["ADMIN"]);
+  return withAuth(req, getKaznaAmountHandler, ["ADMIN"]);
 }

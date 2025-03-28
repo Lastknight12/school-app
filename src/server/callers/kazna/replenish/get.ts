@@ -1,4 +1,8 @@
-import { type UseQueryOptions, useQuery } from "@tanstack/react-query";
+import {
+  type QueryKey,
+  type UseQueryOptions,
+  useQuery,
+} from "@tanstack/react-query";
 import { type getReplenishHandler } from "~/app/api/kazna/replenish/route";
 
 import { type QueryError } from "~/lib/server";
@@ -17,11 +21,13 @@ const getKaznaReplenishFn = async (): Promise<Res> => {
 };
 
 const getKaznaReplenish = (
-  opts?: Omit<UseQueryOptions<Res, QueryError>, "queryFn" | "queryKey">,
+  opts?: Omit<UseQueryOptions<Res, QueryError>, "queryFn" | "queryKey"> & {
+    queryKey?: QueryKey;
+  },
 ) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   return useQuery<Res, QueryError>({
-    queryKey: ["getKaznaReplenish"],
+    queryKey: ["getKaznaReplenish", ...(opts?.queryKey ?? [])],
     queryFn: () => getKaznaReplenishFn(),
     refetchOnWindowFocus: false,
     ...opts,

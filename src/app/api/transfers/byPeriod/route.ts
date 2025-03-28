@@ -50,7 +50,15 @@ export async function getTransfersByPeriodHandler(req: NextRequest) {
       productsBought: {
         select: {
           id: true,
+          title: true,
           image: true,
+          count: true,
+          pricePerOne: true,
+          Category: {
+            select: {
+              name: true,
+            },
+          },
         },
       },
     },

@@ -44,7 +44,7 @@ export async function withAuth(
 
     const response = await handler(req, user);
 
-    return NextResponse.json(response ?? {});
+    return NextResponse.json(response ?? null);
   } catch (error) {
     if (error instanceof ServerError) {
       return error.toNextResponse();

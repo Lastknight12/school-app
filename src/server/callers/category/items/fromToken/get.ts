@@ -1,4 +1,8 @@
-import { type UseQueryOptions, useQuery } from "@tanstack/react-query";
+import {
+  type QueryKey,
+  type UseQueryOptions,
+  useQuery,
+} from "@tanstack/react-query";
 import type { z } from "zod";
 import type {
   getItemsFromTokenHandler,
@@ -25,11 +29,13 @@ const getItemsFromTokenFn = async (body: Props): Promise<Res> => {
 
 const getItemsFromToken = (
   body: Props,
-  opts?: Omit<UseQueryOptions<Res, QueryError>, "queryFn" | "queryKey">,
+  opts?: Omit<UseQueryOptions<Res, QueryError>, "queryFn" | "queryKey"> & {
+    queryKey?: QueryKey;
+  },
 ) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   return useQuery<Res, QueryError>({
-    queryKey: ["getItemsFromToken", body],
+    queryKey: ["getItemsFromToken", body, ...(opts?.queryKey ?? [])],
     queryFn: () => getItemsFromTokenFn(body),
     refetchOnWindowFocus: false,
     ...opts,

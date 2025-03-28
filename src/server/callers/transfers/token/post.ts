@@ -1,8 +1,12 @@
-import { useMutation } from "@tanstack/react-query";
+import {
+  type MutationKey,
+  type UseMutationOptions,
+  useMutation,
+} from "@tanstack/react-query";
 import { type z } from "zod";
-import type {
-  genProductTokenHandler,
-  genProductTokenInput,
+import {
+  type genProductTokenHandler,
+  type genProductTokenInput,
 } from "~/app/api/transfers/token/route";
 
 import { type QueryError } from "~/lib/server";
@@ -11,11 +15,6 @@ type Res = Awaited<ReturnType<typeof genProductTokenHandler>>;
 
 type Props = z.infer<typeof genProductTokenInput>;
 
-type Functions = {
-  onSuccess?: (data: Res) => void;
-  onError?: (data: QueryError) => void;
-};
-
 const genProductTokenFn = async (body: Props): Promise<Res> => {
   const response = await fetch("/api/transfers/token", {
     method: "POST",
@@ -23,18 +22,22 @@ const genProductTokenFn = async (body: Props): Promise<Res> => {
     body: JSON.stringify(body),
   });
   if (!response.ok) {
-    throw new Error("Failed to fetch");
+    throw new Error("Failed to fetch /transfers/token");
   }
   return response.json();
 };
 
-const genProductToken = ({ onSuccess, onError }: Functions) => {
+const genProductToken = (
+  opts?: Omit<
+    UseMutationOptions<Res, QueryError, Props>,
+    "mutationFn" | "mutationKey"
+  > & { mutationKey?: MutationKey },
+) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   return useMutation<Res, QueryError, Props>({
-    mutationKey: ["genProductToken"],
+    mutationKey: ["genProductToken", ...(opts?.mutationKey ?? [])],
     mutationFn: (body) => genProductTokenFn(body),
-    onSuccess,
-    onError,
+    ...opts,
   });
 };
 

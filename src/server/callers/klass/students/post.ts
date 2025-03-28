@@ -1,4 +1,8 @@
-import { type UseQueryOptions, useQuery } from "@tanstack/react-query";
+import {
+  type QueryKey,
+  type UseQueryOptions,
+  useQuery,
+} from "@tanstack/react-query";
 import type { z } from "zod";
 import type {
   getKlassStudentsHandler,
@@ -25,11 +29,13 @@ const getKlassStudentsFn = async (body: Props): Promise<Res> => {
 
 const getKlassStudents = (
   body: Props,
-  opts?: Omit<UseQueryOptions<Res, QueryError>, "queryFn" | "queryKey">,
+  opts?: Omit<UseQueryOptions<Res, QueryError>, "queryFn" | "queryKey"> & {
+    queryKey?: QueryKey;
+  },
 ) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   return useQuery<Res, QueryError>({
-    queryKey: ["getKlassStudents", body],
+    queryKey: ["getKlassStudents", body, ...(opts?.queryKey ?? [])],
     queryFn: () => getKlassStudentsFn(body),
     refetchOnWindowFocus: false,
     ...opts,

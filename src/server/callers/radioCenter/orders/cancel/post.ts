@@ -1,4 +1,8 @@
-import { type UseMutationOptions, useMutation } from "@tanstack/react-query";
+import {
+  type QueryKey,
+  type UseMutationOptions,
+  useMutation,
+} from "@tanstack/react-query";
 import { type z } from "zod";
 import type {
   cancelOrderHandler,
@@ -27,11 +31,11 @@ const cancelOrder = (
   opts?: Omit<
     UseMutationOptions<Res, QueryError, Props>,
     "mutationFn" | "mutationkey"
-  >,
+  > & { queryKey?: QueryKey },
 ) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   return useMutation<Res, QueryError, Props>({
-    mutationKey: opts?.mutationKey ?? ["cancelOrder"],
+    mutationKey: ["cancelOrder", ...(opts?.queryKey ?? [])],
     mutationFn: (body) => cancelOrderFn(body),
     ...opts,
   });

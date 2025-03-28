@@ -1,4 +1,8 @@
-import { type UseMutationOptions, useMutation } from "@tanstack/react-query";
+import {
+  type MutationKey,
+  type UseMutationOptions,
+  useMutation,
+} from "@tanstack/react-query";
 import { type z } from "zod";
 import type { addKlassHandler, addKlassInput } from "~/app/api/klass/add/route";
 
@@ -24,11 +28,11 @@ const addKlass = (
   opts?: Omit<
     UseMutationOptions<Res, QueryError, Props>,
     "mutationFn" | "mutationkey"
-  >,
+  > & { mutationKey?: MutationKey },
 ) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   return useMutation<Res, QueryError, Props>({
-    mutationKey: opts?.mutationKey ?? ["addKlass"],
+    mutationKey: ["addKlass", ...(opts?.mutationKey ?? [])],
     mutationFn: (body) => addKlassFn(body),
     ...opts,
   });

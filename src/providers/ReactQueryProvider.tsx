@@ -5,6 +5,7 @@ import {
   QueryClientProvider,
   defaultShouldDehydrateQuery,
 } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import React from "react";
 import SuperJSON from "superjson";
 
@@ -28,6 +29,7 @@ export function ReactQueryProvider(props: { children: React.ReactNode }) {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <ReactQueryDevtools />
       {props.children}
     </QueryClientProvider>
   );
