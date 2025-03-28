@@ -1,4 +1,5 @@
 import {
+  type QueryKey,
   type UseInfiniteQueryOptions,
   useInfiniteQuery,
 } from "@tanstack/react-query";
@@ -32,12 +33,13 @@ const getLeaderboard = (
   opts?: Omit<
     UseInfiniteQueryOptions<Res, QueryError>,
     "queryFn" | "queryKey" | "initialPageParam" | "getNextPageParam"
-  >,
+  > & { queryKey?: QueryKey },
 ) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   return useInfiniteQuery<Res, QueryError>({
     queryKey: ["getLeaderboard", body],
     queryFn: ({ pageParam = body.cursor }) =>
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
       getLeaderboardFn({ ...body, cursor: pageParam as Props["cursor"] }),
     initialPageParam: body.cursor,
     getNextPageParam: (data) => data.nextCursor,

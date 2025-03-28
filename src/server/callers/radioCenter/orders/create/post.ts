@@ -1,4 +1,8 @@
-import { type UseMutationOptions, useMutation } from "@tanstack/react-query";
+import {
+  type MutationKey,
+  type UseMutationOptions,
+  useMutation,
+} from "@tanstack/react-query";
 import { type z } from "zod";
 import {
   type createOrderHandler,
@@ -26,12 +30,12 @@ const createOrderFn = async (body: Props): Promise<Res> => {
 const createOrder = (
   opts?: Omit<
     UseMutationOptions<Res, QueryError, Props>,
-    "mutationFn" | "mutationkey"
-  >,
+    "mutationFn" | "mutationKey"
+  > & { mutationKey?: MutationKey },
 ) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   return useMutation<Res, QueryError, Props>({
-    mutationKey: opts?.mutationKey ?? ["createOrder"],
+    mutationKey: ["createOrder", ...(opts?.mutationKey ?? [])],
     mutationFn: (body) => createOrderFn(body),
     ...opts,
   });

@@ -83,7 +83,7 @@ export default function GenerateQRModal({ onSuccess, children }: Props) {
           setPaymentError(data.error);
           setTimeout(() => {
             resetStates();
-          }, 1500);
+          }, 150);
 
           return;
         }
@@ -96,7 +96,7 @@ export default function GenerateQRModal({ onSuccess, children }: Props) {
         setTimeout(() => {
           resetProducts();
           resetStates();
-        }, 1500);
+        }, 150);
       });
     }
 

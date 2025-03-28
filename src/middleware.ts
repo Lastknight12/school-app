@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { env } from "~/env";
 
-export const urls = new Map<string, UserRole[]>([
+export const urls = new Map<string | RegExp, UserRole[]>([
   ["/stats", ["STUDENT", "RADIO_CENTER"]],
   ["/transactions", ["ADMIN"]],
   ["/shop", ["STUDENT", "RADIO_CENTER"]],
@@ -15,6 +15,7 @@ export const urls = new Map<string, UserRole[]>([
   ["/kazna", ["ADMIN"]],
   ["/musicOrders", ["RADIO_CENTER"]],
   ["/music/player", ["RADIO_CENTER"]],
+  [/^\/admin\/klass\/.*/, ["ADMIN"]],
 ]);
 
 const not_found_url = "/404";
@@ -26,16 +27,7 @@ export default async function middleware(request: NextRequest) {
       ? "next-auth.session-token"
       : "__Secure-next-auth.session-token";
   const token = request.cookies.get(cookieName)?.value;
-  const currentUrl = request.nextUrl.pathname;
-
-  // find url that match regex or equal current url
-  const urlMatch = Array.from(urls.entries()).find(([url]) =>
-    RegExp(url).test(currentUrl) ? true : currentUrl === url,
-  );
-
-  if (!urlMatch) {
-    return;
-  }
+  const { pathname } = request.nextUrl;
 
   if (!token) return NextResponse.redirect(new URL("/login", request.url));
 
@@ -44,9 +36,33 @@ export default async function middleware(request: NextRequest) {
     secret: env.NEXTAUTH_SECRET!,
   })) as unknown as Session["user"];
 
-  if (!urlMatch[1].includes(decryptedToken.role)) {
-    return NextResponse.redirect(new URL(not_found_url, request.url));
+  const hasAccess = (
+    allowedRoles: string[],
+    pattern: string | RegExp,
+  ): boolean => {
+    if (typeof pattern === "string") {
+      return pattern === pathname && allowedRoles.includes(decryptedToken.role);
+    }
+    if (pattern instanceof RegExp) {
+      return (
+        pattern.test(pathname) && allowedRoles.includes(decryptedToken.role)
+      );
+    }
+    return false;
+  };
+
+  const hasValidRoute = Array.from(urls).some(([pattern, allowedRoles]) => {
+    if (hasAccess(allowedRoles, pattern)) {
+      return true;
+    }
+    return false;
+  });
+
+  if (hasValidRoute) {
+    return NextResponse.next();
   }
+
+  return NextResponse.rewrite(new URL(not_found_url, request.url));
 }
 
 // See "Matching Paths" below to learn more
@@ -60,8 +76,6 @@ export const config = {
     "/admin/db",
     "/admin",
     "/kazna",
-    "/admin/klass/:klassName",
-    "/musicOrders",
-    "/music/player",
+    "/admin/klass/:path*",
   ],
 };

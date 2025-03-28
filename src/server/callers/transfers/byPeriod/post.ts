@@ -1,4 +1,8 @@
-import { type UseQueryOptions, useQuery } from "@tanstack/react-query";
+import {
+  type QueryKey,
+  type UseQueryOptions,
+  useQuery,
+} from "@tanstack/react-query";
 import type { z } from "zod";
 import {
   type getTransfersByPeriodHandler,
@@ -25,11 +29,13 @@ export const getTransfersByPeriodFn = async (body: Props): Promise<Res> => {
 
 const getTransfersByPeriod = (
   body: Props,
-  opts?: Omit<UseQueryOptions<Res, QueryError>, "queryFn" | "queryKey">,
+  opts?: Omit<UseQueryOptions<Res, QueryError>, "queryFn" | "queryKey"> & {
+    queryKey?: QueryKey;
+  },
 ) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   return useQuery<Res, QueryError>({
-    queryKey: ["getTransfersByPeriod", body],
+    queryKey: ["getTransfersByPeriod", body, ...(opts?.queryKey ?? [])],
     queryFn: () => getTransfersByPeriodFn(body),
     refetchOnWindowFocus: false,
     ...opts,

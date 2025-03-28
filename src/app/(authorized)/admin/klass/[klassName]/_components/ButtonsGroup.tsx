@@ -5,6 +5,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
 
+import getAdminData from "~/server/callers/klass/adminData/post";
 import updateKlassUsers from "~/server/callers/klass/updateUsers/post";
 
 import UpdateUsers from "../../../../../_components/shared/SelectUsersModal";
@@ -15,26 +16,47 @@ type CustomUser = Pick<UserModel, "email" | "image" | "id" | "name">;
 
 interface Props {
   klassId: string;
-  klassStudents: CustomUser[];
-  klassTeachers: CustomUser[];
+  klassName: string;
+  initStudents: CustomUser[];
+  initTeachers: CustomUser[];
 }
 
 export default function ButtonsGroup({
   klassId,
-  klassStudents,
-  klassTeachers,
+  klassName,
+  initStudents,
+  initTeachers,
 }: Props) {
   const [isTeachersModalOpen, setIsTeachersModalOpen] = useState(false);
   const [isStudentsModalOpen, setIsStudentsModalOpen] = useState(false);
+  const [students, setStudents] = useState(initStudents);
+  const [teachers, setTeachers] = useState(initTeachers);
 
   const utils = useQueryClient();
+
+  const getAdminDataMutation = getAdminData();
 
   const updateUsersMutation = updateKlassUsers({
     onSuccess: () => {
       toast.success("Користувачів оновлено");
-      void utils.invalidateQueries({ queryKey: ["getKlassStudents"] });
+      void utils.invalidateQueries({
+        queryKey: ["getKlassStudents", { id: klassId }],
+      });
+
       setIsTeachersModalOpen(false);
       setIsStudentsModalOpen(false);
+
+      getAdminDataMutation.mutate(
+        { name: klassName },
+        {
+          onSuccess: (newData) => {
+            if (newData) {
+              setTeachers(newData.teachers);
+              setStudents(newData.students);
+            }
+          },
+        },
+      );
     },
   });
 
@@ -44,15 +66,24 @@ export default function ButtonsGroup({
         open={isStudentsModalOpen}
         onOpenChange={setIsStudentsModalOpen}
         klassId={klassId}
-        klassUsers={klassStudents}
+        users={students}
         usersType="STUDENT"
         isPending={updateUsersMutation.isPending}
         onSubmit={(users) => {
-          updateUsersMutation.mutate({
-            usersIds: users.map((u) => u.id),
-            klassId,
-            usersRole: "STUDENT",
-          });
+          updateUsersMutation.mutate(
+            {
+              usersIds: users.map((u) => u.id),
+              klassId,
+              usersRole: "STUDENT",
+            },
+            {
+              onSuccess: () => {
+                void utils.invalidateQueries({
+                  queryKey: ["getUsersByRole", { role: "STUDENT" }],
+                });
+              },
+            },
+          );
         }}
       >
         <Button>Редагувати учнів</Button>
@@ -62,15 +93,24 @@ export default function ButtonsGroup({
         open={isTeachersModalOpen}
         onOpenChange={setIsTeachersModalOpen}
         klassId={klassId}
-        klassUsers={klassTeachers}
+        users={teachers}
         usersType="TEACHER"
         isPending={updateUsersMutation.isPending}
         onSubmit={(users) => {
-          updateUsersMutation.mutate({
-            usersIds: users.map((u) => u.id),
-            klassId,
-            usersRole: "TEACHER",
-          });
+          updateUsersMutation.mutate(
+            {
+              usersIds: users.map((u) => u.id),
+              klassId,
+              usersRole: "TEACHER",
+            },
+            {
+              onSuccess: () => {
+                void utils.invalidateQueries({
+                  queryKey: ["getUsersByRole", { role: "TEACHER" }],
+                });
+              },
+            },
+          );
         }}
       >
         <Button>Редагувати вчителів</Button>

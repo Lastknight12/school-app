@@ -1,4 +1,8 @@
-import { type UseQueryOptions, useQuery } from "@tanstack/react-query";
+import {
+  type QueryKey,
+  type UseQueryOptions,
+  useQuery,
+} from "@tanstack/react-query";
 import type { z } from "zod";
 import {
   type getCategoryItemsHandler,
@@ -11,7 +15,7 @@ type Res = Awaited<ReturnType<typeof getCategoryItemsHandler>>;
 
 type Props = z.infer<typeof getCategoryItemsInput>;
 
-const getCategoryItemsFn = async (body: Props): Promise<Res> => {
+export const getCategoryItemsFn = async (body: Props): Promise<Res> => {
   const response = await fetch("/api/category/items", {
     method: "POST",
     credentials: "include",
@@ -25,12 +29,15 @@ const getCategoryItemsFn = async (body: Props): Promise<Res> => {
 
 const getCategoryItems = (
   body: Props,
-  opts?: Omit<UseQueryOptions<Res, QueryError>, "queryFn" | "queryKey">,
+  opts?: Omit<UseQueryOptions<Res, QueryError>, "queryFn" | "queryKey"> & {
+    queryKey?: QueryKey;
+  },
 ) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   return useQuery<Res, QueryError>({
-    queryKey: ["getCategoryItems", body],
+    queryKey: ["getCategoryItems", body, ...(opts?.queryKey ?? [])],
     queryFn: () => getCategoryItemsFn(body),
+    refetchOnWindowFocus: false,
     ...opts,
   });
 };

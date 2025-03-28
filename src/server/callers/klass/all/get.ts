@@ -1,4 +1,8 @@
-import { type UseQueryOptions, useQuery } from "@tanstack/react-query";
+import {
+  type QueryKey,
+  type UseQueryOptions,
+  useQuery,
+} from "@tanstack/react-query";
 import { type getAllKlassesHandler } from "~/app/api/klass/all/route";
 
 import { type QueryError } from "~/lib/server";
@@ -17,11 +21,13 @@ const getAllKlassesFn = async (): Promise<Res> => {
 };
 
 const getAllKlasses = (
-  opts?: Omit<UseQueryOptions<Res, QueryError>, "queryFn" | "queryKey">,
+  opts?: Omit<UseQueryOptions<Res, QueryError>, "queryFn" | "queryKey"> & {
+    queryKey?: QueryKey;
+  },
 ) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   return useQuery<Res, QueryError>({
-    queryKey: ["getAllKlasses"],
+    queryKey: ["getAllKlasses", ...(opts?.queryKey ?? [])],
     queryFn: () => getAllKlassesFn(),
     refetchOnWindowFocus: false,
     ...opts,

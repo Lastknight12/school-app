@@ -1,17 +1,16 @@
-import { useMutation } from "@tanstack/react-query";
+import {
+  type MutationKey,
+  type UseMutationOptions,
+  useMutation,
+} from "@tanstack/react-query";
 import { type z } from "zod";
-import type { payHandler, payInput } from "~/app/api/transfers/pay/route";
+import { type payHandler, type payInput } from "~/app/api/transfers/pay/route";
 
 import { type QueryError } from "~/lib/server";
 
 type Res = Awaited<ReturnType<typeof payHandler>>;
 
 type Props = z.infer<typeof payInput>;
-
-type Functions = {
-  onSuccess?: (data: Res) => void;
-  onError?: (data: QueryError) => void;
-};
 
 const payFn = async (body: Props): Promise<Res> => {
   const response = await fetch("/api/transfers/pay", {
@@ -20,18 +19,22 @@ const payFn = async (body: Props): Promise<Res> => {
     body: JSON.stringify(body),
   });
   if (!response.ok) {
-    throw new Error("Виникла помилка під час оплати");
+    throw new Error("Failed to fetch /transfers/pay");
   }
   return response.json();
 };
 
-const pay = ({ onSuccess, onError }: Functions) => {
+const pay = (
+  opts?: Omit<
+    UseMutationOptions<Res, QueryError, Props>,
+    "mutationFn" | "mutationKey"
+  > & { mutationKey?: MutationKey },
+) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   return useMutation<Res, QueryError, Props>({
-    mutationKey: ["pay"],
+    mutationKey: ["pay", ...(opts?.mutationKey ?? [])],
     mutationFn: (body) => payFn(body),
-    onSuccess,
-    onError,
+    ...opts,
   });
 };
 

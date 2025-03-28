@@ -1,4 +1,8 @@
-import { type UseQueryOptions, useQuery } from "@tanstack/react-query";
+import {
+  type QueryKey,
+  type UseQueryOptions,
+  useQuery,
+} from "@tanstack/react-query";
 import { type getHistoryHandler } from "~/app/api/kazna/history/route";
 
 import { type QueryError } from "~/lib/server";
@@ -17,11 +21,13 @@ const getKaznaHistoryFn = async (): Promise<Res> => {
 };
 
 const getKaznaHistory = (
-  opts?: Omit<UseQueryOptions<Res, QueryError>, "queryFn" | "queryKey">,
+  opts?: Omit<UseQueryOptions<Res, QueryError>, "queryFn" | "queryKey"> & {
+    queryKey?: QueryKey;
+  },
 ) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   return useQuery<Res, QueryError>({
-    queryKey: ["getKaznaHistory"],
+    queryKey: ["getKaznaHistory", ...(opts?.queryKey ?? [])],
     queryFn: () => getKaznaHistoryFn(),
     refetchOnWindowFocus: false,
     ...opts,

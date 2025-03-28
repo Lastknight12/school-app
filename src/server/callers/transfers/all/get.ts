@@ -1,4 +1,8 @@
-import { type QueryOptions, useQuery } from "@tanstack/react-query";
+import {
+  type QueryKey,
+  type QueryOptions,
+  useQuery,
+} from "@tanstack/react-query";
 import type { getAllTransactionsHandler } from "~/app/api/transfers/all/route";
 
 import { type QueryError } from "~/lib/server";
@@ -17,11 +21,13 @@ const getAllTransactionsFn = async (): Promise<Res> => {
 };
 
 const getAllTransactions = (
-  opts?: Omit<QueryOptions<Res, QueryError>, "queryFn">,
+  opts?: Omit<QueryOptions<Res, QueryError>, "queryFn"> & {
+    queryKey?: QueryKey;
+  },
 ) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   return useQuery<Res, QueryError>({
-    queryKey: ["getAllTransactions"],
+    queryKey: ["getAllTransactions", ...(opts?.queryKey ?? [])],
     queryFn: () => getAllTransactionsFn(),
     refetchOnWindowFocus: false,
     ...opts,

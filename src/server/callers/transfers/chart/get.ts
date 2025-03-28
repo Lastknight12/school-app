@@ -1,4 +1,8 @@
-import { type UseQueryOptions, useQuery } from "@tanstack/react-query";
+import {
+  type QueryKey,
+  type UseQueryOptions,
+  useQuery,
+} from "@tanstack/react-query";
 import type { getChartDataHandler } from "~/app/api/transfers/chart/route";
 
 import { type QueryError } from "~/lib/server";
@@ -17,11 +21,13 @@ export const getChartDataFn = async (): Promise<Res> => {
 };
 
 const getChartData = (
-  opts?: Omit<UseQueryOptions<Res, QueryError>, "queryFn" | "queryKey">,
+  opts?: Omit<UseQueryOptions<Res, QueryError>, "queryFn" | "queryKey"> & {
+    queryKey?: QueryKey;
+  },
 ) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   return useQuery<Res, QueryError>({
-    queryKey: ["getChartData"],
+    queryKey: ["getChartData", ...(opts?.queryKey ?? [])],
     queryFn: () => getChartDataFn(),
     refetchOnWindowFocus: false,
     ...opts,

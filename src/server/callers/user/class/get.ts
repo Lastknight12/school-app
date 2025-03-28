@@ -1,4 +1,8 @@
-import { type UseQueryOptions, useQuery } from "@tanstack/react-query";
+import {
+  type QueryKey,
+  type UseQueryOptions,
+  useQuery,
+} from "@tanstack/react-query";
 import { type getUserClassHandler } from "~/app/api/user/class/route";
 
 import { type QueryError } from "~/lib/server";
@@ -17,11 +21,13 @@ const getUserClassFn = async (): Promise<Res> => {
 };
 
 const getUserClass = (
-  opts?: Omit<UseQueryOptions<Res, QueryError>, "queryFn" | "queryKey">,
+  opts?: Omit<UseQueryOptions<Res, QueryError>, "queryFn" | "queryKey"> & {
+    queryKey?: QueryKey;
+  },
 ) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   return useQuery<Res, QueryError>({
-    queryKey: ["getUserClass"],
+    queryKey: ["getUserClass", ...(opts?.queryKey ?? [])],
     queryFn: () => getUserClassFn(),
     refetchOnWindowFocus: false,
     ...opts,

@@ -1,16 +1,17 @@
 "server only";
 
 import { headers } from "next/headers";
-import { type getAmountHandler } from "~/app/api/kazna/amount/route";
+import { type getKaznaAmountHandler } from "~/app/api/kazna/amount/route";
 
-type Res = Awaited<ReturnType<typeof getAmountHandler>>;
+type Res = Awaited<ReturnType<typeof getKaznaAmountHandler>>;
 
 export const getKaznaAmount = async (): Promise<Res> => {
   const headersList = headers();
   const host = headersList.get("host");
+  const protocol = host?.includes("localhost") ? "http://" : "https://";
   const clientCookie = headersList.get("Cookie");
 
-  const response = await fetch(`http://${host}/api/kazna/amount`, {
+  const response = await fetch(`${protocol}${host}/api/kazna/amount`, {
     method: "GET",
     headers: {
       Cookie: clientCookie ?? "",
