@@ -1,4 +1,8 @@
-import { type UseMutationOptions, useMutation } from "@tanstack/react-query";
+import {
+  type MutationKey,
+  type UseMutationOptions,
+  useMutation,
+} from "@tanstack/react-query";
 import { type z } from "zod";
 import {
   type getAdminDataHandler,
@@ -24,7 +28,10 @@ const getAdminDataFn = async (body: Props): Promise<Res> => {
 };
 
 const getAdminData = (
-  opts?: Omit<UseMutationOptions<Res, QueryError, Props>, "mutationFn">,
+  opts?: Omit<
+    UseMutationOptions<Res, QueryError, Props>,
+    "mutationFn" | "mutationKey"
+  > & { mutationKey?: MutationKey },
 ) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   return useMutation<Res, QueryError, Props>({
