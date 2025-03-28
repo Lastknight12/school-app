@@ -1,10 +1,10 @@
 import { type User as UserModel } from "@prisma/client";
 import { CheckIcon, Loader2 } from "lucide-react";
+import Image from "next/image";
 import React, { useState } from "react";
 
 import { cn } from "~/lib/utils";
 
-import { Avatar, AvatarFallback, AvatarImage } from "~/shadcn/ui/avatar";
 import { Input } from "~/shadcn/ui/input";
 import { ScrollArea } from "~/shadcn/ui/scroll-area";
 
@@ -77,10 +77,13 @@ export default function UsersList({
               )}
             >
               <div className="flex items-center gap-3">
-                <Avatar className="mr-2 h-6 w-6">
-                  <AvatarImage src={user.image} alt={user.name} />
-                  <AvatarFallback>{user.name[0]}</AvatarFallback>
-                </Avatar>
+                <Image
+                  src={user.image}
+                  alt="user avatar"
+                  width={30}
+                  height={30}
+                  className="rounded-full"
+                />
                 <span>{user.name}</span>
               </div>
 

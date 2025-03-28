@@ -11,9 +11,9 @@ export default async function Page({
 }: {
   params: { klassName: string };
 }) {
-  const decodedParam = decodeURIComponent(params.klassName);
+  const decodedName = decodeURIComponent(params.klassName);
 
-  const klass = await api.klass.getAdminKlassData({ name: decodedParam });
+  const klass = await api.klass.getAdminKlassData({ name: decodedName });
 
   if (!klass) {
     return notFound();
@@ -27,11 +27,7 @@ export default async function Page({
         <div className="flex items-ceter justify-between">
           <StudentTableSearch />
 
-          <ButtonsGroup
-            klassId={klass.id}
-            klassStudents={klass.students}
-            klassTeachers={klass.teachers}
-          />
+          <ButtonsGroup initialData={klass} klassName={decodedName} />
         </div>
       </StudentsTable>
     </main>
