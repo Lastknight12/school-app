@@ -27,12 +27,7 @@ export default async function Page({
         <div className="flex items-ceter justify-between">
           <StudentTableSearch />
 
-          <ButtonsGroup
-            klassId={klass.id}
-            klassName={decodedName}
-            initStudents={klass.students}
-            initTeachers={klass.teachers}
-          />
+          <ButtonsGroup initialData={klass} klassName={decodedName} />
         </div>
       </StudentsTable>
     </main>
