@@ -27,11 +27,12 @@ interface Props {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   klassId?: string;
-  klassUsers?: CustomUser[];
+  users?: CustomUser[];
   usersType: "STUDENT" | "TEACHER";
   children: ReactNode;
   onSubmit?: (users: CustomUser[]) => void;
   isPending?: boolean;
+  initialData?: CustomUser;
 }
 
 export default function UpdateUsers({
@@ -39,14 +40,12 @@ export default function UpdateUsers({
   onOpenChange: onOpenChangeProp,
   usersType,
   children,
-  klassUsers,
+  users,
   onSubmit,
   isPending,
 }: Props) {
   const [open, setOpen] = useState(false);
-  const [selectedUsers, setSelectedUsers] = useState<CustomUser[]>(
-    klassUsers ?? [],
-  );
+  const [selectedUsers, setSelectedUsers] = useState<CustomUser[]>(users ?? []);
 
   const {
     data: students,
@@ -93,7 +92,12 @@ export default function UpdateUsers({
     <Dialog
       open={openProp ?? open}
       onOpenChange={(open) => {
-        !open && setTimeout(() => setSelectedUsers(klassUsers ?? []), 1500);
+        console.log("out of setTimeout", users);
+        !open &&
+          setTimeout(() => {
+            setSelectedUsers(users ?? []);
+            console.log("in setTimeout", users);
+          }, 150);
         onOpenChangeProp?.(open);
         !openProp && setOpen(open);
       }}
@@ -153,7 +157,7 @@ export default function UpdateUsers({
             </>
           )}
         </div>
-        <DialogFooter className="flex items-center justify-between">
+        <DialogFooter className="flex items-center !justify-between !flex-row">
           <div>Обрано користувачів: {selectedUsers.length}</div>
           <Button
             type="button"

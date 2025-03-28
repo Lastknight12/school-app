@@ -1,6 +1,6 @@
 "use client";
 
-import { type User as UserModel } from "@prisma/client";
+import { type UserRole } from "@prisma/client";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -10,30 +10,68 @@ import UpdateUsers from "../../../../../_components/shared/SelectUsersModal";
 
 import { Button } from "~/shadcn/ui/button";
 
-type CustomUser = Pick<UserModel, "email" | "image" | "id" | "name">;
-
 interface Props {
-  klassId: string;
-  klassStudents: CustomUser[];
-  klassTeachers: CustomUser[];
+  klassName: string;
+  initialData: {
+    id: string;
+    name: string;
+    teachers: {
+      role: UserRole;
+      id: string;
+      name: string;
+      email: string;
+      image: string;
+      balance: number;
+      emailVerified: boolean | null;
+      studentClassId: string | null;
+    }[];
+    students: {
+      role: UserRole;
+      id: string;
+      name: string;
+      email: string;
+      image: string;
+      balance: number;
+      emailVerified: boolean | null;
+      studentClassId: string | null;
+    }[];
+  };
 }
 
-export default function ButtonsGroup({
-  klassId,
-  klassStudents,
-  klassTeachers,
-}: Props) {
+export default function ButtonsGroup({ klassName, initialData }: Props) {
   const [isTeachersModalOpen, setIsTeachersModalOpen] = useState(false);
   const [isStudentsModalOpen, setIsStudentsModalOpen] = useState(false);
+  const [students, setStudents] = useState(initialData.students);
+  const [teachers, setTeachers] = useState(initialData.teachers);
 
   const utils = api.useUtils();
 
+  const getAdminDataMutation = api.klass.getAdminKlassData.useQuery(
+    {
+      name: klassName,
+    },
+    {
+      initialData,
+    },
+  );
+
   const updateUsersMutation = api.klass.updateUsers.useMutation({
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Користувачів оновлено");
-      void utils.klass.getKlassStudents.invalidate();
+      void utils.klass.getKlassStudents.invalidate({ id: initialData.id });
       setIsTeachersModalOpen(false);
       setIsStudentsModalOpen(false);
+
+      const { data: newData, isSuccess } = await getAdminDataMutation.refetch();
+
+      if (isSuccess && newData) {
+        setStudents(newData.students);
+        setTeachers(newData.teachers);
+      } else {
+        toast.error(
+          "Помилка синхронізації списку користувачів після оновлення. Перезавантажте сторінку",
+        );
+      }
     },
   });
 
@@ -42,16 +80,23 @@ export default function ButtonsGroup({
       <UpdateUsers
         open={isStudentsModalOpen}
         onOpenChange={setIsStudentsModalOpen}
-        klassId={klassId}
-        klassUsers={klassStudents}
+        klassId={initialData.id}
+        users={students}
         usersType="STUDENT"
         isPending={updateUsersMutation.isPending}
         onSubmit={(users) => {
-          updateUsersMutation.mutate({
-            usersIds: users.map((u) => u.id),
-            klassId,
-            usersRole: "STUDENT",
-          });
+          updateUsersMutation.mutate(
+            {
+              usersIds: users.map((u) => u.id),
+              klassId: initialData.id,
+              usersRole: "STUDENT",
+            },
+            {
+              onSuccess: () => {
+                void utils.user.getUsersByRole.invalidate({ role: "STUDENT" });
+              },
+            },
+          );
         }}
       >
         <Button>Редагувати учнів</Button>
@@ -60,16 +105,23 @@ export default function ButtonsGroup({
       <UpdateUsers
         open={isTeachersModalOpen}
         onOpenChange={setIsTeachersModalOpen}
-        klassId={klassId}
-        klassUsers={klassTeachers}
+        klassId={initialData.id}
+        users={teachers}
         usersType="TEACHER"
         isPending={updateUsersMutation.isPending}
         onSubmit={(users) => {
-          updateUsersMutation.mutate({
-            usersIds: users.map((u) => u.id),
-            klassId,
-            usersRole: "TEACHER",
-          });
+          updateUsersMutation.mutate(
+            {
+              usersIds: users.map((u) => u.id),
+              klassId: initialData.id,
+              usersRole: "TEACHER",
+            },
+            {
+              onSuccess: () => {
+                void utils.user.getUsersByRole.invalidate({ role: "TEACHER" });
+              },
+            },
+          );
         }}
       >
         <Button>Редагувати вчителів</Button>
