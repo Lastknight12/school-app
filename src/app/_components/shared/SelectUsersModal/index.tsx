@@ -92,11 +92,9 @@ export default function UpdateUsers({
     <Dialog
       open={openProp ?? open}
       onOpenChange={(open) => {
-        console.log("out of setTimeout", users);
         !open &&
           setTimeout(() => {
             setSelectedUsers(users ?? []);
-            console.log("in setTimeout", users);
           }, 150);
         onOpenChangeProp?.(open);
         !openProp && setOpen(open);

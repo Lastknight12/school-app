@@ -1,6 +1,6 @@
 "use client";
 
-import { type User as UserModel } from "@prisma/client";
+import { type User as UserModel, UserRole } from "@prisma/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -12,51 +12,64 @@ import UpdateUsers from "../../../../../_components/shared/SelectUsersModal";
 
 import { Button } from "~/shadcn/ui/button";
 
-type CustomUser = Pick<UserModel, "email" | "image" | "id" | "name">;
-
 interface Props {
-  klassId: string;
   klassName: string;
-  initStudents: CustomUser[];
-  initTeachers: CustomUser[];
+  initialData: {
+    id: string;
+    name: string;
+    teachers: {
+      role: UserRole;
+      id: string;
+      name: string;
+      email: string;
+      image: string;
+      balance: number;
+      emailVerified: boolean | null;
+      studentClassId: string | null;
+    }[];
+    students: {
+      role: UserRole;
+      id: string;
+      name: string;
+      email: string;
+      image: string;
+      balance: number;
+      emailVerified: boolean | null;
+      studentClassId: string | null;
+    }[];
+  };
 }
 
-export default function ButtonsGroup({
-  klassId,
-  klassName,
-  initStudents,
-  initTeachers,
-}: Props) {
+export default function ButtonsGroup({ klassName, initialData }: Props) {
   const [isTeachersModalOpen, setIsTeachersModalOpen] = useState(false);
   const [isStudentsModalOpen, setIsStudentsModalOpen] = useState(false);
-  const [students, setStudents] = useState(initStudents);
-  const [teachers, setTeachers] = useState(initTeachers);
+  const [students, setStudents] = useState(initialData.students);
+  const [teachers, setTeachers] = useState(initialData.teachers);
 
   const utils = useQueryClient();
 
-  const getAdminDataMutation = getAdminData();
+  const newAdminData = getAdminData({ name: klassName }, { initialData });
 
   const updateUsersMutation = updateKlassUsers({
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Користувачів оновлено");
       void utils.invalidateQueries({
-        queryKey: ["getKlassStudents", { id: klassId }],
+        queryKey: ["getKlassStudents", { id: initialData.id }],
       });
 
       setIsTeachersModalOpen(false);
       setIsStudentsModalOpen(false);
 
-      getAdminDataMutation.mutate(
-        { name: klassName },
-        {
-          onSuccess: (newData) => {
-            if (newData) {
-              setTeachers(newData.teachers);
-              setStudents(newData.students);
-            }
-          },
-        },
-      );
+      const { data: newData, isSuccess } = await newAdminData.refetch();
+
+      if (isSuccess && newData) {
+        setStudents(newData.students);
+        setTeachers(newData.teachers);
+      } else {
+        toast.error(
+          "Помилка синхронізації списку користувачів після оновлення. Перезавантажте сторінку",
+        );
+      }
     },
   });
 
@@ -65,7 +78,7 @@ export default function ButtonsGroup({
       <UpdateUsers
         open={isStudentsModalOpen}
         onOpenChange={setIsStudentsModalOpen}
-        klassId={klassId}
+        klassId={initialData.id}
         users={students}
         usersType="STUDENT"
         isPending={updateUsersMutation.isPending}
@@ -73,7 +86,7 @@ export default function ButtonsGroup({
           updateUsersMutation.mutate(
             {
               usersIds: users.map((u) => u.id),
-              klassId,
+              klassId: initialData.id,
               usersRole: "STUDENT",
             },
             {
@@ -92,7 +105,7 @@ export default function ButtonsGroup({
       <UpdateUsers
         open={isTeachersModalOpen}
         onOpenChange={setIsTeachersModalOpen}
-        klassId={klassId}
+        klassId={initialData.id}
         users={teachers}
         usersType="TEACHER"
         isPending={updateUsersMutation.isPending}
@@ -100,7 +113,7 @@ export default function ButtonsGroup({
           updateUsersMutation.mutate(
             {
               usersIds: users.map((u) => u.id),
-              klassId,
+              klassId: initialData.id,
               usersRole: "TEACHER",
             },
             {

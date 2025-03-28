@@ -1,12 +1,12 @@
 import {
-  type MutationKey,
-  type UseMutationOptions,
-  useMutation,
+  type QueryKey,
+  type UseQueryOptions,
+  useQuery,
 } from "@tanstack/react-query";
-import { type z } from "zod";
+import type { z } from "zod";
 import {
-  type getAdminDataHandler,
-  type getAdminDataInput,
+  getAdminDataHandler,
+  getAdminDataInput,
 } from "~/app/api/klass/adminData/route";
 
 import { type QueryError } from "~/lib/server";
@@ -15,7 +15,7 @@ type Res = Awaited<ReturnType<typeof getAdminDataHandler>>;
 
 type Props = z.infer<typeof getAdminDataInput>;
 
-const getAdminDataFn = async (body: Props): Promise<Res> => {
+export const getAdminDataFn = async (body: Props): Promise<Res> => {
   const response = await fetch("/api/klass/adminData", {
     method: "POST",
     credentials: "include",
@@ -28,15 +28,16 @@ const getAdminDataFn = async (body: Props): Promise<Res> => {
 };
 
 const getAdminData = (
-  opts?: Omit<
-    UseMutationOptions<Res, QueryError, Props>,
-    "mutationFn" | "mutationKey"
-  > & { mutationKey?: MutationKey },
+  body: Props,
+  opts?: Omit<UseQueryOptions<Res, QueryError>, "queryFn" | "queryKey"> & {
+    queryKey?: QueryKey;
+  },
 ) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  return useMutation<Res, QueryError, Props>({
-    mutationKey: ["getAdminData", ...(opts?.mutationKey ?? [])],
-    mutationFn: (body) => getAdminDataFn(body),
+  return useQuery<Res, QueryError>({
+    queryKey: ["getAdminData", body, ...(opts?.queryKey ?? [])],
+    queryFn: () => getAdminDataFn(body),
+    refetchOnWindowFocus: false,
     ...opts,
   });
 };
