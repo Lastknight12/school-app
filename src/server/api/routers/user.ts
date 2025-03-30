@@ -99,10 +99,7 @@ export const userRouter = createTRPCRouter({
     if (
       !klass?.students.some((student) => student.id === ctx.session.user.id)
     ) {
-      throw new TRPCError({
-        code: "UNAUTHORIZED",
-        message: "Ти не знаходишся у цьому класі",
-      });
+      return null;
     }
 
     return klass;

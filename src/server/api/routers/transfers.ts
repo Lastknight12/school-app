@@ -126,7 +126,7 @@ export const transfersRouter = createTRPCRouter({
           ctx.db.kaznaTransfer.create({
             data: {
               amount: input.amount * -1,
-              message: `Переказ коштів користувачу ${reciever.name}`,
+              message: `Переказ коштів вчителю <user>${reciever.name}`,
               Kazna: {
                 connect: {
                   id: kazna.id,
