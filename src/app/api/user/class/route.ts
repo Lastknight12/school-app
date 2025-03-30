@@ -11,8 +11,7 @@ export async function getUserClassHandler(
 ) {
   if (session.role !== "STUDENT")
     throw new ServerError({
-      code: "BAD_REQUEST",
-      message: "Дозволена роль: STUDENT",
+      code: "UNAUTHORIZED",
     });
 
   if (!session.studentClass) return;
@@ -33,10 +32,7 @@ export async function getUserClassHandler(
   });
 
   if (!klass?.students.some((student) => student.id === session.id)) {
-    throw new ServerError({
-      code: "UNAUTHORIZED",
-      message: "Ти не знаходишся у цьому класі",
-    });
+    return null;
   }
 
   return klass;

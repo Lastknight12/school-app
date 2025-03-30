@@ -24,13 +24,9 @@ import { useSidebar } from "~/shadcn/ui/sidebar";
 
 interface Props {
   session: Session;
-  showCardDesign: boolean;
 }
 
-export default function Settings({
-  session: defaultSession,
-  showCardDesign,
-}: Props) {
+export default function Settings({ session: defaultSession }: Props) {
   const [newUsername, setNewUsername] = useState(defaultSession.user.name);
   const [newImageSrc, setNewImageSrc] = useState(defaultSession.user.image);
 
@@ -133,7 +129,7 @@ export default function Settings({
         </Button>
       </div>
 
-      {showCardDesign && (
+      {defaultSession.user.role === "STUDENT" && (
         <div
           className={cn(
             "px-6 transition-all duration-200 ease-linear",
