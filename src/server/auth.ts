@@ -17,7 +17,7 @@ import { db } from "~/server/db";
  *
  * @see https://next-auth.js.org/getting-started/typescript#module-augmentation
  */
-type CustomUser =
+export type CustomUser =
   | {
       id: string;
       name: string;

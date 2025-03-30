@@ -7,12 +7,9 @@ import { z } from "zod";
 import { env } from "~/env";
 
 import {
-  adminProcedure,
+  authorizeRoles,
   createTRPCRouter,
-  customProcedure,
   protectedProcedure,
-  sellerProcedure,
-  studentProcedure,
 } from "~/server/api/trpc";
 
 export interface TokenData {
@@ -250,7 +247,7 @@ export const transfersRouter = createTRPCRouter({
       return { transfers, nextCursor };
     }),
 
-  getAllTransactions: adminProcedure.query(async ({ ctx }) => {
+  getAllTransactions: authorizeRoles(["ADMIN"]).query(async ({ ctx }) => {
     return (
       await ctx.db.transaction.findMany({
         where: {
@@ -276,7 +273,7 @@ export const transfersRouter = createTRPCRouter({
     ).reverse();
   }),
 
-  deleteTransaction: adminProcedure
+  deleteTransaction: authorizeRoles(["ADMIN"])
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const isTransactionExist = await ctx.db.transaction.findUnique({
@@ -386,7 +383,7 @@ export const transfersRouter = createTRPCRouter({
     };
   }),
 
-  genProductToken: sellerProcedure
+  genProductToken: authorizeRoles(["SELLER"])
     .input(
       z.object({
         products: z.array(
@@ -482,7 +479,7 @@ export const transfersRouter = createTRPCRouter({
       }
     }),
 
-  pay: studentProcedure
+  pay: authorizeRoles(["STUDENT", "RADIO_CENTER"])
     .input(
       z.object({
         url: z.string().url({ message: "Невірний URL" }),
@@ -630,7 +627,7 @@ export const transfersRouter = createTRPCRouter({
       }
     }),
 
-  getTransfersByPeriod: customProcedure(["ADMIN", "SELLER"])
+  getTransfersByPeriod: authorizeRoles(["ADMIN", "SELLER"])
     .input(
       z.object({
         range: z.object({

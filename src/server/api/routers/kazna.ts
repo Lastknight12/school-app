@@ -1,10 +1,10 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
-import { adminProcedure, createTRPCRouter } from "../trpc";
+import { authorizeRoles, createTRPCRouter } from "../trpc";
 
 export const kaznaRouter = createTRPCRouter({
-  getKaznaAmount: adminProcedure.query(async ({ ctx }) => {
+  getKaznaAmount: authorizeRoles(["ADMIN"]).query(async ({ ctx }) => {
     const kazna = await ctx.db.kazna.findFirst();
 
     if (!kazna) {
@@ -20,7 +20,7 @@ export const kaznaRouter = createTRPCRouter({
     return kazna.amount;
   }),
 
-  getReplenishHistory: adminProcedure.query(async ({ ctx }) => {
+  getReplenishHistory: authorizeRoles(["ADMIN"]).query(async ({ ctx }) => {
     return await ctx.db.kaznaTransfer.findMany({
       orderBy: {
         createdAt: "desc",
@@ -39,7 +39,7 @@ export const kaznaRouter = createTRPCRouter({
     });
   }),
 
-  replenishKazna: adminProcedure
+  replenishKazna: authorizeRoles(["ADMIN"])
     .input(z.object({ amount: z.number(), message: z.string() }))
     .mutation(async ({ ctx, input }) => {
       if (input.amount <= 0) {

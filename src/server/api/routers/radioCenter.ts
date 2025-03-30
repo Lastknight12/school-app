@@ -4,12 +4,7 @@ import { parse } from "node-html-parser";
 import { z } from "zod";
 import { env } from "~/env";
 
-import {
-  createTRPCRouter,
-  protectedProcedure,
-  radioCenterProcedure,
-  studentProcedure,
-} from "../trpc";
+import { authorizeRoles, createTRPCRouter, protectedProcedure } from "../trpc";
 
 // Used for validate music
 const youtubeRegexp =
@@ -109,7 +104,7 @@ export const radioCenterRouter = createTRPCRouter({
     };
   }),
 
-  getOrders: radioCenterProcedure.query(async ({ ctx }) => {
+  getOrders: authorizeRoles(["RADIO_CENTER"]).query(async ({ ctx }) => {
     return await ctx.db.musicOrder.findMany({
       where: {
         status: "DELIVERED",
@@ -158,7 +153,7 @@ export const radioCenterRouter = createTRPCRouter({
       return videoInfo;
     }),
 
-  createOrder: studentProcedure
+  createOrder: authorizeRoles(["STUDENT"])
     .input(
       z.object({
         musicUrl: z.string(),
@@ -220,7 +215,7 @@ export const radioCenterRouter = createTRPCRouter({
       return order.id;
     }),
 
-  deleteOrder: radioCenterProcedure
+  deleteOrder: authorizeRoles(["RADIO_CENTER"])
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
       await ctx.db.musicOrder.delete({
@@ -230,7 +225,7 @@ export const radioCenterRouter = createTRPCRouter({
       });
     }),
 
-  acceptOrder: radioCenterProcedure
+  acceptOrder: authorizeRoles(["RADIO_CENTER"])
     .input(
       z.object({
         id: z.string(),
@@ -249,7 +244,7 @@ export const radioCenterRouter = createTRPCRouter({
       return order.id;
     }),
 
-  cancelOrder: radioCenterProcedure
+  cancelOrder: authorizeRoles(["RADIO_CENTER"])
     .input(
       z.object({
         id: z.string(),

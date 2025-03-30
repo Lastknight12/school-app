@@ -21,7 +21,7 @@ import {
 } from "~/shadcn/ui/dialog";
 import { ScrollArea } from "~/shadcn/ui/scroll-area";
 
-export type CustomUser = Pick<UserModel, "email" | "image" | "id" | "name">;
+type CustomUser = Pick<UserModel, "email" | "image" | "id" | "name">;
 
 interface Props {
   open?: boolean;
