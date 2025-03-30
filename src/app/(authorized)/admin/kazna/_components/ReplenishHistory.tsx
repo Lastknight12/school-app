@@ -7,15 +7,6 @@ import { api } from "~/trpc/react";
 
 import { cn } from "~/lib/utils";
 
-function parseMessage(message: string) {
-  if (message.includes("<user>")) {
-    const splitedStr = message.split("<user>");
-    return splitedStr[0] + `<span class="text-sky-400">${splitedStr[1]}<span>`;
-  } else {
-    return message;
-  }
-}
-
 export default function ReplenishHistory() {
   const replenishHistory = api.kazna.getReplenishHistory.useQuery();
 
@@ -55,9 +46,9 @@ export default function ReplenishHistory() {
                 <div
                   className="w-max max-w-[240px] text-wrap font-e_ukraine font-extralight"
                   dangerouslySetInnerHTML={{
-                    __html: parseMessage(replenish.message),
+                    __html: replenish.message,
                   }}
-                ></div>
+                />
               </div>
 
               <h1

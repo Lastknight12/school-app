@@ -21,7 +21,7 @@ export const kaznaRouter = createTRPCRouter({
   }),
 
   getReplenishHistory: authorizeRoles(["ADMIN"]).query(async ({ ctx }) => {
-    return await ctx.db.kaznaTransfer.findMany({
+    const transfers = await ctx.db.kaznaTransfer.findMany({
       orderBy: {
         createdAt: "desc",
       },
@@ -36,6 +36,21 @@ export const kaznaRouter = createTRPCRouter({
           },
         },
       },
+    });
+
+    function parseMessage(message: string) {
+      if (message.includes("<user>")) {
+        const splitedStr = message.split("<user>");
+        return (
+          splitedStr[0] + `<span class="text-sky-400">${splitedStr[1]}<span>`
+        );
+      } else {
+        return message;
+      }
+    }
+
+    return transfers.map((value) => {
+      return { ...value, message: parseMessage(value.message) };
     });
   }),
 
