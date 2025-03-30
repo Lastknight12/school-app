@@ -13,7 +13,7 @@ import superjson from "superjson";
 import { ZodError } from "zod";
 import { env } from "~/env";
 
-import { getServerAuthSession } from "~/server/auth";
+import { type CustomUser, getServerAuthSession } from "~/server/auth";
 import { db } from "~/server/db";
 
 /**
@@ -35,7 +35,6 @@ export const createTRPCContext = async (opts: { headers: Headers }) => {
   return {
     db,
     session,
-
     pusher: new Pusher({
       appId: env.PUSHER_APP_ID,
       key: env.NEXT_PUBLIC_PUSHER_KEY,
@@ -43,7 +42,6 @@ export const createTRPCContext = async (opts: { headers: Headers }) => {
       cluster: env.PUSHER_CLUSTER,
       useTLS: true,
     }),
-
     ...opts,
   };
 };
@@ -90,36 +88,13 @@ export const createCallerFactory = t.createCallerFactory;
 export const createTRPCRouter = t.router;
 
 /**
- * Middleware for timing procedure execution and adding an articifial delay in development.
- *
- * You can remove this if you don't like it, but it can help catch unwanted waterfalls by simulating
- * network latency that would occur in production but not in local development.
- */
-const timingMiddleware = t.middleware(async ({ next, path }) => {
-  const start = Date.now();
-
-  if (t._config.isDev) {
-    // artificial delay in dev
-    const waitMs = Math.floor(Math.random() * 400) + 100;
-    await new Promise((resolve) => setTimeout(resolve, waitMs));
-  }
-
-  const result = await next();
-
-  const end = Date.now();
-  console.log(`[TRPC] ${path} took ${end - start}ms to execute`);
-
-  return result;
-});
-
-/**
  * Public (unauthenticated) procedure
  *
  * This is the base piece you use to build new queries and mutations on your tRPC API. It does not
  * guarantee that a user querying is authorized, but you can still access user session data if they
  * are logged in.
  */
-export const publicProcedure = t.procedure.use(timingMiddleware);
+export const publicProcedure = t.procedure;
 
 /**
  * Protected (authenticated) procedure
@@ -133,18 +108,6 @@ export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
   if (!ctx.session) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
-  return next({
-    ctx: {
-      // infers the `session` as non-nullable
-      session: { ...ctx.session, user: ctx.session.user },
-    },
-  });
-});
-
-export const sellerProcedure = t.procedure.use(({ ctx, next }) => {
-  if (!ctx.session || ctx.session.user.role !== "SELLER") {
-    throw new TRPCError({ code: "UNAUTHORIZED" });
-  }
 
   return next({
     ctx: {
@@ -154,69 +117,29 @@ export const sellerProcedure = t.procedure.use(({ ctx, next }) => {
   });
 });
 
-export const teacherProcedure = t.procedure.use(({ ctx, next }) => {
-  if (!ctx.session || ctx.session.user.role !== "TEACHER") {
-    throw new TRPCError({ code: "UNAUTHORIZED" });
-  }
+type UserWithRole<T extends CustomUser["role"]> = Extract<
+  CustomUser,
+  { role: T }
+>;
 
-  return next({
-    ctx: {
-      // infers the `session` as non-nullable
-      session: { ...ctx.session, user: ctx.session.user },
-    },
-  });
-});
-
-export const adminProcedure = t.procedure.use(({ ctx, next }) => {
-  if (!ctx.session || ctx.session.user.role !== "ADMIN") {
-    throw new TRPCError({ code: "UNAUTHORIZED" });
-  }
-
-  return next({
-    ctx: {
-      // infers the `session` as non-nullable
-      session: { ...ctx.session, user: ctx.session.user },
-    },
-  });
-});
-
-export const radioCenterProcedure = t.procedure.use(({ ctx, next }) => {
-  if (!ctx.session || ctx.session.user.role !== "RADIO_CENTER") {
-    throw new TRPCError({ code: "UNAUTHORIZED" });
-  }
-
-  return next({
-    ctx: {
-      // infers the `session` as non-nullable
-      session: { ...ctx.session, user: ctx.session.user },
-    },
-  });
-});
-
-export const studentProcedure = t.procedure.use(({ ctx, next }) => {
-  if (!ctx.session || ctx.session.user.role !== "STUDENT") {
-    throw new TRPCError({ code: "UNAUTHORIZED" });
-  }
-
-  return next({
-    ctx: {
-      // infers the `session` as non-nullable
-      session: { ...ctx.session, user: ctx.session.user },
-    },
-  });
-});
-
-export const customProcedure = (roles: UserRole[]) => {
+export function authorizeRoles<Role extends UserRole>(roles: Role[]) {
   return t.procedure.use(({ ctx, next }) => {
-    if (!ctx.session || !roles.includes(ctx.session.user.role)) {
+    if (!ctx.session) {
+      throw new TRPCError({ code: "UNAUTHORIZED" });
+    }
+
+    if (!roles.includes(ctx.session.user.role as Role)) {
       throw new TRPCError({ code: "UNAUTHORIZED" });
     }
 
     return next({
       ctx: {
         // infers the `session` as non-nullable
-        session: { ...ctx.session, user: ctx.session.user },
+        session: {
+          ...ctx.session,
+          user: ctx.session.user as UserWithRole<Role>,
+        },
       },
     });
   });
-};
+}

@@ -4,10 +4,9 @@ import { z } from "zod";
 import { updateUserSchema } from "~/schemas/zod";
 
 import {
-  adminProcedure,
+  authorizeRoles,
   createTRPCRouter,
   protectedProcedure,
-  studentProcedure,
 } from "~/server/api/trpc";
 
 export const userRouter = createTRPCRouter({
@@ -37,7 +36,7 @@ export const userRouter = createTRPCRouter({
       return users;
     }),
 
-  getUsersByRole: adminProcedure
+  getUsersByRole: authorizeRoles(["ADMIN"])
     .input(
       z
         .object({
@@ -79,7 +78,7 @@ export const userRouter = createTRPCRouter({
       });
     }),
 
-  getUserClass: studentProcedure.query(async ({ ctx }) => {
+  getUserClass: authorizeRoles(["STUDENT"]).query(async ({ ctx }) => {
     if (!ctx.session.user.studentClass) return;
 
     const klass = await ctx.db.klass.findUnique({
@@ -123,7 +122,7 @@ export const userRouter = createTRPCRouter({
       });
     }),
 
-  updateUserRole: adminProcedure
+  updateUserRole: authorizeRoles(["ADMIN"])
     .input(
       z.object({
         userId: z.string(),

@@ -5,7 +5,7 @@ import { z } from "zod";
 import { env } from "~/env";
 import { addProductSchema } from "~/schemas/zod";
 
-import { createTRPCRouter, protectedProcedure, sellerProcedure } from "../trpc";
+import { authorizeRoles, createTRPCRouter, protectedProcedure } from "../trpc";
 import { type TokenData } from "./transfers";
 
 export const categoryRouter = createTRPCRouter({
@@ -107,7 +107,7 @@ export const categoryRouter = createTRPCRouter({
             },
           }),
         ]);
-        
+
         if (dbProducts.length === 0 || !transaction) {
           throw new TRPCError({
             code: "BAD_REQUEST",
@@ -125,14 +125,16 @@ export const categoryRouter = createTRPCRouter({
         return {
           products: dbProducts.map((product) => ({
             ...product,
-            count: decryptedToken.products.find((item) => item.id === product.id)?.count ?? 1,
+            count:
+              decryptedToken.products.find((item) => item.id === product.id)
+                ?.count ?? 1,
           })),
           totalAmount: transaction.amount,
         };
       }
     }),
 
-  updateProduct: sellerProcedure
+  updateProduct: authorizeRoles(["SELLER"])
     .input(
       z.object({
         id: z.string().min(1, "id не може бути порожнім"),
@@ -163,7 +165,7 @@ export const categoryRouter = createTRPCRouter({
       });
     }),
 
-  deleteProduct: sellerProcedure
+  deleteProduct: authorizeRoles(["SELLER"])
     .input(
       z.object({
         id: z.string().min(1, "id не може бути порожнім"),
@@ -177,7 +179,7 @@ export const categoryRouter = createTRPCRouter({
       });
     }),
 
-  addProduct: sellerProcedure
+  addProduct: authorizeRoles(["SELLER"])
     .input(addProductSchema)
     .mutation(async ({ ctx, input }) => {
       await ctx.db.categoryItem.create({
@@ -195,7 +197,7 @@ export const categoryRouter = createTRPCRouter({
       });
     }),
 
-  addCategory: sellerProcedure
+  addCategory: authorizeRoles(["SELLER"])
     .input(
       z.object({
         categoryName: z.string().min(1, "Назва категорії не може бути пустою"),
@@ -220,7 +222,7 @@ export const categoryRouter = createTRPCRouter({
       }
     }),
 
-  deleteCategory: sellerProcedure
+  deleteCategory: authorizeRoles(["SELLER"])
     .input(
       z.object({
         categoryName: z.string(),
@@ -242,7 +244,7 @@ export const categoryRouter = createTRPCRouter({
       });
     }),
 
-  updateCategory: sellerProcedure
+  updateCategory: authorizeRoles(["SELLER"])
     .input(
       z.object({
         categoryName: z.string().min(1, "categoryName не може бути порожнім"),

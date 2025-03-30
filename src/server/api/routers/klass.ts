@@ -2,14 +2,10 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { addKlassSchema } from "~/schemas/zod";
 
-import {
-  adminProcedure,
-  createTRPCRouter,
-  teacherProcedure,
-} from "~/server/api/trpc";
+import { authorizeRoles, createTRPCRouter } from "~/server/api/trpc";
 
 export const klassRouter = createTRPCRouter({
-  getAllKlasses: adminProcedure.query(async ({ ctx }) => {
+  getAllKlasses: authorizeRoles(["ADMIN"]).query(async ({ ctx }) => {
     return await ctx.db.klass.findMany({
       select: {
         name: true,
@@ -17,7 +13,7 @@ export const klassRouter = createTRPCRouter({
     });
   }),
 
-  getKlassStudents: adminProcedure
+  getKlassStudents: authorizeRoles(["ADMIN"])
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
       const klass = await ctx.db.klass.findFirst({
@@ -36,7 +32,7 @@ export const klassRouter = createTRPCRouter({
       return klass.students;
     }),
 
-  getAdminKlassData: adminProcedure
+  getAdminKlassData: authorizeRoles(["ADMIN"])
     .input(z.object({ name: z.string() }))
     .query(async ({ input, ctx }) => {
       return await ctx.db.klass.findFirst({
@@ -52,7 +48,7 @@ export const klassRouter = createTRPCRouter({
       });
     }),
 
-  getTeacherKlassData: teacherProcedure
+  getTeacherKlassData: authorizeRoles(["TEACHER"])
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
       return await ctx.db.klass.findUnique({
@@ -67,7 +63,7 @@ export const klassRouter = createTRPCRouter({
       });
     }),
 
-  addKlass: adminProcedure
+  addKlass: authorizeRoles(["ADMIN"])
     .input(addKlassSchema)
     .mutation(async ({ ctx, input }) => {
       const isExist = await ctx.db.klass.findFirst({
@@ -93,7 +89,7 @@ export const klassRouter = createTRPCRouter({
       });
     }),
 
-  updateUsers: adminProcedure
+  updateUsers: authorizeRoles(["ADMIN"])
     .input(
       z.object({
         klassId: z.string(),
