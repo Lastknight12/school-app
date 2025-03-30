@@ -61,7 +61,7 @@ const data = {
     },
     {
       title: "Казна",
-      url: "/kazna",
+      url: "/admin/kazna",
       icon: Wallet,
       isCollapsible: false,
     },

@@ -6,8 +6,17 @@ import { db } from "~/server/db";
 
 import { ServerError, getReqBody, withAuth } from "~/lib/server";
 
+function parseMessage(message: string) {
+  if (message.includes("<user>")) {
+    const splitedStr = message.split("<user>");
+    return splitedStr[0] + `<span class="text-sky-400">${splitedStr[1]}<span>`;
+  } else {
+    return message;
+  }
+}
+
 export async function getReplenishHandler() {
-  return await db.kaznaTransfer.findMany({
+  const transfers = await db.kaznaTransfer.findMany({
     orderBy: {
       createdAt: "desc",
     },
@@ -22,6 +31,10 @@ export async function getReplenishHandler() {
         },
       },
     },
+  });
+
+  return transfers.map((value) => {
+    return { ...value, message: parseMessage(value.message) };
   });
 }
 

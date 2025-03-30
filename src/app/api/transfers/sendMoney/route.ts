@@ -107,7 +107,7 @@ export async function sendMoneyHandler(req: NextRequest, session: CustomUser) {
       db.kaznaTransfer.create({
         data: {
           amount: input.data.amount * -1,
-          message: `Переказ коштів користувачу ${reciever.name}`,
+          message: `Переказ коштів вчителю <user>${reciever.name}`,
           Kazna: {
             connect: {
               id: kazna.id,

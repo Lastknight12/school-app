@@ -1,6 +1,6 @@
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Loader2 } from "lucide-react";
-import { Krona_One, Orbitron, Source_Code_Pro } from "next/font/google";
+import { Orbitron, Source_Code_Pro } from "next/font/google";
 import localFont from "next/font/local";
 import { Suspense } from "react";
 import { Toaster } from "sonner";
@@ -14,20 +14,20 @@ import Sidebar from "./_components/shared/Sidebar";
 
 import PageTransition from "~/app/_components/shared/PageTransition";
 
-const metropolis = localFont({
+const e_ukraine = localFont({
   src: [
     {
-      path: "../../fonts/Metropolis-Bold.woff2",
-      weight: "700",
+      path: "../../fonts/e-Ukraine-Regular.otf",
+      weight: "400",
       style: "normal",
     },
     {
-      path: "../../fonts/Metropolis-SemiBold.woff2",
-      weight: "600",
+      path: "../../fonts/e-Ukraine-UltraLight.otf",
+      weight: "200",
       style: "normal",
     },
   ],
-  variable: "--font-metropolis",
+  variable: "--font-e_ukraine",
 });
 
 const orbitron = Orbitron({
@@ -40,12 +40,6 @@ const source_code_pro = Source_Code_Pro({
   variable: "--font-source-code-pro",
 });
 
-const krona_one = Krona_One({
-  subsets: ["latin"],
-  variable: "--font-krona-one",
-  weight: "400",
-});
-
 export default async function RootLayout({
   children,
 }: {
@@ -56,7 +50,7 @@ export default async function RootLayout({
   return (
     <html lang="en" className="dark">
       <body
-        className={`${metropolis.variable} ${orbitron.variable} ${source_code_pro.variable} ${krona_one.variable} overflow-x-hidden font-metropolis`}
+        className={` ${e_ukraine.variable} ${orbitron.variable} ${source_code_pro.variable} overflow-x-hidden font-e_ukraine`}
       >
         <SpeedInsights />
 
