@@ -12,7 +12,7 @@ export const urls = new Map<string | RegExp, UserRole[]>([
   ["/buy", ["STUDENT"]],
   ["/admin", ["ADMIN"]],
   ["/admin/db", ["ADMIN"]],
-  ["/kazna", ["ADMIN"]],
+  ["/admin/kazna", ["ADMIN"]],
   ["/musicOrders", ["RADIO_CENTER"]],
   ["/music/player", ["RADIO_CENTER"]],
   [/^\/admin\/klass\/.*/, ["ADMIN"]],
@@ -75,7 +75,7 @@ export const config = {
     "/buy",
     "/admin/db",
     "/admin",
-    "/kazna",
+    "/admin/kazna",
     "/admin/klass/:path*",
   ],
 };
