@@ -75,7 +75,6 @@ export default function SellerHomePage() {
           </AddNewProduct>
         </div>
 
-        {/* Top scrollable categories list */}
         <CategoryNamesList
           categories={getCategoryNames.data ?? []}
           isLoading={getCategoryNames.isPending}
@@ -84,7 +83,6 @@ export default function SellerHomePage() {
         />
 
         <div className="flex flex-col gap-2">
-          {/* if we not fetching and data is not empty show input */}
           <Input
             className="mb-2"
             value={searchFilter}
@@ -92,7 +90,6 @@ export default function SellerHomePage() {
             onChange={(e) => setSearchFilter(e.target.value)}
           />
 
-          {/* Loading state */}
           {getCategoryItems.isFetching && (
             <div className="flex h-full items-center justify-center">
               <Loader2 className="h-6 w-6 animate-spin text-[#b5b5b5]" />
