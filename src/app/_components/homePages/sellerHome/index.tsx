@@ -75,6 +75,10 @@ export default function SellerHomePage() {
           </AddNewProduct>
         </div>
 
+        {getCategoryNames.data?.length === 0 && !getCategoryNames.isLoading && (
+          <p>Не знайдено жодних категорій. Спробуйте добавити нову</p>
+        )}
+
         <CategoryNamesList
           categories={getCategoryNames.data ?? []}
           isLoading={getCategoryNames.isPending}
@@ -96,11 +100,6 @@ export default function SellerHomePage() {
             </div>
           )}
 
-          {getCategoryNames.data?.length === 0 &&
-            !getCategoryNames.isPending && (
-              <p>Не знайдено жодних категорій. Спробуйте добавити нову</p>
-            )}
-
           {getCategoryItems.data?.length === 0 &&
             !getCategoryItems.isPending && (
               <p className="text-center">
@@ -110,14 +109,12 @@ export default function SellerHomePage() {
             )}
 
           {getCategoryItems.data
-            ?.sort((a, b) => (a.count > b.count ? -1 : 1))
-            ?.map((item) => {
-              return (
-                <ProductListItem key={item.id} item={item}>
-                  <ProductCard product={item} />
-                </ProductListItem>
-              );
-            })}
+            ?.sort((a, b) => b.count - a.count)
+            ?.map((item) => (
+              <ProductListItem key={item.id} item={item}>
+                <ProductCard product={item} />
+              </ProductListItem>
+            ))}
         </div>
       </div>
     </main>
