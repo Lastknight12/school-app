@@ -53,13 +53,14 @@ export default function Shop() {
           isLoading={getCategoryNames.isPending}
           onClick={setCurrentCategoryName}
         />
-        {getCategoryItems.isLoading && (
+
+        {getCategoryItems.isPending && (
           <div className="flex h-full items-center justify-center">
             <Loader2 className="h-6 w-6 animate-spin text-[#b5b5b5]" />
           </div>
         )}
 
-        {getCategoryItems.data?.length === 0 && !getCategoryItems.isLoading && (
+        {getCategoryItems.data?.length === 0 && !getCategoryItems.isPending && (
           <p className="text-center">
             Не знайдено жодних продуктів в категорі{" "}
             <span className="text-emerald-300">{currentCategoryName}</span>
