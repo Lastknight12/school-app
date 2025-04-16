@@ -33,7 +33,7 @@ export default function IncomingChart({ chartData }: Props) {
           }}
         >
           <CartesianGrid vertical={false} />
-          <YAxis></YAxis>
+          <YAxis domain={[0, 500]} />
           <XAxis
             dataKey="month"
             axisLine={false}

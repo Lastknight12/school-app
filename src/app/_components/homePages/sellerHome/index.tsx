@@ -75,7 +75,10 @@ export default function SellerHomePage() {
           </AddNewProduct>
         </div>
 
-        {/* Top scrollable categories list */}
+        {getCategoryNames.data?.length === 0 && !getCategoryNames.isPending && (
+          <p>Не знайдено жодних категорій. Спробуйте добавити нову</p>
+        )}
+
         <CategoryNamesList
           categories={getCategoryNames.data ?? []}
           isLoading={getCategoryNames.isPending}
@@ -84,7 +87,6 @@ export default function SellerHomePage() {
         />
 
         <div className="flex flex-col gap-2">
-          {/* if we not fetching and data is not empty show input */}
           <Input
             className="mb-2"
             value={searchFilter}
@@ -92,17 +94,11 @@ export default function SellerHomePage() {
             onChange={(e) => setSearchFilter(e.target.value)}
           />
 
-          {/* Loading state */}
-          {getCategoryItems.isFetching && (
+          {getCategoryItems.isPending && (
             <div className="flex h-full items-center justify-center">
               <Loader2 className="h-6 w-6 animate-spin text-[#b5b5b5]" />
             </div>
           )}
-
-          {getCategoryNames.data?.length === 0 &&
-            !getCategoryNames.isPending && (
-              <p>Не знайдено жодних категорій. Спробуйте добавити нову</p>
-            )}
 
           {getCategoryItems.data?.length === 0 &&
             !getCategoryItems.isPending && (
@@ -113,14 +109,12 @@ export default function SellerHomePage() {
             )}
 
           {getCategoryItems.data
-            ?.sort((a, b) => (a.count > b.count ? -1 : 1))
-            ?.map((item) => {
-              return (
-                <ProductListItem key={item.id} item={item}>
-                  <ProductCard product={item} />
-                </ProductListItem>
-              );
-            })}
+            ?.sort((a, b) => b.count - a.count)
+            ?.map((item) => (
+              <ProductListItem key={item.id} item={item}>
+                <ProductCard product={item} />
+              </ProductListItem>
+            ))}
         </div>
       </div>
     </main>
