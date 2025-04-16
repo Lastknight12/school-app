@@ -17,9 +17,10 @@ export default function SidebarQrScanner() {
       toast.success("Успішно оплачено");
     },
     onError: (error) => {
-      typeof error.message !== "string"
-        ? toast.error(error.message[0]?.message)
-        : toast.error(error.message);
+      typeof error.message === "string" &&
+        toast.error(
+          error.message === "Невірний URL" ? "Невірний QR-код" : error.message,
+        );
     },
   });
 

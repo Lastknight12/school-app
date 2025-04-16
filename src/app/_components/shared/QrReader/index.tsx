@@ -69,7 +69,7 @@ export default function QrReader({
           {children}
         </button>
         {open && (
-          <div className="absolute left-0 top-1/2 z-30 -translate-y-1/2">
+          <div className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 z-30 w-[300px] aspect-square">
             <div
               className="absolute right-3 top-3 z-20"
               onClick={() => {
@@ -95,6 +95,8 @@ export default function QrReader({
                 toast(
                   "Камера недоступна. Перевірте налаштування камери у вашому браузері та перезавантажте сторінку.",
                 );
+
+                setOpen(false);
               }}
             />
           </div>
