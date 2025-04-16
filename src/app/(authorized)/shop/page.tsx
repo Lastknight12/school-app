@@ -54,22 +54,23 @@ export default function Shop() {
           onClick={setCurrentCategoryName}
         />
 
-        {/* If data is loading show spinner */}
-        {getCategoryItems.isPending ? (
+        {getCategoryItems.isPending && (
           <div className="flex h-full items-center justify-center">
             <Loader2 className="h-6 w-6 animate-spin text-[#b5b5b5]" />
           </div>
-        ) : // if not loading and data is empty show message
-        getCategoryItems.data?.length === 0 ? (
+        )}
+
+        {getCategoryItems.data?.length === 0 && !getCategoryItems.isPending && (
           <p className="text-center">
-            Не знайдено жодних продуктів в категорі{" "}
+            Не знайдено жодних продуктів в категорії{" "}
             <span className="text-emerald-300">{currentCategoryName}</span>
           </p>
-        ) : (
-          // else show items
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 grid-rows-5 gap-4 py-4">
+        )}
+
+        {getCategoryItems.data && getCategoryItems.data.length > 0 && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 py-4">
             {getCategoryItems.data
-              ?.sort((a, b) => (a.count > b.count ? -1 : 1))
+              .sort((a, b) => (a.count > b.count ? -1 : 1))
               .map((item) => {
                 return <ProductCard product={item} key={item.id} />;
               })}
