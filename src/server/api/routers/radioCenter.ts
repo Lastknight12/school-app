@@ -153,7 +153,7 @@ export const radioCenterRouter = createTRPCRouter({
       return videoInfo;
     }),
 
-  createOrder: authorizeRoles(["STUDENT"])
+  createOrder: authorizeRoles(["STUDENT", "RADIO_CENTER"])
     .input(
       z.object({
         musicUrl: z.string(),
