@@ -52,19 +52,19 @@ export default function GenerateQRModal({ onSuccess, children }: Props) {
   const resetProducts = useProducts((state) => state.reset);
   const removeProduct = useProducts((state) => state.removeProduct);
 
-  useEffect(() => {
-    if (products.length === 0) {
-      resetStates();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [products]);
-
   const resetStates = () => {
     genQRToken.reset();
     setIsSuccess(false);
     setOpen(false);
     setPaymentError("");
   };
+
+  useEffect(() => {
+    if (products.length === 0) {
+      resetStates();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [products]);
 
   const genQRToken = genProductToken({
     onError: (error) => {
@@ -85,7 +85,7 @@ export default function GenerateQRModal({ onSuccess, children }: Props) {
       setPaymentError(data.error);
       setTimeout(() => {
         resetStates();
-      }, 150);
+      }, 1500);
 
       return;
     }
@@ -98,7 +98,7 @@ export default function GenerateQRModal({ onSuccess, children }: Props) {
     setTimeout(() => {
       resetProducts();
       resetStates();
-    }, 150);
+    }, 1500);
   });
 
   return (
@@ -111,7 +111,6 @@ export default function GenerateQRModal({ onSuccess, children }: Props) {
           }, 150);
         }
 
-        // open only if there are products
         products.length > 0 && setOpen(isOpen);
       }}
     >
