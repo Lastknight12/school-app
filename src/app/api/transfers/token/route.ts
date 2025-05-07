@@ -88,6 +88,11 @@ export async function genProductTokenHandler(req: NextRequest) {
         amount,
         type: "BUY",
         randomGradient,
+        productsBought: {
+          connect: input.data.products.map((item) => ({
+            id: item.id,
+          })),
+        },
       },
     });
 
