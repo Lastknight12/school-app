@@ -2,9 +2,11 @@
 
 import { signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { FaDiscord, FaGoogle } from "react-icons/fa";
 import { toast } from "sonner";
+
+import Captcha from "./Captcha";
 
 import { Button } from "~/shadcn/ui/button";
 
@@ -16,6 +18,8 @@ interface loginOptions {
 
 export default function Login() {
   const error = useSearchParams().get("error");
+  const [showCaptcha, setShowCaptcha] = useState(false);
+  const [chosenProvider, setChosenProvider] = useState<string | null>(null);
 
   useEffect(() => {
     switch (error) {
@@ -45,18 +49,38 @@ export default function Login() {
 
   return (
     <main className="flex h-screen w-full flex-col items-center justify-center gap-3">
-      <h1>Увійдіть за допомогою:</h1>
-      <div className="flex flex-col gap-3">
-        {loginOptions.map((option) => (
-          <Button
-            variant="secondary"
-            key={option.name}
-            onClick={option.callbackFn}
-          >
-            {option.icon}
-            {option.name}
-          </Button>
-        ))}
+      {showCaptcha && (
+        <Captcha
+          onSuccess={() => {
+            const provider = loginOptions.find(
+              (option) => option.name === chosenProvider,
+            );
+
+            if (provider) {
+              setTimeout(() => {
+                provider.callbackFn();
+              }, 1000);
+            }
+          }}
+        />
+      )}
+      <div className="flex flex-col items-center justify-center gap-3">
+        <h1>Увійдіть за допомогою:</h1>
+        <div className="flex flex-col gap-3">
+          {loginOptions.map((option) => (
+            <Button
+              variant="secondary"
+              key={option.name}
+              onClick={() => {
+                setShowCaptcha(true);
+                setChosenProvider(option.name);
+              }}
+            >
+              {option.icon}
+              {option.name}
+            </Button>
+          ))}
+        </div>
       </div>
     </main>
   );

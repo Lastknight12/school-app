@@ -35,6 +35,7 @@ export const env = createEnv({
     DISCORD_CLIENT_SECRET: z.string(),
     GOOGLE_CLIENT_ID: z.string(),
     GOOGLE_CLIENT_SECRET: z.string(),
+    RECAPTCHA_SECRET_KEY: z.string(),
   },
 
   /**
@@ -45,6 +46,7 @@ export const env = createEnv({
   client: {
     NEXT_PUBLIC_PUSHER_KEY: z.string(),
     NEXT_PUBLIC_BUY_URL: z.string(),
+    NEXT_PUBLIC_RECAPTCHA_SITE_KEY: z.string(),
   },
   /**
    * You can't destruct `process.env` as a regular object in the Next.js edge runtimes (e.g.
@@ -53,6 +55,15 @@ export const env = createEnv({
   runtimeEnv: {
     DATABASE_URL: process.env.DATABASE_URL,
     NODE_ENV: process.env.NODE_ENV,
+    NEXT_PUBLIC_RECAPTCHA_SITE_KEY:
+      // use dev recaptcha keys in development provided by google
+      process.env.NODE_ENV === "development"
+        ? "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
+        : process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY,
+    RECAPTCHA_SECRET_KEY:
+      process.env.NODE_ENV === "development"
+        ? "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe"
+        : process.env.RECAPTCHA_SECRET_KEY,
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
     NEXT_PUBLIC_BUY_URL: process.env.NEXT_PUBLIC_BUY_URL,
