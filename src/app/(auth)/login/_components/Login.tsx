@@ -2,7 +2,7 @@
 
 import { signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { FaDiscord, FaGoogle } from "react-icons/fa";
 import { toast } from "sonner";
 
@@ -20,7 +20,6 @@ export default function Login() {
   const error = useSearchParams().get("error");
   const [showCaptcha, setShowCaptcha] = useState(false);
   const [chosenProvider, setChosenProvider] = useState<string | null>(null);
-  const loginProvidersRef = useRef([]);
 
   useEffect(() => {
     switch (error) {

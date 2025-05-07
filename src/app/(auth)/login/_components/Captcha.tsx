@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { toast } from "sonner";
 import { env } from "~/env";
@@ -36,7 +36,7 @@ export default function Captcha({ onSuccess }: Props) {
   }
 
   const handleChange = (token: string | null) => {
-    handleCaptchaSubmission(token);
+    void handleCaptchaSubmission(token);
   };
 
   function handleExpired() {
