@@ -456,6 +456,9 @@ export const transfersRouter = createTRPCRouter({
             amount,
             type: "BUY",
             randomGradient,
+            productsBought: {
+              connect: input.products.map((product) => ({ id: product.id })),
+            },
           },
         });
 
@@ -528,9 +531,6 @@ export const transfersRouter = createTRPCRouter({
               data: {
                 status: "SUCCESS",
                 senderId: ctx.session.user.id,
-                productsBought: {
-                  connect: products.map((product) => ({ id: product.id })),
-                },
               },
             }),
 
