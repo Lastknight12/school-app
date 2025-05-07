@@ -57,9 +57,7 @@ export default function Login() {
             );
 
             if (provider) {
-              setTimeout(() => {
-                provider.callbackFn();
-              }, 1000);
+              provider.callbackFn();
             }
           }}
         />
