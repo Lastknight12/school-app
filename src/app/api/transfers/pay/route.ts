@@ -80,9 +80,6 @@ export async function payHandler(req: NextRequest, session: CustomUser) {
           data: {
             status: "SUCCESS",
             senderId: session.id,
-            productsBought: {
-              connect: products.map((product) => ({ id: product.id })),
-            },
           },
         }),
 
