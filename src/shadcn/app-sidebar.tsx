@@ -79,7 +79,6 @@ const data = {
     },
   ],
 
-  seller: [{ name: "Покупки", url: "/seller/purchases", icon: Table }],
   radio_center: [
     {
       name: "Замовлення",
@@ -116,7 +115,7 @@ const data = {
       name: "Таблиця лідерів",
       url: "/leaderboard",
       icon: ChartNoAxesColumn,
-      allowedRoles: ["STUDENT", "RADIO_CENTER", "ADMIN"],
+      allowedRoles: ["STUDENT", "RADIO_CENTER", "ADMIN", "SELLER", "TEACHER"],
     },
     {
       name: "Замовити музику",
@@ -160,13 +159,6 @@ export function AppSidebar({
         {session.user.role === "RADIO_CENTER" && (
           <>
             <NavMain items={data.radio_center} label="Radio Center" />
-            <SidebarSeparator />
-          </>
-        )}
-
-        {session.user.role === "SELLER" && (
-          <>
-            <NavMain items={data.seller} label="Seller" />
             <SidebarSeparator />
           </>
         )}
