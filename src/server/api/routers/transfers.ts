@@ -680,7 +680,7 @@ export const transfersRouter = createTRPCRouter({
       });
 
       const totalAmount = transfers.reduce((total, transfer) => {
-        return total + transfer.amount;
+        return transfer.status === "SUCCESS" ? total + transfer.amount : total;
       }, 0);
 
       return {

@@ -45,8 +45,6 @@ export default function PurchasesTableContent() {
     ? Math.ceil(getTransfers.data.transfers.length / usersPerPage)
     : 0;
 
-  getTransfers.data?.transfers[0]?.sender;
-
   return (
     <div className="mb-4">
       <div className="flex justify-between flex-wrap mb-4">

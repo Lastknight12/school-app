@@ -4,10 +4,9 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import ModelsList from "./_components/ModelsList";
+import PurchasesTableContent from "./_components/PurchasesTableContent";
 import TransactionsTableContent from "./_components/TransactionsTableContent";
 import UsersModelContent from "./_components/UsersModelContent";
-
-import PurchasesTableContent from "~/app/_components/shared/PurchasesTableContent";
 
 export type Tabs = "users" | "transactions" | "purchases";
 
