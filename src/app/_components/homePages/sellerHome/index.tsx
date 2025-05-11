@@ -110,7 +110,7 @@ export default function SellerHomePage() {
               <span className="text-emerald-300">{currentCategoryName}</span>
             </p>
           )}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 grid-rows-5 gap-4 py-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 py-4">
             {categoryItems.data
               ?.sort((a, b) => (a.count > b.count ? -1 : 1))
               ?.map((item) => {
