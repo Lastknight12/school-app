@@ -102,7 +102,7 @@ export default function Leaderboard({ session }: Props) {
       <div
         className={cn(
           // 72 px - navbar
-          "flex w-full h-[calc(100vh-64px-165px)] grow flex-col items-center gap-3 rounded-tl-xl rounded-tr-xl bg-card px-3 py-6",
+          "flex w-full  grow flex-col items-center gap-3 rounded-tl-xl rounded-tr-xl bg-card px-3 pt-6",
         )}
       >
         {getLeaderboard.isLoading && (

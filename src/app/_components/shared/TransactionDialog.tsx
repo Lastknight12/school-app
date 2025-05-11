@@ -31,8 +31,6 @@ export default function TransactionDialog({
 }: Props) {
   const { update: updateSession, data: session } = useSession();
 
-  console.log(session);
-
   const [amount, setAmount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
 

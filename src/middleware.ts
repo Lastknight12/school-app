@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { env } from "~/env";
 
-export const urls = new Map<string | RegExp, UserRole[]>([
+const routeAccessMap = new Map<string | RegExp, UserRole[]>([
   ["/stats", ["STUDENT", "RADIO_CENTER"]],
   ["/transactions", ["ADMIN"]],
   ["/shop", ["STUDENT", "RADIO_CENTER"]],
@@ -51,12 +51,14 @@ export default async function middleware(request: NextRequest) {
     return false;
   };
 
-  const hasValidRoute = Array.from(urls).some(([pattern, allowedRoles]) => {
-    if (hasAccess(allowedRoles, pattern)) {
-      return true;
-    }
-    return false;
-  });
+  const hasValidRoute = Array.from(routeAccessMap).some(
+    ([pattern, allowedRoles]) => {
+      if (hasAccess(allowedRoles, pattern)) {
+        return true;
+      }
+      return false;
+    },
+  );
 
   if (hasValidRoute) {
     return NextResponse.next();

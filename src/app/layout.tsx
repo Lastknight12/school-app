@@ -76,7 +76,7 @@ export default async function RootLayout({
                 }
               >
                 <PageTransition>
-                  <div className="mt-3">{children}</div>
+                  <div>{children}</div>
                 </PageTransition>
               </Suspense>
             </Sidebar>
