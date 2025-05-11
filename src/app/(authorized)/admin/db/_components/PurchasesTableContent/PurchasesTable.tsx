@@ -4,6 +4,8 @@ import { type TransactionStatus } from "@prisma/client";
 import { format } from "date-fns";
 import { Loader2 } from "lucide-react";
 
+import { cn } from "~/lib/utils";
+
 import ProductsModal from "./ProductsModal";
 
 import {
@@ -95,7 +97,14 @@ export function TransfersTable({
             <TableCell>
               <ProductsModal products={transfer.productsBought} />
             </TableCell>
-            <TableCell className="text-right">{transfer.amount} $</TableCell>
+            <TableCell
+              className={cn(
+                "text-right",
+                transfer.status === "PENDING" && "text-red-600",
+              )}
+            >
+              {transfer.amount} $
+            </TableCell>
           </TableRow>
         ))}
 
