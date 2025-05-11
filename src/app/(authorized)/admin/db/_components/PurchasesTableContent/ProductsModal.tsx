@@ -2,7 +2,7 @@ import Image from "next/image";
 
 import { cn } from "~/lib/utils";
 
-import ProductCard from "../ProductCard";
+import ProductCard from "~/app/_components/shared/ProductCard";
 
 import {
   Dialog,
@@ -60,7 +60,13 @@ export default function ProductsModal({ products, maxLength = 4 }: Props) {
         </DialogHeader>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 py-4">
           {products.map((product) => (
-            <ProductCard product={product} key={product.id} />
+            <ProductCard
+              product={product}
+              key={product.id}
+              customLabels={{
+                productDbCount: () => "",
+              }}
+            />
           ))}
         </div>
       </DialogContent>

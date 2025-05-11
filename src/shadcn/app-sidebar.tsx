@@ -1,25 +1,28 @@
 "use client";
 
-import { type UserRole } from "@prisma/client";
 import {
   Archive,
+  ArrowLeftRight,
   AudioLines,
+  Banknote,
   ChartColumnBig,
   ChartNoAxesColumn,
-  CircleDollarSign,
+  Database,
   Home,
   Play,
   Rocket,
+  School,
   Shield,
+  ShoppingBag,
   Store,
   Table,
+  Users,
   Wallet,
 } from "lucide-react";
 import { type Session } from "next-auth";
-import * as React from "react";
-import { NavAdmin } from "~/shadcn/nav-admin";
-import { NavMain } from "~/shadcn/nav-main";
-import { NavUser } from "~/shadcn/nav-user";
+import NavMain from "~/shadcn/nav-main";
+
+import { NavUser } from "./nav-user";
 
 import {
   Sidebar,
@@ -33,8 +36,7 @@ import {
 const data = {
   admin: [
     {
-      title: "Admin",
-      url: "/admin",
+      name: "Admin",
       icon: Shield,
       isActive: true,
       isCollapsible: true,
@@ -42,17 +44,22 @@ const data = {
         {
           name: "Database",
           url: "/admin/db?tab=users",
-          subItems: [
+          icon: Database,
+          isCollapsible: true,
+          items: [
             {
               name: "Користувачі",
+              icon: Users,
               url: "/admin/db?tab=users",
             },
             {
               name: "Покупки",
+              icon: ShoppingBag,
               url: "/admin/db?tab=purchases",
             },
             {
               name: "Перекази",
+              icon: ArrowLeftRight,
               url: "/admin/db?tab=transactions",
             },
           ],
@@ -60,22 +67,20 @@ const data = {
       ],
     },
     {
-      title: "Казна",
+      name: "Казна",
       url: "/admin/kazna",
       icon: Wallet,
-      isCollapsible: false,
     },
+    { name: "Список класів", url: "/admin", icon: School },
     {
-      title: "Переказ коштів",
+      name: "Переказ коштів",
       url: "/transactions",
-      icon: CircleDollarSign,
-      isCollapsible: false,
+      icon: Banknote,
     },
   ],
 
   seller: [{ name: "Покупки", url: "/seller/purchases", icon: Table }],
-
-  radioCenter: [
+  radio_center: [
     {
       name: "Замовлення",
       url: "/musicOrders",
@@ -88,36 +93,43 @@ const data = {
     },
   ],
 
-  navMain: [
-    { name: "Головна", url: "/", icon: Home },
+  main: [
+    {
+      name: "Головна",
+      url: "/",
+      icon: Home,
+      allowedRoles: ["STUDENT", "TEACHER", "SELLER", "RADIO_CENTER", "ADMIN"],
+    },
     {
       name: "Магазин",
       url: "/shop",
       icon: Store,
+      allowedRoles: ["STUDENT", "RADIO_CENTER"],
     },
     {
       name: "Статистика",
       url: "/stats",
       icon: ChartColumnBig,
+      allowedRoles: ["STUDENT", "RADIO_CENTER"],
     },
     {
       name: "Таблиця лідерів",
       url: "/leaderboard",
       icon: ChartNoAxesColumn,
+      allowedRoles: ["STUDENT", "RADIO_CENTER", "ADMIN"],
     },
-    { name: "Замовити музику", url: "/music", icon: AudioLines },
+    {
+      name: "Замовити музику",
+      url: "/music",
+      icon: AudioLines,
+      allowedRoles: ["STUDENT", "RADIO_CENTER"],
+    },
   ],
 };
 
 interface Props {
   session: Session | null;
 }
-
-const routesWithAuth = new Map<string, UserRole[]>([
-  ["/stats", ["STUDENT", "RADIO_CENTER"]],
-  ["/shop", ["STUDENT", "RADIO_CENTER"]],
-  ["/leaderboard", ["STUDENT", "RADIO_CENTER", "ADMIN", "SELLER", "TEACHER"]],
-]);
 
 export function AppSidebar({
   session,
@@ -140,22 +152,20 @@ export function AppSidebar({
       <SidebarContent>
         {session.user.role === "ADMIN" && (
           <>
-            <NavAdmin items={data.admin} />
+            <NavMain items={data.admin} label="Admin" />
             <SidebarSeparator />
           </>
         )}
 
         {session.user.role === "RADIO_CENTER" && (
           <>
-            <SidebarSeparator />
-            <NavMain items={data.radioCenter} label="Radio Center" />
+            <NavMain items={data.radio_center} label="Radio Center" />
             <SidebarSeparator />
           </>
         )}
 
         {session.user.role === "SELLER" && (
           <>
-            <SidebarSeparator />
             <NavMain items={data.seller} label="Seller" />
             <SidebarSeparator />
           </>
@@ -163,15 +173,10 @@ export function AppSidebar({
 
         {session.user && (
           <NavMain
-            items={data.navMain.filter((item) => {
-              const allowedRoles = routesWithAuth.get(item.url) ?? [];
-
-              if (
-                allowedRoles.includes(session?.user.role) ||
-                !routesWithAuth.has(item.url)
-              )
-                return true;
-            })}
+            items={data.main.filter((item) =>
+              item.allowedRoles.includes(session.user.role),
+            )}
+            label="Main"
           />
         )}
       </SidebarContent>

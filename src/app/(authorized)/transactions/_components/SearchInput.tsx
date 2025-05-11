@@ -31,7 +31,7 @@ export default function SearchInput({ onInputChange }: Props) {
     <div>
       <Input
         variant="accent"
-        placeholder="Search user..."
+        placeholder="Search user by name or email..."
         value={username}
         onChange={handleInputChange}
       />
