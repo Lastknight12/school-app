@@ -108,13 +108,25 @@ export default function SellerHomePage() {
               </p>
             )}
 
-          {getCategoryItems.data
-            ?.sort((a, b) => b.count - a.count)
-            ?.map((item) => (
-              <ProductListItem key={item.id} item={item}>
-                <ProductCard product={item} />
-              </ProductListItem>
-            ))}
+          {getCategoryItems.data?.length === 0 &&
+            !getCategoryItems.isPending && (
+              <p className="text-center">
+                Не знайдено жодних продуктів в категорії{" "}
+                <span className="text-emerald-300">{currentCategoryName}</span>
+              </p>
+            )}
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 py-4">
+            {getCategoryItems.data
+              ?.sort((a, b) => (a.count > b.count ? -1 : 1))
+              ?.map((item) => {
+                return (
+                  <ProductListItem key={item.id} item={item}>
+                    <ProductCard product={item} />
+                  </ProductListItem>
+                );
+              })}
+          </div>
         </div>
       </div>
     </main>
