@@ -168,8 +168,6 @@ export const userRouter = createTRPCRouter({
         },
       });
 
-      console.log(users, users.length, limit);
-
       let nextCursor: string | undefined = undefined;
       if (users.length > limit) {
         const nextItem = users.pop();
