@@ -146,12 +146,12 @@ export const userRouter = createTRPCRouter({
   getLeaderboard: protectedProcedure
     .input(
       z.object({
-        limit: z.number().min(3).max(50).nullish(),
+        limit: z.number().min(3).max(25).nullish(),
         cursor: z.string().nullish(),
       }),
     )
     .query(async ({ ctx, input }) => {
-      const limit = input.limit ?? 50;
+      const limit = input.limit ?? 25;
 
       const users = await ctx.db.user.findMany({
         where: {
@@ -159,9 +159,7 @@ export const userRouter = createTRPCRouter({
         },
         cursor: input.cursor ? { id: input.cursor } : undefined,
         take: input.limit ? input.limit + 1 : undefined,
-        orderBy: {
-          balance: "desc",
-        },
+        orderBy: [{ balance: "desc" }, { id: "asc" }],
         select: {
           id: true,
           name: true,
@@ -169,6 +167,8 @@ export const userRouter = createTRPCRouter({
           balance: true,
         },
       });
+
+      console.log(users, users.length, limit);
 
       let nextCursor: string | undefined = undefined;
       if (users.length > limit) {
