@@ -11,12 +11,12 @@ export const env = createEnv({
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
-    NEXTAUTH_SECRET:
+    BETTER_AUTH_SECRET:
       process.env.NODE_ENV === "production"
         ? z.string()
         : z.string().optional(),
     CRON_SECRET: z.string(),
-    NEXTAUTH_URL: z.preprocess(
+    BETTER_AUTH_URL: z.preprocess(
       // This makes Vercel deployments not fail if you don't set NEXTAUTH_URL
       // Since NextAuth.js automatically uses the VERCEL_URL if present.
       (str) => process.env.VERCEL_URL ?? str,
@@ -64,8 +64,8 @@ export const env = createEnv({
       process.env.NODE_ENV === "development"
         ? "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe"
         : process.env.RECAPTCHA_SECRET_KEY,
-    NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
-    NEXTAUTH_URL: process.env.NEXTAUTH_URL,
+    BETTER_AUTH_SECRET: process.env.NEXTAUTH_SECRET,
+    BETTER_AUTH_URL: process.env.NEXTAUTH_URL,
     NEXT_PUBLIC_BUY_URL: process.env.NEXT_PUBLIC_BUY_URL,
     QR_SECRET: process.env.QR_SECRET,
     CRON_SECRET: process.env.CRON_SECRET,
