@@ -34,7 +34,7 @@ import {
 interface Student {
   name: string;
   email: string;
-  image: string;
+  image?: string | null;
 }
 interface Props {
   klassId: string;

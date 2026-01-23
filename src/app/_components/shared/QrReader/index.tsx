@@ -80,9 +80,6 @@ export default function QrReader({
               <X size={30} />
             </div>
             <Scanner
-              components={{
-                audio: false,
-              }}
               onScan={(results) => {
                 const firstResult = results[0]?.rawValue;
                 if (firstResult) {

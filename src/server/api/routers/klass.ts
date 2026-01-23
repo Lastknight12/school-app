@@ -21,7 +21,14 @@ export const klassRouter = createTRPCRouter({
           id: input.id,
         },
         select: {
-          students: true,
+          students: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              image: true,
+            },
+          },
         },
       });
 
