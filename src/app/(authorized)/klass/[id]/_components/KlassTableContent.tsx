@@ -30,7 +30,7 @@ export default function KlassTableContent({ student, onSuccess }: Props) {
         <TableRow key={student.id}>
           <TableCell>
             <Image
-              src={student.image}
+              src={student.image ?? ""}
               alt="image"
               width={40}
               height={40}

@@ -29,7 +29,7 @@ export default function ReplenishHistory() {
               <div className="flex flex-col gap-2">
                 <div className="flex gap-2 items-center">
                   <Image
-                    src={replenish.sender.image}
+                    src={replenish.sender.image ?? ""}
                     width={32}
                     height={32}
                     alt="avatar"

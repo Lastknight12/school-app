@@ -27,7 +27,7 @@ export default function TeachersDropdown({ onSelect, teacherIds }: Props) {
                 key={id}
                 src={
                   getAllTeachers.data?.find((teacher) => teacher.id === id)!
-                    .image
+                    .image ?? ""
                 }
                 alt="avatar"
                 width={25}
@@ -68,7 +68,7 @@ export default function TeachersDropdown({ onSelect, teacherIds }: Props) {
                 />
 
                 <Image
-                  src={teacher.image}
+                  src={teacher.image ?? ""}
                   alt="avatar"
                   width={30}
                   height={30}
