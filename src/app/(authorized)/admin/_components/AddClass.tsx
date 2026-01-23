@@ -111,7 +111,10 @@ export default function AddClass() {
                         className="h-6 w-6 [&:not(:last-child)]:-ml-2"
                         key={teacher.id}
                       >
-                        <AvatarImage src={teacher.image} alt={teacher.name} />
+                        <AvatarImage
+                          src={teacher.image ?? ""}
+                          alt={teacher.name}
+                        />
                         <AvatarFallback>{teacher.name}</AvatarFallback>
                       </Avatar>
                     ))}
