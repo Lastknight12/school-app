@@ -1,6 +1,9 @@
 import { notFound } from "next/navigation";
 
+import { getServerAuthSession } from "~/server/auth";
 import { api } from "~/trpc/server";
+
+import { checkRole } from "~/lib/utils";
 
 import ButtonsGroup from "./_components/ButtonsGroup";
 import StudentsTable from "./_components/StudentTable";
@@ -11,6 +14,9 @@ export default async function Page({
 }: {
   params: { klassName: string };
 }) {
+  const session = await getServerAuthSession();
+  checkRole(session, ["ADMIN"]);
+
   const decodedName = decodeURIComponent(params.klassName);
 
   const klass = await api.klass.getAdminKlassData({ name: decodedName });

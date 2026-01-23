@@ -1,9 +1,15 @@
+import { getServerAuthSession } from "~/server/auth";
 import { api } from "~/trpc/server";
+
+import { checkRole } from "~/lib/utils";
 
 import ReplenishDialog from "./_components/ReplenishDialog";
 import ReplenishHistory from "./_components/ReplenishHistory";
 
 export default async function KaznaPage() {
+  const session = await getServerAuthSession();
+  checkRole(session, ["ADMIN"]);
+
   const kaznaAmount = await api.kazna.getKaznaAmount();
 
   return (
