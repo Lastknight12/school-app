@@ -1,10 +1,11 @@
 "use client";
 
-import { signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FaDiscord, FaGoogle } from "react-icons/fa";
 import { toast } from "sonner";
+
+import { authClient } from "~/lib/auht-client";
 
 import Captcha from "./Captcha";
 
@@ -36,14 +37,12 @@ export default function Login() {
     {
       name: "Discord",
       icon: <FaDiscord size={24} />,
-      callbackFn: () =>
-        void signIn("discord", { redirect: true, callbackUrl: "/" }),
+      callbackFn: () => void authClient.signIn.social({ provider: "discord" }),
     },
     {
       name: "Google",
       icon: <FaGoogle size={24} />,
-      callbackFn: () =>
-        void signIn("google", { redirect: true, callbackUrl: "/" }),
+      callbackFn: () => void authClient.signIn.social({ provider: "google" }),
     },
   ];
 

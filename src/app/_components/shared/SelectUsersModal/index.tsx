@@ -146,7 +146,7 @@ export default function UpdateUsers({
                   <div className="flex flex-wrap gap-2 p-2">
                     {selectedUsers.map((user) => (
                       <Avatar key={user.email} className="h-8 w-8">
-                        <AvatarImage src={user.image} alt={user.name} />
+                        <AvatarImage src={user.image ?? ""} alt={user.name} />
                       </Avatar>
                     ))}
                   </div>

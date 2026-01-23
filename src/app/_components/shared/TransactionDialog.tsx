@@ -2,7 +2,6 @@
 
 import type { User } from "@prisma/client";
 import { Loader2 } from "lucide-react";
-import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { type ChangeEvent, useState } from "react";
 import { toast } from "sonner";
@@ -11,11 +10,14 @@ import { sendAmountSchema } from "~/schemas/zod";
 
 import { api } from "~/trpc/react";
 
+import { authClient } from "~/lib/auht-client";
+
 import { Button } from "~/shadcn/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "~/shadcn/ui/dialog";
 
 interface Props {
   user: User;
+  balance?: number;
   children?: React.ReactNode;
   isOpen?: boolean;
   onMutationSuccess?: () => void;
@@ -24,23 +26,24 @@ interface Props {
 
 export default function TransactionDialog({
   user,
+  balance,
   children,
   isOpen: customIsOpen,
   onOpenChange,
   onMutationSuccess,
 }: Props) {
-  const { update: updateSession, data: session } = useSession();
+  const { data: session } = authClient.useSession();
 
   const [amount, setAmount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
 
   const isAmountPositive = amount > 0;
-  const maxValue = 99999999; // 99 999 999
+  const maxValue = 99_999_999;
 
   const sendMoneyMutation = api.transfers.sendMoney.useMutation({
     onSuccess: () => {
       toast.success("Кошти були надіслані");
-      void updateSession({ eventType: "refreshBalance" });
+      void authClient.updateUser({ balance: amount });
       onMutationSuccess?.();
       setIsOpen(false);
     },
@@ -68,7 +71,7 @@ export default function TransactionDialog({
     try {
       sendAmountSchema.parse({ amount });
 
-      if (amount > session!.user.balance) {
+      if (amount > (balance ?? session!.user.balance)) {
         throw new z.ZodError([
           {
             code: "custom",
@@ -102,7 +105,7 @@ export default function TransactionDialog({
           )}
           <div className="flex items-center gap-3">
             <Image
-              src={user.image}
+              src={user.image ?? ""}
               alt="avatar"
               className="rounded-full h-[35px]"
               width={35}
@@ -113,7 +116,9 @@ export default function TransactionDialog({
           </div>
 
           <div className="flex w-full flex-col items-center">
-            <p className="text-[#6f6f6f]">Бланс: {session?.user.balance}</p>
+            <p className="text-[#6f6f6f]">
+              Бланс: {balance ?? session?.user.balance}
+            </p>
             <input
               className="w-[inherit] bg-transparent text-center text-4xl outline-none"
               value={amount}

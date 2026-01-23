@@ -8,12 +8,13 @@
  */
 import { type UserRole } from "@prisma/client";
 import { TRPCError, initTRPC } from "@trpc/server";
+import { headers } from "next/headers";
 import Pusher from "pusher";
 import superjson from "superjson";
 import { ZodError } from "zod";
 import { env } from "~/env";
 
-import { type CustomUser, getServerAuthSession } from "~/server/auth";
+import { type CustomUser, auth } from "~/server/auth";
 import { db } from "~/server/db";
 
 /**
@@ -30,7 +31,9 @@ import { db } from "~/server/db";
  */
 
 export const createTRPCContext = async (opts: { headers: Headers }) => {
-  const session = await getServerAuthSession();
+  const session = await auth.api.getSession({
+    headers: headers(),
+  });
 
   return {
     db,
@@ -117,27 +120,23 @@ export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
   });
 });
 
-type UserWithRole<T extends CustomUser["role"]> = Extract<
-  CustomUser,
-  { role: T }
->;
-
-export function authorizeRoles<Role extends UserRole>(roles: Role[]) {
+export function authorizeRoles<const R extends readonly UserRole[]>(roles: R) {
   return t.procedure.use(({ ctx, next }) => {
     if (!ctx.session) {
       throw new TRPCError({ code: "UNAUTHORIZED" });
     }
 
-    if (!roles.includes(ctx.session.user.role as Role)) {
+    const { user } = ctx.session;
+
+    if (!roles.includes(user.role)) {
       throw new TRPCError({ code: "UNAUTHORIZED" });
     }
 
     return next({
       ctx: {
-        // infers the `session` as non-nullable
         session: {
           ...ctx.session,
-          user: ctx.session.user as UserWithRole<Role>,
+          user: user as CustomUser & { role: R[number] },
         },
       },
     });

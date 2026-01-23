@@ -1,15 +1,16 @@
 "use client";
 
-import { type Session } from "next-auth";
 import { usePathname } from "next/navigation";
 import { AppSidebar } from "~/shadcn/app-sidebar";
 import SidebarPath from "~/shadcn/sidebar-path";
+
+import { type getServerAuthSession } from "~/server/auth";
 
 import { SidebarInset, SidebarProvider } from "~/shadcn/ui/sidebar";
 
 interface Props {
   children: React.ReactNode;
-  session: Session | null;
+  session: Awaited<ReturnType<typeof getServerAuthSession>> | null;
 }
 const dontRenderUrls = ["/login"];
 

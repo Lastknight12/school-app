@@ -3,15 +3,15 @@
 import { useInView } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import { ShoppingCart } from "lucide-react";
-import { type Session } from "next-auth";
 import Image from "next/image";
 import { type CSSProperties, useEffect, useRef } from "react";
 
 import { type formatedTransfer } from "~/server/api/routers/transfers";
+import { type getServerAuthSession } from "~/server/auth";
 import { api } from "~/trpc/react";
 
 interface Props {
-  session: Session | null;
+  session: Awaited<ReturnType<typeof getServerAuthSession>>;
 }
 
 export default function TransfersList({ session }: Props) {

@@ -47,7 +47,23 @@ export const transfersRouter = createTRPCRouter({
           message: "Недостатньо прав",
         });
       }
-      const userBalance = ctx.session.user.balance;
+
+      let userBalance = ctx.session.user.balance;
+      if (ctx.session.user.role === "ADMIN") {
+        const kaznaBalance = await ctx.db.kazna.findFirst({
+          select: {
+            amount: true,
+          },
+        });
+
+        if (!kaznaBalance)
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Не вдалося знайти казну",
+          });
+
+        userBalance = kaznaBalance.amount;
+      }
 
       if (userBalance < input.amount) {
         throw new TRPCError({

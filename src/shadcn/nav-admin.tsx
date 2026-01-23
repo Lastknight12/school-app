@@ -2,7 +2,6 @@
 
 import { ChevronRight, type LucideIcon } from "lucide-react";
 import Link from "next/link";
-import { ReactNode } from "react";
 
 import {
   Collapsible,
@@ -11,7 +10,6 @@ import {
 } from "~/shadcn/ui/collapsible";
 import {
   SidebarGroup,
-  SidebarGroupContent,
   SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
@@ -31,7 +29,7 @@ export interface Item {
   items?: Item[];
 }
 
-function recursiveItems(items: Item[]): ReactNode[] {
+function recursiveItems(items: Item[]) {
   return items.map((item) => {
     return item.isCollapsible ? (
       <Collapsible key={item.name} defaultOpen={item.isActive}>

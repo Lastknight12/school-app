@@ -79,30 +79,33 @@ export const userRouter = createTRPCRouter({
     }),
 
   getUserClass: authorizeRoles(["STUDENT"]).query(async ({ ctx }) => {
-    if (!ctx.session.user.studentClass) return;
-
-    const klass = await ctx.db.klass.findUnique({
+    const klass = await ctx.db.klass.findFirst({
       where: {
-        id: ctx.session.user.studentClass.id,
+        students: {
+          some: { id: ctx.session.user.id },
+        },
       },
       select: {
         id: true,
-        students: {
-          select: {
-            id: true,
-          },
-        },
         name: true,
       },
     });
 
-    if (
-      !klass?.students.some((student) => student.id === ctx.session.user.id)
-    ) {
-      return null;
-    }
-
     return klass;
+  }),
+
+  getTeacherKlasses: authorizeRoles(["TEACHER"]).query(async ({ ctx }) => {
+    return await ctx.db.klass.findMany({
+      where: {
+        teachers: {
+          some: { id: ctx.session.user.id },
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+      },
+    });
   }),
 
   updateUser: protectedProcedure
@@ -167,6 +170,12 @@ export const userRouter = createTRPCRouter({
           balance: true,
         },
       });
+
+      if (users.length === 0)
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Жодного користувача не знайдено",
+        });
 
       let nextCursor: string | undefined = undefined;
       if (users.length > limit) {

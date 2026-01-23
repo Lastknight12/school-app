@@ -78,7 +78,7 @@ export default function UsersList({
             >
               <div className="flex items-center gap-3">
                 <Image
-                  src={user.image}
+                  src={user.image ?? ""}
                   alt="user avatar"
                   width={30}
                   height={30}

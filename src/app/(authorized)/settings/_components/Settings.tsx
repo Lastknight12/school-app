@@ -1,15 +1,15 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
-import { type Session } from "next-auth";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FaCheck } from "react-icons/fa";
 import { toast } from "sonner";
 
+import { type getServerAuthSession } from "~/server/auth";
 import { api } from "~/trpc/react";
 
+import { authClient } from "~/lib/auht-client";
 import { useCardVariant } from "~/lib/state";
 import { cn } from "~/lib/utils";
 
@@ -22,20 +22,21 @@ import { Label } from "~/shadcn/ui/label";
 import { useSidebar } from "~/shadcn/ui/sidebar";
 
 interface Props {
-  session: Session;
+  session: Awaited<ReturnType<typeof getServerAuthSession>>;
 }
 
 export default function Settings({ session: defaultSession }: Props) {
-  const [newUsername, setNewUsername] = useState(defaultSession.user.name);
-  const [newImageSrc, setNewImageSrc] = useState(defaultSession.user.image);
+  const [newUsername, setNewUsername] = useState(
+    defaultSession?.user.name ?? "",
+  );
+  const [newImageSrc, setNewImageSrc] = useState(
+    defaultSession?.user.image ?? "",
+  );
 
   const { open, isMobile } = useSidebar();
-
-  const { update, data: newSession } = useSession();
   const isValuesChanged =
-    newUsername !== (newSession?.user.name ?? defaultSession.user.name) ||
-    newImageSrc !== (newSession?.user.image ?? defaultSession.user.image);
-
+    newUsername !== defaultSession?.user.name ||
+    newImageSrc !== defaultSession?.user.image;
   const currentCardVariant = useCardVariant((state) => state.variant);
   const setCardVariant = useCardVariant((state) => state.setVariant);
 
@@ -47,8 +48,9 @@ export default function Settings({ session: defaultSession }: Props) {
 
   const updateUserMutation = api.user.updateUser.useMutation({
     onSuccess: async () => {
-      await update({ newUsername, newImageSrc });
+      await authClient.updateUser({ name: newUsername, image: newImageSrc });
       router.refresh();
+      toast.success("Користувача оновлено!");
     },
     onError: (error) => {
       error.data?.zodError && error.data?.zodError.length > 0
@@ -59,7 +61,7 @@ export default function Settings({ session: defaultSession }: Props) {
 
   const getUserClass = api.user.getUserClass.useQuery(void 0, {
     refetchOnWindowFocus: false,
-    enabled: defaultSession.user.role === "STUDENT",
+    enabled: defaultSession?.user.role === "STUDENT",
   });
 
   return (
@@ -71,7 +73,7 @@ export default function Settings({ session: defaultSession }: Props) {
             <Label className="text-left text-base">Аватарка:</Label>
             <UploadImage
               onSuccess={(imageSrc) => setNewImageSrc(imageSrc)}
-              defaultImageSrc={defaultSession.user.image}
+              defaultImageSrc={defaultSession?.user.image ?? ""}
               imageSize={50}
               imageClassName=" rounded-full"
               closeButtonClassName="bg-red-700 border-none text-black"
@@ -85,7 +87,7 @@ export default function Settings({ session: defaultSession }: Props) {
             </Label>
             <Input
               value={newUsername}
-              placeholder={defaultSession.user.name}
+              placeholder={defaultSession?.user.name}
               onChange={(e) => setNewUsername(e.target.value)}
             />
           </div>
@@ -93,10 +95,10 @@ export default function Settings({ session: defaultSession }: Props) {
           <div className="flex flex-col gap-2">
             {/* Email */}
             <Label className="text-left text-base">Email:</Label>
-            <Input disabled placeholder={defaultSession.user.email} />
+            <Input disabled placeholder={defaultSession?.user.email} />
           </div>
 
-          {defaultSession.user.role === "STUDENT" && (
+          {defaultSession?.user.role === "STUDENT" && (
             <div className="flex gap-3">
               {/* Klass */}
               <Label className="text-left text-base">Клас:</Label>
@@ -129,7 +131,7 @@ export default function Settings({ session: defaultSession }: Props) {
         </Button>
       </div>
 
-      {defaultSession.user.role === "STUDENT" && (
+      {defaultSession?.user.role === "STUDENT" && (
         <div
           className={cn(
             "px-6 transition-all duration-200 ease-linear",

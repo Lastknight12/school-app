@@ -4,7 +4,6 @@ import { Orbitron, Source_Code_Pro } from "next/font/google";
 import localFont from "next/font/local";
 import { Suspense } from "react";
 import { Toaster } from "sonner";
-import NextAuthProvider from "~/providers/NextAuthProvider";
 
 import { getServerAuthSession } from "~/server/auth";
 import { TRPCReactProvider } from "~/trpc/react";
@@ -55,32 +54,30 @@ export default async function RootLayout({
         <SpeedInsights />
 
         <TRPCReactProvider>
-          <NextAuthProvider>
-            <Toaster
-              toastOptions={{
-                classNames: {
-                  toast: "bg-card border-border",
-                  title: "text-card-foreground",
-                  icon: "text-card-foreground",
-                },
-              }}
-              position="top-center"
-            />
+          <Toaster
+            toastOptions={{
+              classNames: {
+                toast: "bg-card border-border",
+                title: "text-card-foreground",
+                icon: "text-card-foreground",
+              },
+            }}
+            position="top-center"
+          />
 
-            <Sidebar session={session}>
-              <Suspense
-                fallback={
-                  <div className="w-full h-full flex items-center justify-center">
-                    <Loader2 className="h-6 w-6 animate-spin text-[#b5b5b5]" />
-                  </div>
-                }
-              >
-                <PageTransition>
-                  <div>{children}</div>
-                </PageTransition>
-              </Suspense>
-            </Sidebar>
-          </NextAuthProvider>
+          <Sidebar session={session}>
+            <Suspense
+              fallback={
+                <div className="w-full h-full flex items-center justify-center">
+                  <Loader2 className="h-6 w-6 animate-spin text-[#b5b5b5]" />
+                </div>
+              }
+            >
+              <PageTransition>
+                <div>{children}</div>
+              </PageTransition>
+            </Suspense>
+          </Sidebar>
         </TRPCReactProvider>
       </body>
     </html>

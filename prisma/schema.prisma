@@ -3,7 +3,6 @@
 
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["typedSql"]
 }
 
 datasource db {
@@ -15,34 +14,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Necessary for Next auth
-model Account {
-  id                       String  @id @default(cuid())
-  userId                   String
-  type                     String
-  provider                 String
-  providerAccountId        String
-  refresh_token            String? // @db.Text
-  access_token             String? // @db.Text
-  expires_at               Int?
-  token_type               String?
-  scope                    String?
-  id_token                 String? // @db.Text
-  session_state            String?
-  user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  refresh_token_expires_in Int?
-
-  @@unique([provider, providerAccountId])
-}
-
-model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
 enum UserRole {
   ADMIN
   TEACHER
@@ -52,15 +23,19 @@ enum UserRole {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String   @id @default(cuid())
   name          String
-  email         String    @unique
-  image         String
-  balance       Float     @default(0.00)
-  role          UserRole  @default(STUDENT)
-  emailVerified Boolean?
-  accounts      Account[]
-  sessions      Session[]
+  email         String
+  image         String?
+  balance       Float    @default(0.00)
+  role          UserRole @default(STUDENT)
+  emailVerified Boolean
+
+  createdAt DateTime
+  updatedAt DateTime
+
+  accounts Account[]
+  sessions Session[]
 
   recieverTransactions Transaction[] @relation(name: "recieverTransactions")
   senderTransactions   Transaction[] @relation(name: "senderTransactions")
@@ -72,6 +47,43 @@ model User {
 
   musicOrders    MusicOrder[]
   KaznaTransfers KaznaTransfer[]
+
+  @@unique([email])
+  @@map("users")
+}
+
+model Session {
+    id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime
+  updatedAt DateTime
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime
+  updatedAt             DateTime
+
+  @@map("account")
 }
 
 model Category {
@@ -91,6 +103,17 @@ model CategoryItem {
   categoryId String
 
   Transactions Transaction[]
+}
+
+model Verification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
+
+  @@map("verification")
 }
 
 enum TransactionType {
@@ -147,9 +170,9 @@ model MusicOrder {
 }
 
 model Kazna {
-  id         String          @id @default(cuid())
-  amount     Float           @default(0)
-  Transfers  KaznaTransfer[]
+  id        String          @id @default(cuid())
+  amount    Float           @default(0)
+  Transfers KaznaTransfer[]
 }
 
 model KaznaTransfer {

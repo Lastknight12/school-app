@@ -1,10 +1,10 @@
-import { type Session } from "next-auth";
+import { type getServerAuthSession } from "~/server/auth";
 
 import DebitCard from "../../shared/DebitCard";
 import TransfersList from "./TransfersList";
 
 interface Props {
-  session: Session;
+  session: Awaited<ReturnType<typeof getServerAuthSession>>;
 }
 
 export default async function StudentHomePage({ session }: Props) {
@@ -12,15 +12,15 @@ export default async function StudentHomePage({ session }: Props) {
     <main className="flex h-full_page flex-col justify-between">
       <div className="relative flex w-full justify-center">
         <DebitCard
-          balance={session.user.balance}
-          cardHolder={session.user.name ?? "Ім'я"}
+          balance={session!.user.balance ?? 0}
+          cardHolder={session!.user.name ?? "Ім'я"}
           className="max-[410px]:!w-[280px]"
         />
 
         {/* blured bg */}
         <DebitCard
-          balance={session.user.balance}
-          cardHolder={session.user.name ?? "Ім'я"}
+          balance={session!.user.balance}
+          cardHolder={session!.user.name ?? "Ім'я"}
           className="absolute left-1/2 -translate-x-1/2 blur-2xl max-[410px]:!w-[280px]"
         />
       </div>

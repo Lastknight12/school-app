@@ -15,12 +15,12 @@ import {
   Shield,
   ShoppingBag,
   Store,
-  Table,
   Users,
   Wallet,
 } from "lucide-react";
-import { type Session } from "next-auth";
 import NavMain from "~/shadcn/nav-main";
+
+import { type getServerAuthSession } from "~/server/auth";
 
 import { NavUser } from "./nav-user";
 
@@ -127,7 +127,7 @@ const data = {
 };
 
 interface Props {
-  session: Session | null;
+  session: Awaited<ReturnType<typeof getServerAuthSession>>;
 }
 
 export function AppSidebar({

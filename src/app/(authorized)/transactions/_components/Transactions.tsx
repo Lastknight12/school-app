@@ -1,9 +1,9 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
-import type { Session } from "next-auth";
 import Image from "next/image";
 
+import { type getServerAuthSession } from "~/server/auth";
 import { api } from "~/trpc/react";
 
 import SearchInput from "./SearchInput";
@@ -11,10 +11,11 @@ import SearchInput from "./SearchInput";
 import TransactionDialog from "~/app/_components/shared/TransactionDialog";
 
 interface Props {
-  session: Session;
+  session: Awaited<ReturnType<typeof getServerAuthSession>>;
+  balance: number;
 }
 
-export default function Transactions({ session }: Props) {
+export default function Transactions({ session, balance }: Props) {
   const getUsers = api.user.getUsersByNameOrEmail.useMutation();
 
   async function onInputChange(searchTerm: string) {
@@ -43,11 +44,15 @@ export default function Transactions({ session }: Props) {
         {getUsers.data?.map((user) => {
           return (
             <>
-              {session.user.name === user.name ? null : (
-                <TransactionDialog key={user.name} user={user}>
+              {session?.user.name === user.name ? null : (
+                <TransactionDialog
+                  key={user.name}
+                  user={user}
+                  balance={balance}
+                >
                   <div className="flex items-center gap-3">
                     <Image
-                      src={user.image}
+                      src={user.image ?? ""}
                       alt="avatar"
                       className="rounded-full h-[35px]"
                       width={35}
