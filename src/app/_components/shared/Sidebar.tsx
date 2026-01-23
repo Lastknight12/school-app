@@ -4,24 +4,25 @@ import { usePathname } from "next/navigation";
 import { AppSidebar } from "~/shadcn/app-sidebar";
 import SidebarPath from "~/shadcn/sidebar-path";
 
-import { type getServerAuthSession } from "~/server/auth";
+import { type authClient } from "~/lib/auht-client";
 
 import { SidebarInset, SidebarProvider } from "~/shadcn/ui/sidebar";
 
 interface Props {
   children: React.ReactNode;
-  session: Awaited<ReturnType<typeof getServerAuthSession>> | null;
+  session: typeof authClient.$Infer.Session | null;
+  sessions: (typeof authClient.$Infer.Session)[];
 }
 const dontRenderUrls = ["/login"];
 
-export default function Sidebar({ children, session }: Props) {
+export default function Sidebar({ children, session, sessions }: Props) {
   const pathname = usePathname();
 
   if (dontRenderUrls.includes(pathname)) return children;
 
   return (
     <SidebarProvider>
-      <AppSidebar session={session} />
+      <AppSidebar session={session} sessions={sessions} />
 
       <SidebarInset>
         {session && (

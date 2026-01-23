@@ -2,10 +2,11 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Loader2 } from "lucide-react";
 import { Orbitron, Source_Code_Pro } from "next/font/google";
 import localFont from "next/font/local";
+import { headers } from "next/headers";
 import { Suspense } from "react";
 import { Toaster } from "sonner";
 
-import { getServerAuthSession } from "~/server/auth";
+import { auth, getServerAuthSession } from "~/server/auth";
 import { TRPCReactProvider } from "~/trpc/react";
 
 import "../styles/globals.css";
@@ -45,6 +46,9 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const session = await getServerAuthSession();
+  const sessions = (await auth.api.listDeviceSessions({
+    headers: headers(),
+  })) as (typeof auth.$Infer.Session)[];
 
   return (
     <html lang="en" className="dark">
@@ -65,7 +69,7 @@ export default async function RootLayout({
             position="top-center"
           />
 
-          <Sidebar session={session}>
+          <Sidebar session={session} sessions={sessions}>
             <Suspense
               fallback={
                 <div className="w-full h-full flex items-center justify-center">

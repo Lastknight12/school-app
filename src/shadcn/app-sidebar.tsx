@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import NavMain from "~/shadcn/nav-main";
 
-import { type getServerAuthSession } from "~/server/auth";
+import { type authClient } from "~/lib/auht-client";
 
 import { NavUser } from "./nav-user";
 
@@ -127,11 +127,13 @@ const data = {
 };
 
 interface Props {
-  session: Awaited<ReturnType<typeof getServerAuthSession>>;
+  session: typeof authClient.$Infer.Session | null;
+  sessions: (typeof authClient.$Infer.Session)[];
 }
 
 export function AppSidebar({
   session,
+  sessions,
 }: Props & React.ComponentProps<typeof Sidebar>) {
   if (!session) return null;
 
@@ -173,7 +175,7 @@ export function AppSidebar({
         )}
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={session.user} />
+        <NavUser user={session.user} sessions={sessions} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

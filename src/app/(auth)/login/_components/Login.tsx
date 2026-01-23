@@ -2,7 +2,7 @@
 
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { FaDiscord, FaGoogle } from "react-icons/fa";
+import { FaGoogle } from "react-icons/fa";
 import { toast } from "sonner";
 
 import { authClient } from "~/lib/auht-client";
@@ -34,11 +34,6 @@ export default function Login() {
   }, [error]);
 
   const loginOptions: loginOptions[] = [
-    {
-      name: "Discord",
-      icon: <FaDiscord size={24} />,
-      callbackFn: () => void authClient.signIn.social({ provider: "discord" }),
-    },
     {
       name: "Google",
       icon: <FaGoogle size={24} />,

@@ -1,6 +1,7 @@
 import { type UserRole } from "@prisma/client";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
+import { multiSession } from "better-auth/plugins";
 import { headers } from "next/headers";
 import { env } from "~/env";
 
@@ -17,14 +18,11 @@ export type CustomUser = {
 
 export const auth = betterAuth({
   database: prismaAdapter(db, { provider: "postgresql" }),
+  plugins: [multiSession()],
   socialProviders: {
     google: {
       clientId: env.GOOGLE_CLIENT_ID,
       clientSecret: env.GOOGLE_CLIENT_SECRET,
-    },
-    discord: {
-      clientId: env.DISCORD_CLIENT_ID,
-      clientSecret: env.DISCORD_CLIENT_SECRET,
     },
   },
   user: {

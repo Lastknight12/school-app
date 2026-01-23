@@ -13,7 +13,11 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuPortal,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "~/shadcn/ui/dropdown-menu";
 import {
@@ -23,14 +27,48 @@ import {
   useSidebar,
 } from "~/shadcn/ui/sidebar";
 
+function Account({
+  email,
+  image,
+  name,
+  token,
+}: {
+  image: string;
+  name: string;
+  email: string;
+  token?: string;
+}) {
+  return (
+    <div
+      className="flex items-center gap-2 px-1 py-1.5 text-left text-sm"
+      onClick={async () => {
+        await (token &&
+          authClient.multiSession.setActive({ sessionToken: token }));
+        window.location.reload();
+      }}
+    >
+      <Avatar className="h-8 w-8 rounded-lg">
+        <AvatarImage src={image} alt={name} />
+        <AvatarFallback className="rounded-lg">{name[0]}</AvatarFallback>
+      </Avatar>
+      <div className="grid flex-1 text-left text-sm leading-tight">
+        <span className="truncate font-semibold">{name}</span>
+        <span className="truncate text-xs">{email}</span>
+      </div>
+    </div>
+  );
+}
+
 export function NavUser({
   user,
+  sessions,
 }: {
   user: {
     name: string;
     email: string;
     image?: string | null;
   };
+  sessions: (typeof authClient.$Infer.Session)[];
 }) {
   const { isMobile, setOpenMobile } = useSidebar();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -65,18 +103,36 @@ export function NavUser({
             sideOffset={4}
           >
             <DropdownMenuLabel className="p-0 font-normal">
-              <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={user.image ?? ""} alt={user.name} />
-                  <AvatarFallback className="rounded-lg">
-                    {user.name[0]}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">{user.name}</span>
-                  <span className="truncate text-xs">{user.email}</span>
-                </div>
-              </div>
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>
+                  <Account
+                    name={user.name}
+                    image={user.image ?? ""}
+                    email={user.email}
+                  />
+                </DropdownMenuSubTrigger>
+                <DropdownMenuPortal>
+                  <DropdownMenuSubContent>
+                    {sessions.map((data) => (
+                      <DropdownMenuItem key={data.user.email}>
+                        <Account
+                          name={data?.user.name ?? ""}
+                          image={data?.user.image ?? ""}
+                          email={data?.user.email ?? ""}
+                          token={data.session.token}
+                        />
+                      </DropdownMenuItem>
+                    ))}
+                    <DropdownMenuItem
+                      onClick={() =>
+                        authClient.signIn.social({ provider: "google" })
+                      }
+                    >
+                      Add another
+                    </DropdownMenuItem>
+                  </DropdownMenuSubContent>
+                </DropdownMenuPortal>
+              </DropdownMenuSub>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
