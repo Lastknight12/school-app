@@ -64,8 +64,8 @@ export const env = createEnv({
       process.env.NODE_ENV === "development"
         ? "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe"
         : process.env.RECAPTCHA_SECRET_KEY,
-    BETTER_AUTH_SECRET: process.env.NEXTAUTH_SECRET,
-    BETTER_AUTH_URL: process.env.NEXTAUTH_URL,
+    BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
+    BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
     NEXT_PUBLIC_BUY_URL: process.env.NEXT_PUBLIC_BUY_URL,
     QR_SECRET: process.env.QR_SECRET,
     CRON_SECRET: process.env.CRON_SECRET,
