@@ -1,41 +1,47 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import React, { useEffect, useState } from "react";
 
-import ModelsList from "./ModelsList";
-import PurchasesTableContent from "./PurchasesTableContent";
-import UsersModelContent from "./TransactionsTableContent";
-import TransactionsTableContent from "./TransactionsTableContent";
+import Purchases from "./Purchases";
+import TabsList from "./TabsList";
+import Transactions from "./Transactions";
+import Users from "./Users";
 
-export type Tabs = "users" | "transactions" | "purchases";
+export type Tab = "users" | "transactions" | "purchases";
 
 export default function DbAdminPanel() {
+  const router = useRouter();
   const tab = useSearchParams().get("tab");
   const isTabCorrect =
     tab === "users" || tab === "transactions" || tab === "purchases";
 
-  const [currentModel, setCurrentModel] = useState<Tabs>(
-    isTabCorrect ? (tab as Tabs) : "users",
+  const [currentTab, setCurrentTab] = useState<Tab>(
+    isTabCorrect ? (tab as Tab) : "users",
   );
 
   useEffect(() => {
     if (tab && isTabCorrect) {
-      setCurrentModel(tab as Tabs);
+      setCurrentTab(tab as Tab);
     }
   }, [isTabCorrect, tab]);
+
+  function handleClick(tab: Tab) {
+    setCurrentTab(tab);
+    router.push(`${window.location.pathname}?tab=${tab}`);
+  }
 
   return (
     <div className="px-6" suppressHydrationWarning={true}>
       <div className="mb-5">
-        <ModelsList onClick={setCurrentModel} activeItem={currentModel} />
+        <TabsList onClick={handleClick} activeItem={currentTab} />
       </div>
 
-      {currentModel === "users" && <UsersModelContent />}
+      {currentTab === "users" && <Users />}
 
-      {currentModel === "transactions" && <TransactionsTableContent />}
+      {currentTab === "transactions" && <Transactions />}
 
-      {currentModel === "purchases" && <PurchasesTableContent />}
+      {currentTab === "purchases" && <Purchases />}
     </div>
   );
 }

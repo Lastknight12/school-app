@@ -1,11 +1,13 @@
 import { cn } from "~/lib/utils";
 
+import { type Tab } from "./index";
+
 interface Props {
-  onClick?: (name: "users" | "purchases" | "transactions") => void;
+  onClick?: (name: Tab) => void;
   activeItem?: "users" | "purchases" | "transactions";
 }
 
-export default function ModelsList({ onClick, activeItem }: Props) {
+export default function TabsList({ onClick, activeItem }: Props) {
   return (
     <div className="overflow-x-auto pb-2 text-sm">
       <div className="flex gap-2 items-center">

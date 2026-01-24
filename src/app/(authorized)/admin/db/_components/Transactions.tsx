@@ -17,7 +17,7 @@ import {
   TableRow,
 } from "~/shadcn/ui/table";
 
-export default function UsersModelContent() {
+export default function TransactionsTableContent() {
   const [currentPage, setCurrentPage] = useState(1);
   const [transactionsPerPage] = useState(10);
 
