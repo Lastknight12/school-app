@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { v2 as cloudinary } from "cloudinary";
-import { env } from "~/env";
+
+import { cloudinary } from "~/lib/cloudinary";
 
 export type uploadImageRes = {
   error?: string;
@@ -15,15 +15,9 @@ async function handler(req: NextRequest) {
   if (!file || !(file instanceof File)) {
     return new NextResponse(
       JSON.stringify({ error: "Відсутній файл", imageUrl: "" }),
-      { status: 500 }
+      { status: 500 },
     );
   }
-
-  cloudinary.config({
-    cloud_name: env.CLOUDINARY_CLOUD_NAME,
-    api_key: env.CLOUDINARY_API_KEY,
-    api_secret: env.CLOUDINARY_API_SECRET,
-  });
 
   const fileBuffer = await file.arrayBuffer();
   const mimeType = file.type;
@@ -43,13 +37,13 @@ async function handler(req: NextRequest) {
           error: "Помилка завантаження зображення на сервер",
           imageUrl: "",
         }),
-        { status: 500 }
+        { status: 500 },
       );
     });
 
   return new NextResponse(
     JSON.stringify({ error: null, imageUrl: image.url }),
-    { status: 200 }
+    { status: 200 },
   );
 }
 

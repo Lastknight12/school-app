@@ -27,6 +27,7 @@ export const klassRouter = createTRPCRouter({
               name: true,
               email: true,
               image: true,
+              balance: true,
             },
           },
         },

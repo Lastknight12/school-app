@@ -11,6 +11,9 @@ export default function TeacherHomePage({ klasses }: Props) {
   return (
     <main className="mx-5 px-6">
       <div className="flex w-full flex-col gap-2">
+        {klasses.length === 0 && (
+          <h1 className="text-center">Жодних класів не знайдено</h1>
+        )}
         {klasses.map((teacherClass) => (
           <Link
             key={teacherClass.id}

@@ -71,7 +71,7 @@ export default function AddClass() {
   return (
     <div className="mb-5">
       <Dialog onOpenChange={setIsOpen} open={isOpen}>
-        <DialogTrigger>
+        <DialogTrigger asChild>
           <Button disabled={addKlassMutation.isPending}>Додати клас</Button>
         </DialogTrigger>
         <DialogContent className="backdrop-blur-md">

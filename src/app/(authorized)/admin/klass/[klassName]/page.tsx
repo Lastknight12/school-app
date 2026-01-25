@@ -12,12 +12,13 @@ import { StudentTableSearch } from "./_components/StudentTableSearch";
 export default async function Page({
   params,
 }: {
-  params: { klassName: string };
+  params: Promise<{ klassName: string }>;
 }) {
   const session = await getServerAuthSession();
   checkRole(session, ["ADMIN"]);
 
-  const decodedName = decodeURIComponent(params.klassName);
+  const { klassName } = await params;
+  const decodedName = decodeURIComponent(klassName);
 
   const klass = await api.klass.getAdminKlassData({ name: decodedName });
 

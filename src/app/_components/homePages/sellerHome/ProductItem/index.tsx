@@ -124,7 +124,6 @@ export default function ProductListItem({ children, item }: Props) {
           {updating ? (
             <UpdateProduct defaultImageSrc={item.image} />
           ) : (
-            // TODO: rename it
             <AddProductInList
               item={item}
               remainingCount={item.count}

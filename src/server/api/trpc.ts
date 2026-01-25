@@ -32,7 +32,7 @@ import { db } from "~/server/db";
 
 export const createTRPCContext = async (opts: { headers: Headers }) => {
   const session = await auth.api.getSession({
-    headers: headers(),
+    headers: await headers(),
   });
 
   return {

@@ -7,8 +7,8 @@ import KlassTable from "./_components/KlassTable";
 
 type Params = { id: string };
 
-export default async function Page({ params }: { params: Params }) {
-  const { id } = params;
+export default async function Page({ params }: { params: Promise<Params> }) {
+  const { id } = await params;
   const session = await getServerAuthSession();
   if (session?.user.role !== "TEACHER") return notFound();
 

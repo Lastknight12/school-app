@@ -42,11 +42,13 @@ interface Props {
   children: React.ReactNode;
 }
 
+type qrType = "expires" | "infinity";
+
 export default function GenerateQRModal({ onSuccess, children }: Props) {
   const [open, setOpen] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [paymentError, setPaymentError] = useState("");
-  const [qrType, setQrType] = useState("expires");
+  const [qrType, setQrType] = useState<qrType>("expires");
 
   const products = useProducts((state) => state.products);
   const resetProducts = useProducts((state) => state.reset);
@@ -57,6 +59,7 @@ export default function GenerateQRModal({ onSuccess, children }: Props) {
     setIsSuccess(false);
     setOpen(false);
     setPaymentError("");
+    setQrType("expires");
   };
 
   useEffect(() => {
@@ -116,6 +119,7 @@ export default function GenerateQRModal({ onSuccess, children }: Props) {
         if (!isOpen) {
           setTimeout(() => {
             genQRToken.reset();
+            resetStates();
           }, 150);
         }
 
@@ -178,8 +182,12 @@ export default function GenerateQRModal({ onSuccess, children }: Props) {
                               ? item.title.slice(0, 15) + "..."
                               : item.title}
                           </h1>
-                          <p>Ціна: {item.pricePerOne + " Балів"}</p>
-                          <p>Кількість: {item.count}</p>
+                          <p className="text-white/70">
+                            Ціна: {item.pricePerOne + " Балів"}
+                          </p>
+                          <p className="text-white/70">
+                            Кількість: {item.count}
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -196,7 +204,11 @@ export default function GenerateQRModal({ onSuccess, children }: Props) {
         <DialogFooter className="justify-end items-center gap-3 flex-wrap flex-row">
           {!genQRToken.isSuccess ? (
             <>
-              <Select defaultValue={qrType} onValueChange={setQrType}>
+              <Select
+                defaultValue={qrType}
+                value={qrType}
+                onValueChange={(value: qrType) => setQrType(value)}
+              >
                 <SelectTrigger className="w-[180px]">
                   <SelectValue />
                 </SelectTrigger>
@@ -234,7 +246,7 @@ export default function GenerateQRModal({ onSuccess, children }: Props) {
                 </a>
               )}
 
-              <DialogClose>
+              <DialogClose asChild>
                 <Button>Закрити</Button>
               </DialogClose>
             </>

@@ -74,7 +74,7 @@ const columns: ColumnDef<Student>[] = [
       <Button
         variant="ghost"
         onClick={() => column.toggleSorting()}
-        className="flex items-center"
+        className="flex items-center p-0"
       >
         Balance
         {column.getIsSorted() === "desc" && (

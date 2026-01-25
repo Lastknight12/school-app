@@ -47,7 +47,7 @@ export default async function RootLayout({
 }) {
   const session = await getServerAuthSession();
   const sessions = (await auth.api.listDeviceSessions({
-    headers: headers(),
+    headers: await headers(),
   })) as (typeof auth.$Infer.Session)[];
 
   return (
