@@ -1,6 +1,6 @@
 "use client";
 
-import { addDays, format } from "date-fns";
+import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 import * as React from "react";
 import { useEffect } from "react";
@@ -19,7 +19,7 @@ interface Props {
 export default function DatePickerRange({ onSelect }: Props) {
   const [date, setDate] = React.useState<DateRange | undefined>({
     from: new Date(),
-    to: addDays(new Date(), 1),
+    to: undefined,
   });
 
   useEffect(() => {

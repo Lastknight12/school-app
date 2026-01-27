@@ -124,7 +124,6 @@ enum TransactionType {
 enum TransactionStatus {
   PENDING
   SUCCESS
-  FAILED
 }
 
 model Transaction {
