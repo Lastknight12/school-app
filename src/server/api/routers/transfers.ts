@@ -537,20 +537,22 @@ export const transfersRouter = createTRPCRouter({
         transactionId?: string,
         randomChannelId?: string,
       ) => {
-        if (ctx.session.user.balance < amount) {
-          transactionId &&
-            (await ctx.db.transaction.delete({ where: { id: transactionId } }));
-
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: "Недостатньо коштів",
-          });
-        }
-
         if (transactionId && randomChannelId) {
-          await ctx.pusher.trigger(randomChannelId, "pay", {
-            error: null,
-          });
+          if (ctx.session.user.balance < amount) {
+            transactionId &&
+              (await ctx.db.transaction.delete({
+                where: { id: transactionId },
+              }));
+
+            await ctx.pusher.trigger(randomChannelId, "pay", {
+              error: "Недостатньо коштів",
+            });
+
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: "Недостатньо коштів",
+            });
+          }
 
           const promises = [
             ctx.db.transaction.update({
@@ -581,6 +583,9 @@ export const transfersRouter = createTRPCRouter({
           ];
 
           await Promise.all(promises);
+          await ctx.pusher.trigger(randomChannelId, "pay", {
+            error: null,
+          });
         }
       };
 
