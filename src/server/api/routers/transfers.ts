@@ -379,21 +379,28 @@ export const transfersRouter = createTRPCRouter({
       },
     });
 
-    const incomingAmount = transfers?.recieverTransactions
+    if (!transfers) {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "Відсутні транзакції",
+      });
+    }
+
+    const incomingAmount = transfers.recieverTransactions
       .reduce((acc, curr) => acc + curr.amount, 0)
       .toFixed(2);
 
-    const outgoingAmount = transfers?.senderTransactions
+    const outgoingAmount = transfers.senderTransactions
       .reduce((acc, curr) => acc + curr.amount, 0)
       .toFixed(2);
 
     return {
       incoming: {
-        amount: incomingAmount!,
+        amount: incomingAmount,
         count: transfers?.recieverTransactions.length,
       },
       outgoing: {
-        amount: outgoingAmount!,
+        amount: outgoingAmount,
         count: transfers?.senderTransactions.length,
       },
     };
@@ -412,7 +419,6 @@ export const transfersRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      // validator
       if (
         (input.products.length > 1 || input.products[0]!.count > 1) &&
         input.type === "infinity"
@@ -434,67 +440,76 @@ export const transfersRouter = createTRPCRouter({
       }
 
       if (input.type === "expires") {
-        const dbProducts = await ctx.db.categoryItem.findMany({
-          where: {
-            id: {
-              in: input.products.map((item) => item.id),
+        try {
+          const dbProducts = await ctx.db.categoryItem.findMany({
+            where: {
+              id: {
+                in: input.products.map((item) => item.id),
+              },
             },
-          },
-        });
-
-        if (dbProducts.length === 0) {
-          throw new TRPCError({
-            message: "Invalid product ID",
-            code: "BAD_REQUEST",
           });
-        }
 
-        const randomGradient = [
-          { from: "#D99CFF", to: "#FFD0F2" },
-          { from: "#FF9C9C", to: "#FF83CD" },
-          { from: "#FFFB9C", to: "#FFB69F" },
-          { from: "#C79CFF", to: "#9FBFFF" },
-          { from: "#9CFFC3", to: "#9FDCFF" },
-        ][Math.floor(Math.random() * 5)]!;
+          if (dbProducts.length === 0) {
+            throw new TRPCError({
+              message: "Invalid product ID",
+              code: "BAD_REQUEST",
+            });
+          }
 
-        const amount = dbProducts.reduce((total, dbProduct) => {
-          const productInput = input.products.find(
-            ({ id }) => id === dbProduct.id,
+          const randomGradient = [
+            { from: "#D99CFF", to: "#FFD0F2" },
+            { from: "#FF9C9C", to: "#FF83CD" },
+            { from: "#FFFB9C", to: "#FFB69F" },
+            { from: "#C79CFF", to: "#9FBFFF" },
+            { from: "#9CFFC3", to: "#9FDCFF" },
+          ][Math.floor(Math.random() * 5)]!;
+
+          const amount = dbProducts.reduce((total, dbProduct) => {
+            const productInput = input.products.find(
+              ({ id }) => id === dbProduct.id,
+            );
+
+            return productInput
+              ? total + dbProduct.pricePerOne * productInput.count
+              : total;
+          }, 0);
+
+          const transaction = await ctx.db.transaction.create({
+            data: {
+              amount,
+              type: "BUY",
+              status: "PENDING",
+              randomGradient,
+              productsBought: {
+                connect: input.products.map((product) => ({ id: product.id })),
+              },
+            },
+          });
+
+          const randomChannelId = randomUUID();
+
+          const token = jwt.sign(
+            {
+              products: input.products,
+              transactionId: transaction.id,
+              randomChannelId: randomChannelId,
+            },
+            env.QR_SECRET,
           );
 
-          return productInput
-            ? total + dbProduct.pricePerOne * productInput.count
-            : total;
-        }, 0);
+          const buyUrl = `${env.NEXT_PUBLIC_BUY_URL}?token=${token}`;
 
-        const transaction = await ctx.db.transaction.create({
-          data: {
-            amount,
-            type: "BUY",
-            randomGradient,
-            productsBought: {
-              connect: input.products.map((product) => ({ id: product.id })),
-            },
-          },
-        });
-
-        const randomChannelId = randomUUID();
-
-        const token = jwt.sign(
-          {
-            products: input.products,
-            transactionId: transaction.id,
-            randomChannelId: randomChannelId,
-          },
-          env.QR_SECRET,
-        );
-
-        const buyUrl = `${env.NEXT_PUBLIC_BUY_URL}?token=${token}`;
-
-        return {
-          qr: `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${buyUrl}`,
-          channel: randomChannelId,
-        };
+          return {
+            qr: `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${buyUrl}`,
+            channel: randomChannelId,
+          };
+        } catch (error) {
+          console.log(error);
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Будь ласка спробуйте пізніше",
+          });
+        }
       }
     }),
 
@@ -532,14 +547,6 @@ export const transfersRouter = createTRPCRouter({
           });
         }
 
-        const randomGradient = [
-          { from: "#D99CFF", to: "#FFD0F2" },
-          { from: "#FF9C9C", to: "#FF83CD" },
-          { from: "#FFFB9C", to: "#FFB69F" },
-          { from: "#C79CFF", to: "#9FBFFF" },
-          { from: "#9CFFC3", to: "#9FDCFF" },
-        ][Math.floor(Math.random() * 5)]!;
-
         if (transactionId && randomChannelId) {
           await ctx.pusher.trigger(randomChannelId, "pay", {
             error: null,
@@ -574,27 +581,6 @@ export const transfersRouter = createTRPCRouter({
           ];
 
           await Promise.all(promises);
-        } else {
-          const promises = [
-            ctx.db.transaction.create({
-              data: {
-                amount,
-                type: "BUY",
-                randomGradient,
-                status: "SUCCESS",
-                senderId: ctx.session.user.id,
-                productsBought: {
-                  connect: products.map((product) => ({ id: product.id })),
-                },
-              },
-            }),
-
-            ctx.db.categoryItem.update({
-              where: { id: products[0]?.id },
-              data: { count: { decrement: products[0]?.count } },
-            }),
-          ];
-          await Promise.all(promises);
         }
       };
 
@@ -613,6 +599,8 @@ export const transfersRouter = createTRPCRouter({
         await processTransaction(product.pricePerOne, [
           { id: productId, count: 1 },
         ]);
+
+        return;
       }
 
       if (params.has("token")) {
@@ -644,6 +632,8 @@ export const transfersRouter = createTRPCRouter({
           transactionId,
           randomChannelId,
         );
+
+        return;
       }
     }),
 
@@ -651,8 +641,8 @@ export const transfersRouter = createTRPCRouter({
     .input(
       z.object({
         range: z.object({
-          from: z.string(),
-          to: z.string().nullish(),
+          from: z.date(),
+          to: z.date().nullish(),
         }),
       }),
     )
@@ -660,11 +650,11 @@ export const transfersRouter = createTRPCRouter({
       const transfers = await ctx.db.transaction.findMany({
         where: {
           createdAt: {
-            gte: new Date(input.range.from),
-            // if user dont provide range.to, take transfers in range.from day
-            lt: new Date(addDays(input.range.to ?? input.range.from, 1)),
+            gte: input.range.from,
+            lt: addDays(input.range.to ?? input.range.from, 1),
           },
           type: "BUY",
+          status: "SUCCESS",
         },
         select: {
           id: true,
@@ -687,12 +677,6 @@ export const transfersRouter = createTRPCRouter({
             },
           },
         },
-      });
-
-      transfers.forEach((transfer) => {
-        transfer.createdAt = new Date(
-          transfer.createdAt.setUTCHours(0, 0, 0, 0),
-        );
       });
 
       const totalAmount = transfers.reduce((total, transfer) => {

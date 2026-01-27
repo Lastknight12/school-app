@@ -1,6 +1,6 @@
 "use client";
 
-import { addDays, format } from "date-fns";
+import { addDays, endOfDay, format, startOfDay } from "date-fns";
 import { RefreshCw } from "lucide-react";
 import { useState } from "react";
 
@@ -25,8 +25,8 @@ export default function PurchasesTableContent() {
   const getTransfers = api.transfers.getTransfersByPeriod.useQuery(
     {
       range: {
-        from: dateRange.from,
-        to: dateRange.to,
+        from: startOfDay(dateRange.from),
+        to: dateRange.to ? endOfDay(dateRange.to) : undefined,
       },
     },
     {
