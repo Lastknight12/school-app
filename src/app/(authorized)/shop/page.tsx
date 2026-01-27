@@ -6,7 +6,7 @@ import ShopPage from "./_components/ShopPage";
 
 export default async function Page() {
   const session = await getServerAuthSession();
-  checkRole(session, ["STUDENT", "RADIO_CENTER"]);
+  checkRole(session, ["STUDENT", "RADIO_CENTER", "ADMIN"]);
 
   return <ShopPage />;
 }

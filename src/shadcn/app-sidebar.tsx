@@ -103,7 +103,7 @@ const data = {
       name: "Магазин",
       url: "/shop",
       icon: Store,
-      allowedRoles: ["STUDENT", "RADIO_CENTER"],
+      allowedRoles: ["STUDENT", "RADIO_CENTER", "ADMIN"],
     },
     {
       name: "Статистика",
