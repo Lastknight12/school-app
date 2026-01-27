@@ -11,6 +11,7 @@ import { useDebounceValue } from "~/hooks/use-debounce-value";
 
 import CategoryNamesList from "../../shared/CategoryNamesList";
 import ProductCard from "../../shared/ProductCard";
+import { TruncatedText } from "../../shared/TruncatedText";
 import GenerateQRModal from "./GenerateQRModal";
 import ProductListItem from "./ProductItem";
 import AddNewCategory from "./TopButtons/AddNewCategory";
@@ -106,10 +107,18 @@ export default function SellerHomePage() {
 
           {getCategoryItems.data?.length === 0 &&
             !getCategoryItems.isPending && (
-              <p className="text-center">
-                Не знайдено жодних продуктів в категорії{" "}
-                <span className="text-emerald-300">{currentCategoryName}</span>
-              </p>
+              <div className="flex gap-1 items-center justify-center">
+                <p className="text-center">
+                  Не знайдено жодних продуктів в категорії
+                </p>
+
+                <TruncatedText
+                  type="popover"
+                  className="text-emerald-300 inline"
+                  text={currentCategoryName}
+                  maxLength={20}
+                />
+              </div>
             )}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 py-4">
             {getCategoryItems.data

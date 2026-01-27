@@ -1,6 +1,6 @@
 "use client";
 
-import { type TransactionStatus } from "@prisma/client";
+import { type PurchaseStatus } from "@prisma/client";
 import { format } from "date-fns";
 import { Loader2 } from "lucide-react";
 
@@ -20,7 +20,7 @@ import {
 } from "~/shadcn/ui/table";
 
 interface Data {
-  status: TransactionStatus;
+  status: PurchaseStatus;
   id: string;
   amount: number;
   createdAt: Date;
@@ -34,7 +34,7 @@ interface Data {
     };
     pricePerOne: number;
   }[];
-  sender: {
+  buyer: {
     name: string;
     email: string;
   } | null;
@@ -90,10 +90,10 @@ export function TransfersTable({
               {transfer.createdAt.toLocaleDateString()}
             </TableCell>
             <TableCell className="font-medium">
-              {transfer.sender?.name ?? "Відсутні дані"}
+              {transfer.buyer?.name ?? "Відсутні дані"}
             </TableCell>
             <TableCell>{transfer.status}</TableCell>
-            <TableCell>{transfer.sender?.email}</TableCell>
+            <TableCell>{transfer.buyer?.email}</TableCell>
             <TableCell>
               <ProductsModal products={transfer.productsBought} />
             </TableCell>

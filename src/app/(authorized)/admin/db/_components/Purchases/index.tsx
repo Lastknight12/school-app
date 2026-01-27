@@ -15,14 +15,14 @@ import { Button } from "~/shadcn/ui/button";
 
 export default function PurchasesTableContent() {
   const [currentPage, setCurrentPage] = useState(1);
-  const usersPerPage = 10;
+  const purchasesPerPage = 10;
 
   const [dateRange, setDateRange] = useState<{ from: string; to?: string }>({
     from: format(new Date(), "yyyy-MM-dd"),
     to: format(addDays(new Date(), 1), "yyyy-MM-dd"),
   });
 
-  const getTransfers = api.transfers.getTransfersByPeriod.useQuery(
+  const getTransfers = api.transfers.getPurchasesByPeriod.useQuery(
     {
       range: {
         from: startOfDay(dateRange.from),
@@ -34,15 +34,15 @@ export default function PurchasesTableContent() {
     },
   );
 
-  const indexOfLastPurchase = currentPage * usersPerPage;
-  const indexOfFirstPurchase = indexOfLastPurchase - usersPerPage;
-  const currentPurchases = getTransfers.data?.transfers?.slice(
+  const indexOfLastPurchase = currentPage * purchasesPerPage;
+  const indexOfFirstPurchase = indexOfLastPurchase - purchasesPerPage;
+  const currentPurchases = getTransfers.data?.purchases?.slice(
     indexOfFirstPurchase,
     indexOfLastPurchase,
   );
 
   const totalPages = getTransfers.data
-    ? Math.ceil(getTransfers.data.transfers.length / usersPerPage)
+    ? Math.ceil(getTransfers.data.purchases.length / purchasesPerPage)
     : 0;
 
   return (

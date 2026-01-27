@@ -21,41 +21,77 @@ export const kaznaRouter = createTRPCRouter({
   }),
 
   getReplenishHistory: authorizeRoles(["ADMIN"]).query(async ({ ctx }) => {
-    const transfers = await ctx.db.kaznaTransfer.findMany({
+    const transfers = await ctx.db.transaction.findMany({
+      where: {
+        sender: {
+          role: "ADMIN",
+        },
+      },
       orderBy: {
         createdAt: "desc",
       },
       select: {
         id: true,
         amount: true,
-        message: true,
+        comment: true,
         sender: {
           select: {
             name: true,
             image: true,
           },
         },
+        reciever: {
+          select: {
+            name: true,
+            image: true,
+          },
+        },
+        createdAt: true,
       },
     });
 
-    function parseMessage(message: string) {
-      if (message.includes("<user>")) {
-        const splitedStr = message.split("<user>");
-        return (
-          splitedStr[0] + `<span class="text-sky-400">${splitedStr[1]}<span>`
-        );
-      } else {
-        return message;
-      }
-    }
-
-    return transfers.map((value) => {
-      return { ...value, message: parseMessage(value.message) };
+    const replenishs = await ctx.db.kaznaTransfer.findMany({
+      orderBy: {
+        createdAt: "desc",
+      },
+      select: {
+        id: true,
+        amount: true,
+        comment: true,
+        sender: {
+          select: {
+            name: true,
+            image: true,
+          },
+        },
+        createdAt: true,
+      },
     });
+
+    return [
+      ...transfers.map((t) => ({
+        type: "TRANSFER",
+        id: t.id,
+        amount: t.amount,
+        comment: t.comment,
+        sender: t.sender,
+        reciever: t.reciever,
+        createdAt: t.createdAt,
+      })),
+      ...replenishs.map((r) => ({
+        type: "REPLENISH",
+        id: r.id,
+        amount: r.amount,
+        comment: r.comment,
+        sender: r.sender,
+        reciever: null,
+        createdAt: r.createdAt,
+      })),
+    ].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
   }),
 
   replenishKazna: authorizeRoles(["ADMIN"])
-    .input(z.object({ amount: z.number(), message: z.string() }))
+    .input(z.object({ amount: z.number(), comment: z.string() }))
     .mutation(async ({ ctx, input }) => {
       if (input.amount <= 0) {
         throw new TRPCError({
@@ -80,7 +116,7 @@ export const kaznaRouter = createTRPCRouter({
       await ctx.db.kaznaTransfer.create({
         data: {
           amount: input.amount,
-          message: input.message,
+          comment: input.comment,
           Kazna: {
             connect: {
               id: kazna.id,

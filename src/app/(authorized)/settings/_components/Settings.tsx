@@ -68,15 +68,15 @@ export default function Settings({ session: defaultSession }: Props) {
     <>
       <div className="mb-5 flex flex-col gap-3 px-6 pb-5">
         <div className="flex flex-col gap-8">
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col justify-center gap-3">
             {/* New name */}
             <Label className="text-left text-base">Аватарка:</Label>
             <UploadImage
               onSuccess={(imageSrc) => setNewImageSrc(imageSrc)}
               defaultImageSrc={defaultSession?.user.image ?? ""}
               imageSize={50}
-              imageClassName=" rounded-full"
-              closeButtonClassName="bg-red-700 border-none text-black"
+              imageClassName="rounded-full"
+              closeButtonClassName="border-none text-black"
             />
           </div>
 

@@ -1,11 +1,14 @@
 "use client";
 
-import { Loader2 } from "lucide-react";
+import { format } from "date-fns";
+import { ArrowRightFromLine, Loader2 } from "lucide-react";
 import Image from "next/image";
 
 import { api } from "~/trpc/react";
 
 import { cn } from "~/lib/utils";
+
+import { TruncatedText } from "~/app/_components/shared/TruncatedText";
 
 export default function ReplenishHistory() {
   const replenishHistory = api.kazna.getReplenishHistory.useQuery();
@@ -27,28 +30,51 @@ export default function ReplenishHistory() {
               key={replenish.id}
             >
               <div className="flex flex-col gap-2">
-                <div className="flex gap-2 items-center">
-                  <Image
-                    src={replenish.sender.image ?? ""}
-                    width={32}
-                    height={32}
-                    alt="avatar"
-                    className="rounded-full w-8 h-8"
-                  />
+                <div className="flex gap-3 items-center">
+                  <div className="flex gap-2 items-center">
+                    <Image
+                      src={replenish.sender.image ?? ""}
+                      width={20}
+                      height={20}
+                      alt="avatar"
+                      className="rounded-full w-8 h-8"
+                    />
 
-                  <h1>
-                    {replenish.sender.name.length > 10
-                      ? replenish.sender.name.slice(0, 10)
-                      : replenish.sender.name}
-                  </h1>
+                    <TruncatedText
+                      text={replenish.sender.name}
+                      maxLength={10}
+                    />
+                  </div>
+
+                  {replenish.type === "TRANSFER" && replenish.reciever && (
+                    <>
+                      <ArrowRightFromLine color="#959595" />
+
+                      <div className="flex gap-2 items-center">
+                        <Image
+                          src={replenish.reciever.image ?? ""}
+                          width={20}
+                          height={20}
+                          alt="avatar"
+                          className="rounded-full w-8 h-8"
+                        />
+
+                        <TruncatedText
+                          text={replenish.reciever.name}
+                          maxLength={10}
+                        />
+                      </div>
+                    </>
+                  )}
                 </div>
 
-                <div
-                  className="w-max max-w-[240px] text-wrap font-e_ukraine font-extralight"
-                  dangerouslySetInnerHTML={{
-                    __html: replenish.message,
-                  }}
-                />
+                <div className="w-max max-w-[240px] text-wrap font-e_ukraine font-extralight">
+                  <TruncatedText text={replenish.comment} maxLength={50} />
+                </div>
+
+                <p className="text-[#fafafa4d]">
+                  {format(replenish.createdAt, "dd.MM.yyyy")}
+                </p>
               </div>
 
               <h1

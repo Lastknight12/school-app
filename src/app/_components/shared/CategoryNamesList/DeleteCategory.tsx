@@ -4,6 +4,8 @@ import { toast } from "sonner";
 
 import { api } from "~/trpc/react";
 
+import { TruncatedText } from "../TruncatedText";
+
 import { Button } from "~/shadcn/ui/button";
 import {
   Dialog,
@@ -36,12 +38,7 @@ export function DeleteCategory({
       void utils.category.getCategoryItems.invalidate();
       toast.success(
         <p className="text-white">
-          Категорію{" "}
-          <span className="text-emerald-300">
-            {categoryName.length > 10
-              ? categoryName.slice(0, 10) + "..."
-              : categoryName}
-          </span>{" "}
+          Категорію <TruncatedText text={categoryName} maxLength={10} />
           видалено
         </p>,
       );
@@ -68,11 +65,11 @@ export function DeleteCategory({
         <DialogHeader>
           <DialogTitle>
             Видалити{" "}
-            <span className="text-red-500">
-              {categoryName.length > 15
-                ? categoryName.slice(0, 15) + "..."
-                : categoryName}
-            </span>
+            <TruncatedText
+              className="text-red-500"
+              text={categoryName}
+              maxLength={15}
+            />
             ?
           </DialogTitle>
           <DialogDescription>

@@ -6,7 +6,11 @@ import { addProductSchema } from "~/schemas/zod";
 
 import { api } from "~/trpc/react";
 
+import { truncateText } from "~/lib/utils";
+
 import UploadImage from "../../../shared/UploadImage";
+
+import { TruncatedText } from "~/app/_components/shared/TruncatedText";
 
 import { Button } from "~/shadcn/ui/button";
 import Counter from "~/shadcn/ui/counter";
@@ -61,9 +65,7 @@ export default function AddNewProduct({
         // short title if title is too long
         <p className="text-white">
           Продукт{" "}
-          <span className="text-emerald-300">
-            {title.length > 10 ? title.slice(0, 10) + "..." : title}
-          </span>{" "}
+          <span className="text-emerald-300">{truncateText(title, 15)}</span>{" "}
           успішно додано
         </p>,
       );
@@ -112,12 +114,15 @@ export default function AddNewProduct({
           <DialogTitle>Додати продукт</DialogTitle>
           <DialogDescription>
             Заповніть поля, щоб добавити новий продукт в категорію{" "}
-            <span className="text-emerald-300">{currentCategoryName}</span>
+            <TruncatedText
+              className="text-emerald-300"
+              text={currentCategoryName}
+              maxLength={20}
+            />
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-3 py-4">
           <div className="grid grid-cols-3 items-center">
-            {/* NAME */}
             <Label className="text-left text-base">Назва:</Label>
             <Input
               variant="accent"
@@ -129,7 +134,6 @@ export default function AddNewProduct({
           </div>
 
           <div className="grid grid-cols-3 items-center">
-            {/* COUNT */}
             <Label className="text-left text-base">Кількість</Label>
             <Counter
               value={count}

@@ -19,7 +19,7 @@ import { Input } from "~/shadcn/ui/input";
 export default function ReplenishDialog() {
   const [open, setOpen] = useState(false);
   const [amount, setAmount] = useState(0);
-  const [message, setMessage] = useState("");
+  const [comment, setComment] = useState("");
 
   const utils = api.useUtils();
 
@@ -60,14 +60,14 @@ export default function ReplenishDialog() {
 
           <Input
             variant="accent"
-            value={message}
+            value={comment}
             placeholder="Повідомлення"
-            onChange={(e) => setMessage(e.target.value)}
+            onChange={({ target: { value } }) => setComment(value)}
           />
 
           <Button
             disabled={!isAmountPositive || replenishKaznaMutation.isPending}
-            onClick={() => replenishKaznaMutation.mutate({ amount, message })}
+            onClick={() => replenishKaznaMutation.mutate({ amount, comment })}
             variant="secondary"
           >
             Поповнити{" "}

@@ -6,12 +6,21 @@ export const sendAmountSchema = z.object({
     .number()
     .min(1, { message: "Мінімальна сума 1" })
     .max(99999999, { message: "Максимальна сума 99 999 999" }),
+  comment: z
+    .string()
+    .min(5, { message: "Коментар не може бути менше 5 символів" }),
 });
 
 export const updateUserSchema = z.object({
-  newName: z.string().min(1, "Ім'я не може бути пустим").max(20, "Ім'я не може перевищувати 20 символів"),
-  newImageSrc: z.string().min(1, "Аватарка не може бути пустою").url("Аватарка повинна бути посиланням")
-})
+  newName: z
+    .string()
+    .min(1, "Ім'я не може бути пустим")
+    .max(20, "Ім'я не може перевищувати 20 символів"),
+  newImageSrc: z
+    .string()
+    .min(1, "Аватарка не може бути пустою")
+    .url("Аватарка повинна бути посиланням"),
+});
 
 export const addKlassSchema = z.object({
   name: z
@@ -20,12 +29,10 @@ export const addKlassSchema = z.object({
     .max(4, { message: "Максимальна довжина назви 4" })
     // match only classes like 1-11-АБВ
     // example: 11-Б, 7 but not 12, 0, 11-ББ
-    .refine((val) => /^(?:[1-9]|1[01])(-?[А-Яа-я]{1})?$/.test(val), 
-        "Невірний формат назви. Доступний формат 1-11-АБВ. Наприклад 10-Б або 10",
+    .refine(
+      (val) => /^(?:[1-9]|1[01])(-?[А-Яа-я]{1})?$/.test(val),
+      "Невірний формат назви. Доступний формат 1-11-АБВ. Наприклад 10-Б або 10",
     ),
-  teacherIds: z
-    .array(z.string())
-    .min(1, { message: "Виберіть хоча б 1 викладача" }),
 });
 
 export const addProductSchema = z.object({
@@ -42,15 +49,17 @@ export const addProductSchema = z.object({
   category: z.string().min(1, { message: "Виберіть категорію" }),
 });
 
-export const musicOrderStatusSchema = z.enum(["ACCEPTED", "DELIVERED", "CANCELLED"]).transform((value: string) => {
-  switch (value) {
-    case "ACCEPTED":
-      return MusicOrderStatus.ACCEPTED;
-    case "DELIVERED":
-      return MusicOrderStatus.DELIVERED;
-    case "CANCELLED":
-      return MusicOrderStatus.CANCELLED;
-    default:
-      throw new Error(`Невірний статус: ${value}`);
-  }
-});
+export const musicOrderStatusSchema = z
+  .enum(["ACCEPTED", "DELIVERED", "CANCELLED"])
+  .transform((value: string) => {
+    switch (value) {
+      case "ACCEPTED":
+        return MusicOrderStatus.ACCEPTED;
+      case "DELIVERED":
+        return MusicOrderStatus.DELIVERED;
+      case "CANCELLED":
+        return MusicOrderStatus.CANCELLED;
+      default:
+        throw new Error(`Невірний статус: ${value}`);
+    }
+  });

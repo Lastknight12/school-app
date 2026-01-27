@@ -1,7 +1,7 @@
 "use client";
 
 import { type MusicOrder } from "@prisma/client";
-import { EllipsisVertical } from "lucide-react";
+import { EllipsisVertical, SquareArrowOutUpRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -9,6 +9,8 @@ import { toast } from "sonner";
 import { api } from "~/trpc/react";
 
 import { cn } from "~/lib/utils";
+
+import { TruncatedText } from "./TruncatedText";
 
 import {
   DropdownMenu,
@@ -64,8 +66,7 @@ export default function MusicOrderCard({
 
   return (
     <div className={"flex bg-card border items-start border-border rounded-lg"}>
-      <Link
-        href={order.musicUrl}
+      <div
         className={cn(
           "flex gap-5 w-full",
           className,
@@ -82,20 +83,22 @@ export default function MusicOrderCard({
 
         <div className="flex text-sm flex-col gap-2">
           <p className="max-w-[285px] text-base font-bold max-sm:text-base">
-            {order.musicTitle.length > 47
-              ? order.musicTitle.slice(0, 44) + "..."
-              : order.musicTitle}
+            <TruncatedText text={order.musicTitle} maxLength={45} />
           </p>
           <p className="max-sm:text-sm">
             Замовник:{" "}
-            <span className="text-emerald-300 mt-2">
-              {order.buyer.name.length > 25
-                ? order.buyer.name.slice(0, 22) + "..."
-                : order.buyer.name}
-            </span>
+            <TruncatedText
+              className="text-emerald-300 mt-2"
+              text={order.buyer.name}
+              maxLength={25}
+            />
           </p>
         </div>
-      </Link>
+
+        <Link href={order.musicUrl} className="w-min">
+          <SquareArrowOutUpRight />
+        </Link>
+      </div>
 
       {type === "radioCenter" && (
         <DropdownMenu>

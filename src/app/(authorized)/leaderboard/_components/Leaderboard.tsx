@@ -11,6 +11,8 @@ import { api } from "~/trpc/react";
 
 import { cn } from "~/lib/utils";
 
+import { TruncatedText } from "~/app/_components/shared/TruncatedText";
+
 interface Props {
   session: Awaited<ReturnType<typeof getServerAuthSession>>;
 }
@@ -81,11 +83,11 @@ export default function Leaderboard({ session }: Props) {
               className="rounded-full h-[65px]"
             />
 
-            <p className="break-all text-center">
-              {user.name.length > 15
-                ? user.name.slice(0, 15) + "..."
-                : user.name}
-            </p>
+            <TruncatedText
+              className="break-all text-center"
+              text={user.name}
+              maxLength={15}
+            />
 
             <p className="text-center text-lg max-sm:text-sm">
               {user.balance} $
@@ -140,7 +142,7 @@ export default function Leaderboard({ session }: Props) {
                     <div className="h-10 w-10 rounded-full bg-gray-300" />
                   )}
 
-                  <div>{user.name}</div>
+                  <TruncatedText text={user.name} maxLength={20} />
                 </div>
 
                 <div className="text-right max-sm:text-sm">

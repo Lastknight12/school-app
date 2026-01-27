@@ -22,7 +22,7 @@ import NavMain from "~/shadcn/nav-main";
 
 import { type authClient } from "~/lib/auht-client";
 
-import { NavUser } from "./nav-user";
+import { SidebarUser } from "./sidebar-user";
 
 import {
   Sidebar,
@@ -175,7 +175,7 @@ export function AppSidebar({
         )}
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={session.user} sessions={sessions} />
+        <SidebarUser user={session.user} sessions={sessions} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

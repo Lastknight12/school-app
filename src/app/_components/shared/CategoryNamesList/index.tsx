@@ -1,5 +1,6 @@
 import { cn } from "~/lib/utils";
 
+import { TruncatedText } from "../TruncatedText";
 import { CategoryMenu } from "./CategoryMenu";
 
 import { Skeleton } from "~/shadcn/ui/skeleton";
@@ -36,17 +37,19 @@ export default function CategoryNamesList({
                   key={category.name}
                   className="flex items-center bg-card border border-border rounded-[10px] w-max"
                 >
-                  <div
-                    className={cn(
-                      "py-2 grow cursor-pointer",
-                      !showMenu ? "px-4" : "pl-4",
-                    )}
+                  <button
+                    className={cn(!showMenu ? "px-4" : "pl-4")}
+                    suppressHydrationWarning
                     onClick={() => {
                       onClick?.(category.name);
                     }}
                   >
-                    {category.name}
-                  </div>
+                    <TruncatedText
+                      type="hover"
+                      text={category.name}
+                      maxLength={15}
+                    />
+                  </button>
 
                   {showMenu && <CategoryMenu categoryName={category.name} />}
                 </div>

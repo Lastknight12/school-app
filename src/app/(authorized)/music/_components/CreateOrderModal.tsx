@@ -5,6 +5,8 @@ import { toast } from "sonner";
 
 import { api } from "~/trpc/react";
 
+import { TruncatedText } from "~/app/_components/shared/TruncatedText";
+
 import { Button } from "~/shadcn/ui/button";
 import {
   Dialog,
@@ -118,11 +120,11 @@ export default function DialogDemo() {
                   className="rounded-lg"
                 />
 
-                <span className="max-w-[250px]">
-                  {videoInfo.musicTitle.length > 55
-                    ? videoInfo.musicTitle?.slice(0, 55) + "..."
-                    : videoInfo.musicTitle}
-                </span>
+                <TruncatedText
+                  className="max-w-[250px]"
+                  text={videoInfo.musicTitle}
+                  maxLength={55}
+                />
               </div>
             )}
         </div>

@@ -2,7 +2,7 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider        = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -39,6 +39,8 @@ model User {
 
   recieverTransactions Transaction[] @relation(name: "recieverTransactions")
   senderTransactions   Transaction[] @relation(name: "senderTransactions")
+  purchases            Purchase[]    @relation(name: "purchases")
+  sales                Purchase[]    @relation(name: "sales")
 
   teacherClasses Klass[] @relation(name: "teacherClasses")
 
@@ -53,7 +55,7 @@ model User {
 }
 
 model Session {
-    id        String   @id
+  id        String   @id
   expiresAt DateTime
   token     String
   createdAt DateTime
@@ -102,7 +104,7 @@ model CategoryItem {
   Category   Category @relation(fields: [categoryId], references: [id])
   categoryId String
 
-  Transactions Transaction[]
+  purchases Purchase[]
 }
 
 model Verification {
@@ -121,24 +123,41 @@ enum TransactionType {
   TRANSFER
 }
 
-enum TransactionStatus {
+enum PurchaseStatus {
   PENDING
   SUCCESS
 }
 
-model Transaction {
-  id             String            @id @default(cuid())
+model Purchase {
+  id             String          @id @default(cuid())
   amount         Float
   type           TransactionType
-  status         TransactionStatus @default(PENDING)
+  status         PurchaseStatus  @default(PENDING)
   randomGradient Json
   productsBought CategoryItem[]
 
-  reciever   User?   @relation(fields: [recieverId], references: [id], name: "recieverTransactions", onDelete: Cascade)
-  recieverId String?
+  buyer   User?   @relation(fields: [buyerId], references: [id], name: "purchases", onDelete: Cascade)
+  buyerId String?
 
-  sender   User?   @relation(fields: [senderId], references: [id], name: "senderTransactions", onDelete: Cascade)
-  senderId String?
+  seller   User   @relation(fields: [sellerId], references: [id], name: "sales", onDelete: Cascade)
+  sellerId String
+
+  createdAt DateTime @default(now())
+}
+
+model Transaction {
+  id             String          @id @default(cuid())
+  amount         Float
+  type           TransactionType
+  randomGradient Json
+
+  comment String
+
+  reciever   User   @relation(fields: [recieverId], references: [id], name: "recieverTransactions", onDelete: Cascade)
+  recieverId String
+
+  sender   User   @relation(fields: [senderId], references: [id], name: "senderTransactions", onDelete: Cascade)
+  senderId String
 
   createdAt DateTime @default(now())
 }
@@ -176,11 +195,15 @@ model Kazna {
 
 model KaznaTransfer {
   id        String   @id @default(cuid())
-  sender    User     @relation(fields: [senderId], references: [id])
   amount    Float
-  message   String
+
+  comment   String
+  
   Kazna     Kazna    @relation(fields: [kaznaId], references: [id])
-  createdAt DateTime @default(now())
-  senderId  String
   kaznaId   String
+
+  sender    User     @relation(fields: [senderId], references: [id])
+  senderId  String
+
+  createdAt DateTime @default(now())
 }

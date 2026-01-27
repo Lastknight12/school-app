@@ -16,3 +16,7 @@ export function checkRole(session: Session | null, roles: UserRole[]) {
     return notFound();
   }
 }
+
+export function truncateText(text: string, maxLength: number) {
+  return text.slice(0, maxLength) + "...";
+}

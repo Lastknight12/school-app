@@ -1,6 +1,5 @@
 "use client";
 
-import { type User } from "@prisma/client";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -11,9 +10,6 @@ import { api } from "~/trpc/react";
 
 import { cn } from "~/lib/utils";
 
-import SelectUsersModal from "~/app/_components/shared/SelectUsersModal";
-
-import { Avatar, AvatarFallback, AvatarImage } from "~/shadcn/ui/avatar";
 import { Button } from "~/shadcn/ui/button";
 import {
   Dialog,
@@ -27,20 +23,15 @@ import { Input } from "~/shadcn/ui/input";
 
 export default function AddClass() {
   const [isOpen, setIsOpen] = useState(false);
-  const [isTeachersModalOpen, setIsTeachersModalOpen] = useState(false);
 
   const utils = api.useUtils();
 
   const [klassName, setKlassName] = useState("");
-  const [teachers, setTeachers] = useState<
-    Pick<User, "id" | "image" | "name">[]
-  >([]);
 
   const addKlassMutation = api.klass.addKlass.useMutation({
     onSuccess: () => {
       void utils.klass.getAllKlasses.invalidate();
       setIsOpen(false);
-      setIsTeachersModalOpen(false);
     },
     onError: (error) => {
       error.data?.zodError
@@ -53,7 +44,6 @@ export default function AddClass() {
     try {
       addKlassSchema.parse({
         name: klassName,
-        teacherIds: teachers.map((t) => t.id),
       });
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -64,7 +54,6 @@ export default function AddClass() {
 
     addKlassMutation.mutate({
       name: klassName,
-      teacherIds: teachers.map((t) => t.id),
     });
   }
 
@@ -87,44 +76,6 @@ export default function AddClass() {
               className="mb-3"
               placeholder="Назва класу"
             />
-
-            <SelectUsersModal
-              usersType="TEACHER"
-              onSubmit={(teachers) => {
-                setTeachers(teachers);
-                setIsTeachersModalOpen(false);
-              }}
-              open={isTeachersModalOpen}
-              onOpenChange={setIsTeachersModalOpen}
-            >
-              <Button
-                variant="secondary"
-                disabled={addKlassMutation.isPending}
-                className="max-w-max"
-              >
-                {teachers.length === 0 ? (
-                  <p>Виберіть вчителів</p>
-                ) : (
-                  <div className="flex items-center gap-2">
-                    {teachers.slice(0, 5).map((teacher) => (
-                      <Avatar
-                        className="h-6 w-6 [&:not(:last-child)]:-ml-2"
-                        key={teacher.id}
-                      >
-                        <AvatarImage
-                          src={teacher.image ?? ""}
-                          alt={teacher.name}
-                        />
-                        <AvatarFallback>{teacher.name}</AvatarFallback>
-                      </Avatar>
-                    ))}
-                    {teachers.slice(0, 5).length > 5 && (
-                      <p>+{teachers.slice(0, 5).length}</p>
-                    )}
-                  </div>
-                )}
-              </Button>
-            </SelectUsersModal>
           </div>
           <DialogFooter>
             <Button

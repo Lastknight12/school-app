@@ -14,6 +14,7 @@ import { authClient } from "~/lib/auht-client";
 
 import { Button } from "~/shadcn/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "~/shadcn/ui/dialog";
+import { Textarea } from "~/shadcn/ui/textarea";
 
 interface Props {
   user: User;
@@ -35,6 +36,7 @@ export default function TransactionDialog({
   const { data: session } = authClient.useSession();
 
   const [amount, setAmount] = useState(0);
+  const [comment, setComment] = useState("");
   const [isOpen, setIsOpen] = useState(false);
 
   const isAmountPositive = amount > 0;
@@ -69,7 +71,7 @@ export default function TransactionDialog({
 
   function handleSubmit() {
     try {
-      sendAmountSchema.parse({ amount });
+      sendAmountSchema.parse({ amount, comment });
 
       if (amount > (balance ?? session!.user.balance)) {
         throw new z.ZodError([
@@ -87,7 +89,7 @@ export default function TransactionDialog({
       }
     }
 
-    sendMoneyMutation.mutate({ receiverId: user.id, amount });
+    sendMoneyMutation.mutate({ receiverId: user.id, amount, comment });
   }
 
   return (
@@ -123,22 +125,36 @@ export default function TransactionDialog({
               className="w-[inherit] bg-transparent text-center text-4xl outline-none"
               value={amount}
               maxLength={10}
+              max={session?.user.balance}
               onChange={handleAmountChange}
             />
           </div>
 
-          <Button
-            disabled={
-              !isAmountPositive || sendMoneyMutation.isPending || !session
-            }
-            onClick={handleSubmit}
-            variant="secondary"
-          >
-            Відправити{" "}
-            {sendMoneyMutation.isPending && (
-              <Loader2 className="h-4 w-4 animate-spin text-[#b5b5b5]" />
-            )}
-          </Button>
+          <div className="flex flex-col gap-2">
+            <Textarea
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              placeholder="Коментар до транзакції"
+              rows={2}
+              className="resize-none"
+            />
+
+            <Button
+              disabled={
+                !isAmountPositive ||
+                sendMoneyMutation.isPending ||
+                !session ||
+                !comment
+              }
+              onClick={handleSubmit}
+              variant="secondary"
+            >
+              Відправити{" "}
+              {sendMoneyMutation.isPending && (
+                <Loader2 className="h-4 w-4 animate-spin text-[#b5b5b5]" />
+              )}
+            </Button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>

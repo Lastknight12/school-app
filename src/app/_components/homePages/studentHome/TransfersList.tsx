@@ -1,7 +1,8 @@
 "use client";
 
+import { format } from "date-fns";
 import { useInView } from "framer-motion";
-import { Loader2 } from "lucide-react";
+import { Loader2, MessageCircle } from "lucide-react";
 import { ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import { type CSSProperties, useEffect, useRef } from "react";
@@ -87,17 +88,13 @@ export default function TransfersList({ session }: Props) {
                         >
                           <ShoppingCart color="#232323a1" size={20} />
                         </div>
-                      ) : isUserSender ? (
-                        <Image
-                          src={transfer.reciever!.image ?? ""}
-                          alt="avatar"
-                          width={40}
-                          height={40}
-                          className="rounded-full h-10"
-                        />
                       ) : (
                         <Image
-                          src={transfer.sender!.image ?? ""}
+                          src={
+                            isUserSender
+                              ? (transfer.reciever!.image ?? "")
+                              : (transfer.sender!.image ?? "")
+                          }
                           alt="avatar"
                           width={40}
                           height={40}
@@ -106,21 +103,25 @@ export default function TransfersList({ session }: Props) {
                       )}
 
                       <div>
-                        <h1 className="font-bold tracking-wide text-[#fafafa]">
-                          {transfer.type === "BUY"
-                            ? "Покупка товару"
-                            : // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-                              isUserSender
-                              ? transfer.reciever?.name
-                              : transfer.sender?.name}
-                        </h1>
-                        <p className="text-sm font-semibold text-[#fafafa4d]">
-                          {transfer.createdAt.toLocaleDateString("uk-UA", {
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                          })}
-                        </p>
+                        <div className="flex gap-2 items-center">
+                          <h1 className="font-bold tracking-wide text-[#fafafa]">
+                            {transfer.type === "BUY"
+                              ? "Покупка товару"
+                              : // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+                                isUserSender
+                                ? transfer.reciever?.name
+                                : transfer.sender?.name}
+                          </h1>
+
+                          <p className="text-sm font-semibold text-[#fafafa4d]">
+                            {format(transfer.createdAt, "dd.MM.yyyy")}
+                          </p>
+                        </div>
+
+                        <div className="flex gap-1 items-center">
+                          <MessageCircle size={18} />
+                          <p className="font-semibold">{transfer.comment}</p>
+                        </div>
                       </div>
                     </div>
 

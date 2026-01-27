@@ -4,6 +4,8 @@ import { toast } from "sonner";
 
 import { api } from "~/trpc/react";
 
+import { TruncatedText } from "../TruncatedText";
+
 import { Button } from "~/shadcn/ui/button";
 import {
   Dialog,
@@ -48,16 +50,17 @@ export default function UpdateCategory({
         // short title if title is too long
         <p className="text-white">
           Категорію{" "}
-          <span className="text-emerald-300">
-            {categoryName.length > 10
-              ? categoryName.slice(0, 10) + "..."
-              : categoryName}
-          </span>{" "}
-          змінено на
-          <span className="text-emerald-300">
-            {" "}
-            {name.length > 10 ? name.slice(0, 10) + "..." : name}
-          </span>
+          <TruncatedText
+            className="text-emerald-300"
+            text={categoryName}
+            maxLength={10}
+          />{" "}
+          змінено на{" "}
+          <TruncatedText
+            className="text-emerald-300"
+            text={name}
+            maxLength={10}
+          />
         </p>,
       );
 

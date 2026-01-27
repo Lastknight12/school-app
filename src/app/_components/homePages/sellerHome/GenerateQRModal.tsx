@@ -11,6 +11,8 @@ import { pusherClient } from "~/lib/pusher-client";
 import { useProducts } from "~/lib/state";
 import { cn } from "~/lib/utils";
 
+import { TruncatedText } from "../../shared/TruncatedText";
+
 import { Button } from "~/shadcn/ui/button";
 import {
   Carousel,
@@ -177,11 +179,8 @@ export default function GenerateQRModal({ onSuccess, children }: Props) {
                         />
 
                         <div className="flex flex-col justify-center gap-2">
-                          <h1>
-                            {item.title.length > 15
-                              ? item.title.slice(0, 15) + "..."
-                              : item.title}
-                          </h1>
+                          <TruncatedText text={item.title} maxLength={15} />
+
                           <p className="text-white/70">
                             Ціна: {item.pricePerOne + " Балів"}
                           </p>

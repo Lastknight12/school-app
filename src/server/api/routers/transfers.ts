@@ -14,7 +14,7 @@ import {
 
 export interface TokenData {
   randomChannelId: string;
-  transactionId: string;
+  purchaseId: string;
   count: number;
   products: {
     id: string;
@@ -34,7 +34,8 @@ export const transfersRouter = createTRPCRouter({
     .input(
       z.object({
         receiverId: z.string().min(1, "receiverId не може бути порожнім"),
-        amount: z.number().min(1, "amount не може бути менше 1"),
+        amount: z.number().min(1, "Кількість балів не може бути менше 1"),
+        comment: z.string().min(5, "Коментар не може бути менше 5 символів"),
       }),
     )
     .mutation(async ({ input, ctx }) => {
@@ -49,20 +50,23 @@ export const transfersRouter = createTRPCRouter({
       }
 
       let userBalance = ctx.session.user.balance;
+      let kaznaId: string | undefined;
       if (ctx.session.user.role === "ADMIN") {
-        const kaznaBalance = await ctx.db.kazna.findFirst({
+        const kazna = await ctx.db.kazna.findFirst({
           select: {
+            id: true,
             amount: true,
           },
         });
 
-        if (!kaznaBalance)
+        if (!kazna)
           throw new TRPCError({
             code: "NOT_FOUND",
             message: "Не вдалося знайти казну",
           });
 
-        userBalance = kaznaBalance.amount;
+        userBalance = kazna.amount;
+        kaznaId = kazna.id;
       }
 
       if (userBalance < input.amount) {
@@ -102,9 +106,10 @@ export const transfersRouter = createTRPCRouter({
 
       const randomColor = colors[Math.floor(Math.random() * colors.length)]!;
 
-      const transaction = await ctx.db.transaction.create({
+      await ctx.db.transaction.create({
         data: {
           type: "TRANSFER",
+          comment: input.comment,
           reciever: {
             connect: {
               id: input.receiverId,
@@ -115,93 +120,59 @@ export const transfersRouter = createTRPCRouter({
               id: ctx.session.user.id,
             },
           },
-          status: "PENDING",
           amount: input.amount,
           randomGradient: randomColor,
         },
       });
 
-      if (ctx.session.user.role === "ADMIN") {
-        const kazna = await ctx.db.kazna.findFirst();
-
-        if (!kazna) {
-          throw new TRPCError({
-            code: "NOT_FOUND",
-            message: "Казна не знайдена",
-          });
-        }
-
-        if (kazna.amount < input.amount) {
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: "Недостатньо коштів в казні",
-          });
-        }
-
-        const promises = [
-          ctx.db.kaznaTransfer.create({
-            data: {
-              amount: input.amount * -1,
-              message: `Переказ коштів вчителю <user>${reciever.name}`,
-              Kazna: {
-                connect: {
-                  id: kazna.id,
-                },
-              },
-              sender: {
-                connect: {
-                  id: ctx.session.user.id,
-                },
-              },
+      async function updateRecieverBalance() {
+        await ctx.db.user.update({
+          where: {
+            id: input.receiverId,
+          },
+          data: {
+            balance: {
+              increment: input.amount,
             },
-          }),
+          },
+        });
+      }
 
-          ctx.db.kazna.update({
+      switch (ctx.session.user.role) {
+        case "ADMIN": {
+          await ctx.db.kazna.update({
             where: {
-              id: kazna.id,
+              id: kaznaId,
             },
             data: {
               amount: {
                 decrement: input.amount,
               },
             },
-          }),
-        ];
+          });
 
-        await Promise.all(promises);
-      } else {
-        await ctx.db.user.update({
-          where: {
-            id: ctx.session.user.id,
-          },
-          data: {
-            balance: {
-              decrement: input.amount,
+          await updateRecieverBalance();
+
+          return;
+        }
+
+        case "TEACHER": {
+          await ctx.db.user.update({
+            where: {
+              id: ctx.session.user.id,
             },
-            senderTransactions: {
-              connect: {
-                id: transaction.id,
+            data: {
+              balance: {
+                decrement: input.amount,
               },
             },
-          },
-        });
-      }
+          });
 
-      await ctx.db.user.update({
-        where: {
-          id: input.receiverId,
-        },
-        data: {
-          balance: {
-            increment: input.amount,
-          },
-          recieverTransactions: {
-            connect: {
-              id: transaction.id,
-            },
-          },
-        },
-      });
+          await updateRecieverBalance();
+
+          return;
+        }
+      }
     }),
 
   getTransfers: protectedProcedure
@@ -232,8 +203,8 @@ export const transfersRouter = createTRPCRouter({
         take: input.limit ? input.limit + 1 : undefined,
         select: {
           id: true,
-          productsBought: true,
           randomGradient: true,
+          comment: true,
           reciever: {
             select: {
               id: true,
@@ -271,6 +242,7 @@ export const transfersRouter = createTRPCRouter({
         },
         select: {
           id: true,
+          comment: true,
           reciever: {
             select: {
               name: true,
@@ -474,7 +446,7 @@ export const transfersRouter = createTRPCRouter({
               : total;
           }, 0);
 
-          const transaction = await ctx.db.transaction.create({
+          const purchase = await ctx.db.purchase.create({
             data: {
               amount,
               type: "BUY",
@@ -482,6 +454,11 @@ export const transfersRouter = createTRPCRouter({
               randomGradient,
               productsBought: {
                 connect: input.products.map((product) => ({ id: product.id })),
+              },
+              seller: {
+                connect: {
+                  id: ctx.session.user.id,
+                },
               },
             },
           });
@@ -491,7 +468,7 @@ export const transfersRouter = createTRPCRouter({
           const token = jwt.sign(
             {
               products: input.products,
-              transactionId: transaction.id,
+              purchaseId: purchase.id,
               randomChannelId: randomChannelId,
             },
             env.QR_SECRET,
@@ -534,14 +511,14 @@ export const transfersRouter = createTRPCRouter({
       const processTransaction = async (
         amount: number,
         products: { id: string; count: number }[],
-        transactionId?: string,
+        purchaseId?: string,
         randomChannelId?: string,
       ) => {
-        if (transactionId && randomChannelId) {
+        if (purchaseId && randomChannelId) {
           if (ctx.session.user.balance < amount) {
-            transactionId &&
-              (await ctx.db.transaction.delete({
-                where: { id: transactionId },
+            purchaseId &&
+              (await ctx.db.purchase.delete({
+                where: { id: purchaseId },
               }));
 
             await ctx.pusher.trigger(randomChannelId, "pay", {
@@ -555,11 +532,11 @@ export const transfersRouter = createTRPCRouter({
           }
 
           const promises = [
-            ctx.db.transaction.update({
-              where: { id: transactionId },
+            ctx.db.purchase.update({
+              where: { id: purchaseId },
               data: {
                 status: "SUCCESS",
-                senderId: ctx.session.user.id,
+                buyerId: ctx.session.user.id,
               },
             }),
 
@@ -610,13 +587,13 @@ export const transfersRouter = createTRPCRouter({
 
       if (params.has("token")) {
         const token = params.get("token")!;
-        const { transactionId, products, randomChannelId } = jwt.verify(
+        const { purchaseId, products, randomChannelId } = jwt.verify(
           token,
           env.QR_SECRET,
         ) as TokenData;
 
-        const transaction = await ctx.db.transaction.findUnique({
-          where: { id: transactionId },
+        const transaction = await ctx.db.purchase.findUnique({
+          where: { id: purchaseId },
         });
         const productIds = products.map((p) => p.id);
 
@@ -634,7 +611,7 @@ export const transfersRouter = createTRPCRouter({
         await processTransaction(
           transaction.amount,
           products,
-          transactionId,
+          purchaseId,
           randomChannelId,
         );
 
@@ -642,7 +619,7 @@ export const transfersRouter = createTRPCRouter({
       }
     }),
 
-  getTransfersByPeriod: authorizeRoles(["ADMIN", "SELLER"])
+  getPurchasesByPeriod: authorizeRoles(["ADMIN", "SELLER"])
     .input(
       z.object({
         range: z.object({
@@ -652,18 +629,18 @@ export const transfersRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx, input }) => {
-      const transfers = await ctx.db.transaction.findMany({
+      const purchases = await ctx.db.purchase.findMany({
         where: {
           createdAt: {
             gte: input.range.from,
             lt: addDays(input.range.to ?? input.range.from, 1),
           },
-          type: "BUY",
+
           status: "SUCCESS",
         },
         select: {
           id: true,
-          sender: true,
+          buyer: true,
           amount: true,
           createdAt: true,
           status: true,
@@ -684,13 +661,13 @@ export const transfersRouter = createTRPCRouter({
         },
       });
 
-      const totalAmount = transfers.reduce((total, transfer) => {
-        return transfer.status === "SUCCESS" ? total + transfer.amount : total;
+      const totalAmount = purchases.reduce((total, transfer) => {
+        return total + transfer.amount;
       }, 0);
 
       return {
         totalAmount,
-        transfers,
+        purchases,
       };
     }),
 });

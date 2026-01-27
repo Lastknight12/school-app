@@ -10,6 +10,7 @@ import { cn } from "~/lib/utils";
 
 import CategoryNamesList from "~/app/_components/shared/CategoryNamesList";
 import ProductCard from "~/app/_components/shared/ProductCard";
+import { TruncatedText } from "~/app/_components/shared/TruncatedText";
 
 import { useSidebar } from "~/shadcn/ui/sidebar";
 
@@ -61,10 +62,18 @@ export default function ShopPage() {
         )}
 
         {getCategoryItems.data?.length === 0 && !getCategoryItems.isPending && (
-          <p className="text-center">
-            Не знайдено жодних продуктів в категорії{" "}
-            <span className="text-emerald-300">{currentCategoryName}</span>
-          </p>
+          <>
+            <p className="text-center">
+              Не знайдено жодних продуктів в категорії
+            </p>
+
+            <TruncatedText
+              type="hover"
+              className="text-emerald-300 inline"
+              text={currentCategoryName}
+              maxLength={20}
+            />
+          </>
         )}
 
         {getCategoryItems.data && getCategoryItems.data.length > 0 && (

@@ -42,28 +42,24 @@ export default function Transactions({ session, balance }: Props) {
           )}
 
         {getUsers.data?.map((user) => {
-          return (
-            <>
-              {session?.user.name === user.name ? null : (
-                <TransactionDialog
-                  key={user.name}
-                  user={user}
-                  balance={balance}
-                >
-                  <div className="flex items-center gap-3">
-                    <Image
-                      src={user.image ?? ""}
-                      alt="avatar"
-                      className="rounded-full h-[35px]"
-                      width={35}
-                      height={35}
-                    />
+          if (session?.user.name === user.name) {
+            return null;
+          }
 
-                    <h1>{user.name}</h1>
-                  </div>
-                </TransactionDialog>
-              )}
-            </>
+          return (
+            <TransactionDialog key={user.name} user={user} balance={balance}>
+              <div className="flex items-center gap-3">
+                <Image
+                  src={user.image ?? ""}
+                  alt="avatar"
+                  className="rounded-full h-[35px]"
+                  width={35}
+                  height={35}
+                />
+
+                <h1>{user.name}</h1>
+              </div>
+            </TransactionDialog>
           );
         })}
       </div>

@@ -7,6 +7,8 @@ import { api } from "~/trpc/react";
 
 import { cn } from "~/lib/utils";
 
+import { TruncatedText } from "~/app/_components/shared/TruncatedText";
+
 import { Button } from "~/shadcn/ui/button";
 import {
   Table,
@@ -84,13 +86,14 @@ export default function TransactionsTableContent() {
             <TableHead className="w-[150px]">Date</TableHead>
             <TableHead>Sender</TableHead>
             <TableHead className=" cursor-pointer">Reciever</TableHead>
+            <TableHead className=" cursor-pointer">Коментар</TableHead>
             <TableHead>Amount</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {isFetchingTransactions && (
             <TableRow>
-              <TableCell colSpan={4}>
+              <TableCell colSpan={5}>
                 <Loader2 className="mx-auto h-5 w-5 animate-spin text-[#b5b5b5]" />
               </TableCell>
             </TableRow>
@@ -98,7 +101,7 @@ export default function TransactionsTableContent() {
 
           {!isFetchingTransactions && transactions?.length === 0 && (
             <TableRow>
-              <TableCell colSpan={4}>
+              <TableCell colSpan={5}>
                 <div className="text-center">Жодних транзакцій не знайдено</div>
               </TableCell>
             </TableRow>
@@ -112,6 +115,13 @@ export default function TransactionsTableContent() {
 
               <TableCell>{transaction.sender?.name}</TableCell>
               <TableCell>{transaction.reciever?.name}</TableCell>
+              <TableCell>
+                <TruncatedText
+                  text={transaction.comment}
+                  maxLength={50}
+                  className="hover:bg-foreground/10 p-2 rounded-md"
+                />
+              </TableCell>
               <TableCell>{transaction.amount}</TableCell>
             </TableRow>
           ))}

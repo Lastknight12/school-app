@@ -8,6 +8,8 @@ import { env } from "~/env";
 
 import { api } from "~/trpc/react";
 
+import { TruncatedText } from "~/app/_components/shared/TruncatedText";
+
 import { Button } from "~/shadcn/ui/button";
 import {
   Carousel,
@@ -104,11 +106,7 @@ export default function BuyPage() {
                             alt={`${item.title} image`}
                           />
                           <div className="flex flex-col justify-center gap-2">
-                            <h1>
-                              {item.title.length > 15
-                                ? item.title.slice(0, 15) + "..."
-                                : item.title}
-                            </h1>
+                            <TruncatedText text={item.title} maxLength={15} />
                             <p>Ціна: {item.pricePerOne + " Балів"}</p>
                             <p>Кількість: {item.count}</p>
                           </div>

@@ -101,9 +101,9 @@ export const categoryRouter = createTRPCRouter({
               },
             },
           }),
-          ctx.db.transaction.findUnique({
+          ctx.db.purchase.findUnique({
             where: {
-              id: decryptedToken.transactionId,
+              id: decryptedToken.purchaseId,
             },
           }),
         ]);

@@ -4,6 +4,8 @@ import { toast } from "sonner";
 
 import { api } from "~/trpc/react";
 
+import { TruncatedText } from "~/app/_components/shared/TruncatedText";
+
 import { Button } from "~/shadcn/ui/button";
 import {
   Dialog,
@@ -44,9 +46,11 @@ export default function AddNewCategory({ children }: Props) {
         // short title if title is too long
         <p className="text-white">
           Категорію{" "}
-          <span className="text-emerald-300">
-            {name.length > 10 ? name.slice(0, 10) + "..." : name}
-          </span>{" "}
+          <TruncatedText
+            className="text-emerald-300"
+            text={name}
+            maxLength={10}
+          />{" "}
           успішно додано
         </p>,
       );

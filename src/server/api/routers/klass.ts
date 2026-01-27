@@ -90,9 +90,6 @@ export const klassRouter = createTRPCRouter({
       await ctx.db.klass.create({
         data: {
           name: input.name,
-          teachers: {
-            connect: input.teacherIds.map((id) => ({ id })),
-          },
         },
       });
     }),

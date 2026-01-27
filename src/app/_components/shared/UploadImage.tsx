@@ -2,9 +2,9 @@
 
 import { useMutation } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
+import { FileUp, X } from "lucide-react";
 import Image from "next/image";
 import { type ChangeEvent, useRef, useState } from "react";
-import { X, FileUp } from "lucide-react";
 import { toast } from "sonner";
 import { type uploadImageRes } from "~/app/api/uploadImage/route";
 
@@ -68,37 +68,38 @@ export default function UploadImage({
       {!perviewSrc && uploadFileMutation.isPending && (
         <Loader2 className="h-4 w-4 animate-spin text-[#b5b5b5]" />
       )}
-      
+
       {!perviewSrc && !uploadFileMutation.isPending && (
-        <Button variant="secondary" onClick={() => fileInputRef.current?.click()}>
-          <FileUp size={25} className="text-accent-foreground"/>
+        <Button
+          size="icon"
+          variant="secondary"
+          onClick={() => fileInputRef.current?.click()}
+        >
+          <FileUp size={25} className="text-accent-foreground" />
         </Button>
       )}
 
       {perviewSrc && (
-        <div>
-          <div className="relative w-max">
-            <button
-              className={cn(
-                "absolute -right-1 -top-1 rounded-full border border-red-500 bg-red-100",
-                closeButtonClassName,
-              )}
-              onClick={() => setPerviewSrc("")}
-            >
-              <X
-                size={15}
-                className={cn(closeIconColor ?? "text-red-500")}
-              />
-            </button>
-            <Image
-              src={perviewSrc}
-              alt="post perview"
-              style={{ height: imageSize ?? 150 }}
-              className={cn(imageClassName)}
-              width={imageSize ?? 150}
-              height={imageSize ?? 150}
-            />
-          </div>
+        <div className="relative w-max">
+          <Button
+            variant="destructive"
+            size="icon"
+            className={cn(
+              "w-5 h-5 absolute -right-1 -top-1 rounded-full border",
+              closeButtonClassName,
+            )}
+            onClick={() => setPerviewSrc("")}
+          >
+            <X size={15} className={cn(closeIconColor ?? "text-red-300")} />
+          </Button>
+          <Image
+            src={perviewSrc}
+            alt="post perview"
+            style={{ height: imageSize ?? 150 }}
+            className={cn(imageClassName)}
+            width={imageSize ?? 150}
+            height={imageSize ?? 150}
+          />
         </div>
       )}
       <input

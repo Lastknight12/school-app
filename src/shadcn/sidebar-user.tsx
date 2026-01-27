@@ -6,6 +6,8 @@ import { useState } from "react";
 
 import { authClient } from "~/lib/auht-client";
 
+import { TruncatedText } from "~/app/_components/shared/TruncatedText";
+
 import { Avatar, AvatarFallback, AvatarImage } from "~/shadcn/ui/avatar";
 import {
   DropdownMenu,
@@ -52,14 +54,19 @@ function Account({
         <AvatarFallback className="rounded-lg">{name[0]}</AvatarFallback>
       </Avatar>
       <div className="grid flex-1 text-left text-sm leading-tight">
-        <span className="truncate font-semibold">{name}</span>
+        <TruncatedText
+          type="hover"
+          className="truncate font-semibold"
+          text={name}
+          maxLength={20}
+        />
         <span className="truncate text-xs">{email}</span>
       </div>
     </div>
   );
 }
 
-export function NavUser({
+export function SidebarUser({
   user,
   sessions,
 }: {

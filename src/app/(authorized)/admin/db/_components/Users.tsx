@@ -16,6 +16,8 @@ import { api } from "~/trpc/react";
 
 import { cn } from "~/lib/utils";
 
+import { TruncatedText } from "~/app/_components/shared/TruncatedText";
+
 import { Button } from "~/shadcn/ui/button";
 import {
   DropdownMenu,
@@ -192,7 +194,9 @@ export default function UsersModelContent() {
 
           {currentUsers?.map((user) => (
             <TableRow key={user.id}>
-              <TableCell className="font-medium">{user.name}</TableCell>
+              <TableCell className="font-medium">
+                <TruncatedText text={user.name} maxLength={20} />
+              </TableCell>
               <TableCell>{user.email}</TableCell>
               <TableCell>{user.balance + "$"}</TableCell>
               <TableCell>{user.role}</TableCell>

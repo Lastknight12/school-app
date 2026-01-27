@@ -13,6 +13,8 @@ import variant_4 from "images/variant-4.png";
 import variant_5 from "images/variant-5.png";
 import variant_6 from "images/variant-6.png";
 
+import { TruncatedText } from "./TruncatedText";
+
 const cardWidth = 350;
 const cardHeight = 200;
 
@@ -132,11 +134,7 @@ export default function DebitCard({
         >
           <div className="flex flex-col">
             <p className="text-[10px]">Card holder</p>
-            <p>
-              {cardHolder.length > 13
-                ? cardHolder.slice(0, 13) + "..."
-                : cardHolder}
-            </p>
+            <TruncatedText text={cardHolder} maxLength={15} />
           </div>
 
           <div className="flex flex-col">

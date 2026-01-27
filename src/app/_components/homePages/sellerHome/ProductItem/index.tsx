@@ -13,6 +13,8 @@ import { cn } from "~/lib/utils";
 import AddProductInList from "./AddProductContent";
 import { UpdateProduct } from "./UpdateProductContent";
 
+import { TruncatedText } from "~/app/_components/shared/TruncatedText";
+
 import { Button } from "~/shadcn/ui/button";
 import {
   Dialog,
@@ -107,11 +109,11 @@ export default function ProductListItem({ children, item }: Props) {
         <DialogHeader>
           <DialogTitle>
             Додати{" "}
-            <span className="text-emerald-300">
-              {item.title.length > 30
-                ? item.title.slice(0, 30) + "..."
-                : item.title}
-            </span>{" "}
+            <TruncatedText
+              className="text-emerald-300"
+              text={item.title}
+              maxLength={30}
+            />{" "}
             до списку
           </DialogTitle>
 
