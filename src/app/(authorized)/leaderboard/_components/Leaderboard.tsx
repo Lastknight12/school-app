@@ -90,7 +90,7 @@ export default function Leaderboard({ session }: Props) {
             />
 
             <p className="text-center text-lg max-sm:text-sm">
-              {user.balance} $
+              {user.balance} ₴
             </p>
           </motion.div>
         ))}
@@ -146,7 +146,7 @@ export default function Leaderboard({ session }: Props) {
                 </div>
 
                 <div className="text-right max-sm:text-sm">
-                  {user.balance} $
+                  {user.balance} ₴
                 </div>
               </div>
             )),

@@ -198,7 +198,7 @@ export default function UsersModelContent() {
                 <TruncatedText text={user.name} maxLength={20} />
               </TableCell>
               <TableCell>{user.email}</TableCell>
-              <TableCell>{user.balance + "$"}</TableCell>
+              <TableCell>{user.balance + "₴"}</TableCell>
               <TableCell>{user.role}</TableCell>
               <TableCell className="text-right">
                 <DropdownMenu>

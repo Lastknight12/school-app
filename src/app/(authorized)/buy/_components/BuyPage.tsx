@@ -120,7 +120,7 @@ export default function BuyPage() {
             </div>
             <div>
               <h1 className="mb-3 w-full text-center text-xl">
-                В суммі: {getItemsFromTokenOrId.data.totalAmount}
+                В сумі: {getItemsFromTokenOrId.data.totalAmount}
               </h1>
               <Button
                 disabled={payMutation.isPending}

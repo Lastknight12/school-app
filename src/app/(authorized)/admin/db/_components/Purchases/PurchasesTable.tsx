@@ -103,7 +103,7 @@ export function TransfersTable({
                 transfer.status === "PENDING" && "text-red-600",
               )}
             >
-              {transfer.amount} $
+              {transfer.amount} ₴
             </TableCell>
           </TableRow>
         ))}
@@ -121,7 +121,7 @@ export function TransfersTable({
         {!isFetching && data && data.length > 0 && (
           <TableRow>
             <TableCell colSpan={5}>Усього</TableCell>
-            <TableCell className="text-right">{totalAmount} $</TableCell>
+            <TableCell className="text-right">{totalAmount} ₴</TableCell>
           </TableRow>
         )}
       </TableFooter>
