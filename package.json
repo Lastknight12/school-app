@@ -57,7 +57,7 @@
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.427.0",
     "net": "^1.0.2",
-    "next": "^16.1.4",
+    "next": "^16.1.5",
     "next-themes": "^0.3.0",
     "node-html-parser": "^6.1.13",
     "pusher": "^5.2.0",
