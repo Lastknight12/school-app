@@ -92,8 +92,8 @@ export default function TransfersList({ session }: Props) {
                         <Image
                           src={
                             isUserSender
-                              ? (transfer.reciever!.image ?? "")
-                              : (transfer.sender!.image ?? "")
+                              ? (transfer.reciever.image ?? "")
+                              : (transfer.sender.image ?? "")
                           }
                           alt="avatar"
                           width={40}
